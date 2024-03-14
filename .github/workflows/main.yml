@@ -48,7 +48,8 @@ jobs:
       - name: Test
         run: curl "${{ steps.deploy.outputs.url }}"
 
-        name: Build
+
+name: Build
 on:
   push:
     branches:
