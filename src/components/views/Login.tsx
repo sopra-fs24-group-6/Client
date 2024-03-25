@@ -35,13 +35,17 @@ FormField.propTypes = {
 
 const Login = () => {
   const navigate = useNavigate();
-  const [name, setName] = useState<string>(null);
+  const [password, setPassword] = useState<string>(null);
   const [username, setUsername] = useState<string>(null);
+
+  const doRegistration = () => {
+    navigate("/register")
+  };
 
   const doLogin = async () => {
     try {
-      const requestBody = JSON.stringify({ username, name });
-      const response = await api.post("/users", requestBody);
+      const requestBody = JSON.stringify({ username, password });
+      const response = await api.post("/authenticate", requestBody);
 
       // Get the returned user and update a new object.
       const user = new User(response.data);
@@ -55,6 +59,7 @@ const Login = () => {
       alert(
         `Something went wrong during the login: \n${handleError(error)}`
       );
+      navigate("/login");
     }
   };
 
@@ -68,17 +73,23 @@ const Login = () => {
             onChange={(un: string) => setUsername(un)}
           />
           <FormField
-            label="Name"
-            value={name}
-            onChange={(n) => setName(n)}
+            label="Password"
+            value={password}
+            onChange={(n) => setPassword(n)}
           />
           <div className="login button-container">
             <Button
-              disabled={!username || !name}
-              width="100%"
+              disabled={!username || !password}
+              width="50%"
               onClick={() => doLogin()}
             >
               Login
+            </Button>
+            <Button
+              width="50%"
+              onClick={doRegistration}
+            >
+              Register here
             </Button>
           </div>
         </div>
