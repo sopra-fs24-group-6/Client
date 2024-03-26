@@ -12,6 +12,7 @@ const FormFieldReg = (props) => {
     <div className="register field">
       <label className="register label">{props.label}</label>
       <input
+        type={props.type}
         className="register input"
         placeholder="enter here.."
         value={props.value}
@@ -22,6 +23,7 @@ const FormFieldReg = (props) => {
 };
 
 FormFieldReg.propTypes = {
+  type: PropTypes.string,
   label: PropTypes.string,
   value: PropTypes.string,
   onChange: PropTypes.func,
@@ -29,6 +31,8 @@ FormFieldReg.propTypes = {
 
 const Register = () => {
   const navigate = useNavigate();
+
+  const [isSecure, setIsSecure] = useState(true);
   const [password, setPassword] = useState<string>(null);
   const [username, setUsername] = useState<string>(null);
 
@@ -48,6 +52,7 @@ const Register = () => {
       const user = new User(response.data);
 
       localStorage.setItem("token", user.token);
+      localStorage.setItem("id", user.id);
       navigate("/game");
     } catch (error) {
       alert(
@@ -65,11 +70,19 @@ const Register = () => {
             value={username}
             onChange={(un: string) => setUsername(un)}
           />
-          <FormFieldReg
-            label="Password"
-            value={password}
-            onChange={(n) => setPassword(n)}
-          />
+          <div>
+            <FormFieldReg
+              type={isSecure ? "password" : "text"}
+              label="Password"
+              value={password}
+              onChange={setPassword}
+            />
+
+            <Button onClick={() => setIsSecure((prev) => !prev)}>
+              {isSecure ? "Show" : "Hide"}
+            </Button>
+          </div>
+
           <div className="submit button container">
             <Button
               disabled={!username || !password}

@@ -18,6 +18,7 @@ const FormField = (props) => {
     <div className="login field">
       <label className="login label">{props.label}</label>
       <input
+        type={props.type}
         className="login input"
         placeholder="enter here.."
         value={props.value}
@@ -28,6 +29,7 @@ const FormField = (props) => {
 };
 
 FormField.propTypes = {
+  type: PropTypes.string,
   label: PropTypes.string,
   value: PropTypes.string,
   onChange: PropTypes.func,
@@ -35,6 +37,8 @@ FormField.propTypes = {
 
 const Login = () => {
   const navigate = useNavigate();
+
+  const [isSecure, setIsSecure] = useState(true);
   const [password, setPassword] = useState<string>(null);
   const [username, setUsername] = useState<string>(null);
 
@@ -51,6 +55,7 @@ const Login = () => {
       const user = new User(response.data);
 
       // Store the token into the local storage.
+      localStorage.setItem("id", user.id);
       localStorage.setItem("token", user.token);
 
       // Login successfully worked --> navigate to the route /game in the GameRouter
@@ -72,11 +77,19 @@ const Login = () => {
             value={username}
             onChange={(un: string) => setUsername(un)}
           />
-          <FormField
-            label="Password"
-            value={password}
-            onChange={(n) => setPassword(n)}
-          />
+          <div>
+            <FormField
+              type={isSecure ? "password" : "text"}
+              label="Password"
+              value={password}
+              onChange={(n) => setPassword(n)}
+            />
+
+            <Button onClick={() => setIsSecure(prev => !prev)}>
+              {isSecure ? "Show" : "Hide"}
+            </Button>
+          </div>
+          
           <div className="login button-container">
             <Button
               disabled={!username || !password}
