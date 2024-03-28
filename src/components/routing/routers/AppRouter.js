@@ -7,6 +7,7 @@ import Login from "../../views/Login";
 import Register from "../../views/Register";
 import Profile from "../../views/Profile";
 import Edit from "../../views/Edit";
+import Lobby from "../../views/Lobby";
 
 /**
  * Main router of your application.
@@ -36,6 +37,8 @@ const AppRouter = () => {
           <Route path="/profile/edit" element={<Edit />} />
           <Route path="/profile/:userid" element={<Profile />} />
         </Route>
+
+        <Route path="/lobby" element={<Lobby />} />
 
         <Route path="/" element={
           <Navigate to="/game" replace />
