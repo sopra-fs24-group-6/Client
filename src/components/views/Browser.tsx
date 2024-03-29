@@ -56,23 +56,45 @@ const Browser = () => {
       <table>
         <thead>
           <tr>
-            <th>Lobby Name</th>
-            <th>Lobby Type</th>
-            <th>Players</th>
-            <th>Player Limit</th>
-            <th>Themes</th>
-            <th>Action</th>
+            <th style={{ width: "auto", padding: "10px", textAlign: "center" }}>
+              Lobby Name
+            </th>
+            <th style={{ width: "auto", padding: "10px", textAlign: "center" }}>
+              Lobby Type
+            </th>
+            <th style={{ width: "auto", padding: "10px", textAlign: "center" }}>
+              Players
+            </th>
+            <th style={{ width: "auto", padding: "10px", textAlign: "center" }}>
+              Player Limit
+            </th>
+            <th style={{ width: "auto", padding: "10px", textAlign: "center" }}>
+              Themes
+            </th>
+            <th
+              style={{ width: "auto", padding: "10px", textAlign: "center" }}
+            ></th>
           </tr>
         </thead>
         <tbody>
           {lobbies.map((lobby) => (
             <tr key={lobby.id}>
-              <td>{lobby.name}</td>
-              <td>{lobby.password ? "Private" : "Public"}</td>
-              <td>{lobby.players.length}</td>
-              <td>{lobby.playerLimit}</td>
-              <td>{lobby.themes.join(", ")}</td>
-              <td>
+              <td style={{ padding: "10px", textAlign: "center" }}>
+                {lobby.name}
+              </td>
+              <td style={{ padding: "10px", textAlign: "center" }}>
+                {lobby.password ? "Private" : "Public"}
+              </td>
+              <td style={{ padding: "10px", textAlign: "center" }}>
+                {lobby.players.length}
+              </td>
+              <td style={{ padding: "10px", textAlign: "center" }}>
+                {lobby.playerLimit}
+              </td>
+              <td style={{ padding: "10px", textAlign: "center" }}>
+                {lobby.themes.join(", ")}
+              </td>
+              <td style={{ padding: "10px", textAlign: "center" }}>
                 <button onClick={() => joinLobby(lobby)}>Join</button>
               </td>
             </tr>
