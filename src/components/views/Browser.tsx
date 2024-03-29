@@ -36,12 +36,17 @@ const Browser = () => {
   };
 
   const passwordSubmit = async () => {
-    if (password === selectedLobby.password) {
+    try {
+      await api.post("/lobbies" + selectedLobby.id + "authenticate,", password);
       const userId = localStorage.getItem("id");
       await api.put("lobbies/" + selectedLobby.id, userId);
       navigate("/lobbies/" + selectedLobby.id);
-    } else {
-      alert("Incorrect password. Please try again.");
+    } catch (error) {
+      alert(
+        `Something went wrong during the authentifiation: \n${handleError(
+          error
+        )}`
+      );
     }
   };
 
