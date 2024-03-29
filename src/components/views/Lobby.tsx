@@ -3,17 +3,19 @@ import { api, handleError } from "helpers/api";
 import { useNavigate } from "react-router-dom";
 import User from "models/User";
 import Lobby from "models/Lobby";
+import "styles/views/Lobby.scss";
+import initialPlayers from "components/placeholders/playerlist";
 
 const GameLobby = () => {
   const navigate = useNavigate();
-  const lobbyAdmin = localStorage.getItem("id");
   let isPublished = false;
+  let isAdmin = true;
   const [lobby, setLobby] = useState(null);
 
   const [isPrivate, setIsPrivate] = useState(false);
   const [name, setName] = useState<string>(null);
   const [password, setPassword] = useState<string>(null);
-  const [players, setPlayers] = useState<Array<User>>(null);
+  const [players, setPlayers] = useState(initialPlayers);
   const [playerLimit, setPlayerLimit] = useState(4);
   const [playerCount, setPlayerCount] = useState(null);
   const [themes, setThemes] = useState<Array<any>>(null);
@@ -39,6 +41,7 @@ const GameLobby = () => {
 
   const createLobby = async () => {
     try {
+      const lobbyAdmin = localStorage.getItem("id");
       const requestBody = JSON.stringify({
         lobbyAdmin,
         name,
@@ -86,6 +89,7 @@ const GameLobby = () => {
   const startGame = async () => {
     try {
       await api.post("/games", lobby);
+      navigate("/game");
     } catch (error) {
       alert(
         `Something went wrong when trying to start the game: \n${handleError(
@@ -95,101 +99,123 @@ const GameLobby = () => {
     }
   };
   return (
-    <div>
-      <h2>Lobby Settings</h2>
-      <div>
-        <label>Lobby Name:</label>
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-      </div>
-      <div>
-        <label>Lobby Type:</label>
+    <div className="container">
+      <div className="settings">
+        <h2>Lobby Settings</h2>
         <div>
-          <label>
-            Public
-            <input
-              type="radio"
-              name="isPrivate"
-              checked={!isPrivate}
-              onChange={() => setIsPrivate(false)}
-            />
-          </label>
-          <label>
-            Private
-            <input
-              type="radio"
-              name="isPrivate"
-              checked={isPrivate}
-              onChange={() => setIsPrivate(true)}
-            />
-          </label>
-        </div>
-      </div>
-      {isPrivate && (
-        <div>
-          <label>Lobby Password:</label>
+          <label>Lobby Name:</label>
           <input
             type="text"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            disabled={!isAdmin}
           />
         </div>
-      )}
-      <div>
-        <label>Player Count:</label>
-        <select
-          value={playerCount}
-          onChange={(e) => setPlayerCount(parseInt(e.target.value))}
-        >
-          {[3, 4, 5, 6].map((count) => (
-            <option key={count} value={count}>
-              {count}
-            </option>
+        <div>
+          <div>
+            Lobby Type:
+            <label>
+              Public
+              <input
+                type="radio"
+                name="isPrivate"
+                checked={!isPrivate}
+                onChange={() => setIsPrivate(false)}
+                disabled={!isAdmin}
+              />
+            </label>
+            <label>
+              Private
+              <input
+                type="radio"
+                name="isPrivate"
+                checked={isPrivate}
+                onChange={() => setIsPrivate(true)}
+                disabled={!isAdmin}
+              />
+            </label>
+          </div>
+        </div>
+        {isPrivate && (
+          <div>
+            <label>Lobby Password:</label>
+            <input
+              type="text"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              disabled={!isAdmin}
+            />
+          </div>
+        )}
+        <div>
+          <label>Player Limit:</label>
+          <select
+            value={playerLimit}
+            onChange={(e) => setPlayerLimit(parseInt(e.target.value))}
+            disabled={!isAdmin}
+          >
+            {[3, 4, 5, 6].map((count) => (
+              <option key={count} value={count}>
+                {count}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label>Round Timer:</label>
+          <input
+            type="range"
+            min={30}
+            max={300}
+            step={10}
+            value={roundTimer}
+            onChange={(e) => setRoundTimer(parseInt(e.target.value))}
+            disabled={!isAdmin}
+          />
+          <span>{roundTimer} seconds</span>
+        </div>
+        <div>
+          <label>Clue Timer:</label>
+          <input
+            type="range"
+            min={5}
+            max={30}
+            step={5}
+            value={clueTimer}
+            onChange={(e) => setClueTimer(parseInt(e.target.value))}
+            disabled={!isAdmin}
+          />
+          <span>{clueTimer} seconds</span>
+        </div>
+        <div>
+          <label>Discussion Timer:</label>
+          <input
+            type="range"
+            min={30}
+            max={300}
+            step={10}
+            value={discussionTimer}
+            onChange={(e) => setDiscussionTimer(parseInt(e.target.value))}
+            disabled={!isAdmin}
+          />
+          <span>{discussionTimer} seconds</span>
+        </div>
+        <div>
+          {!isPublished && <button onClick={createLobby}>Create Lobby</button>}
+          {isPublished && isAdmin && (
+            <button onClick={startGame}>Start Game</button>
+          )}
+        </div>
+      </div>
+      <div className="players">
+        <h2>
+          Players {players.length} / {playerLimit}
+        </h2>
+        <ul>
+          {players.map((player, index) => (
+            <li key={index}>{player}</li>
           ))}
-        </select>
-      </div>
-      <div>
-        <label>Round Timer:</label>
-        <input
-          type="range"
-          min={30}
-          max={300}
-          step={10}
-          value={roundTimer}
-          onChange={(e) => setRoundTimer(parseInt(e.target.value))}
-        />
-        <span>{roundTimer} seconds</span>
-      </div>
-      <div>
-        <label>Clue Timer:</label>
-        <input
-          type="range"
-          min={5}
-          max={30}
-          step={5}
-          value={clueTimer}
-          onChange={(e) => setClueTimer(parseInt(e.target.value))}
-        />
-        <span>{clueTimer} seconds</span>
-      </div>
-      <div>
-        <label>Discussion Timer:</label>
-        <input
-          type="range"
-          min={30}
-          max={300}
-          step={10}
-          value={discussionTimer}
-          onChange={(e) => setDiscussionTimer(parseInt(e.target.value))}
-        />
-        <span>{discussionTimer} seconds</span>
-      </div>
-      <div>
-        <button onClick={createLobby}>Create Lobby</button>
-        <button onClick={startGame}>Start Game</button>
+        </ul>
       </div>
     </div>
   );
