@@ -79,6 +79,7 @@ const Browser = () => {
           ))}
         </tbody>
       </table>
+      <button onClick={getLobbies}>Refresh</button>
 
       {/* Password Prompt Popup */}
       {passwordPrompt && (
