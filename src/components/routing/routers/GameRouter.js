@@ -2,20 +2,17 @@ import React from "react";
 import {Navigate, Route, Routes} from "react-router-dom";
 import Game from "../../views/Game";
 import PropTypes from "prop-types";
+import UserDetails from "../../views/UserDetails"
 
 const GameRouter = () => {
   return (
     <div style={{display: "flex", flexDirection: "column"}}>
       <Routes>
-
-        <Route path="" element={<Game />} />
-
-        <Route path="dashboard" element={<Game />} />
-
-        <Route path="*" element={<Navigate to="dashboard" replace />} />
-
+        <Route path="" element={<Game/>}/>
+        <Route path=":id" element={<UserDetails/>}/>
+        <Route path="dashboard" element={<Game/>}/>
+        <Route path="*" element={<Navigate to="dashboard" replace/>}/>
       </Routes>
-   
     </div>
   );
 };
