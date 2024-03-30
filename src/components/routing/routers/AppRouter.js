@@ -6,6 +6,7 @@ import { LoginGuard } from "../routeProtectors/LoginGuard";
 import Login from "../../views/Login";
 import Registration from "../../views/Registration";
 import UserDetails from "../../views/UserDetails";
+import Menu from "../../views/Menu";
 
 /**
  * Main router of your application.
@@ -30,6 +31,7 @@ const AppRouter = () => {
         </Route>
 
         <Route path="/register" element={<Registration />} />
+        <Route path="/menu" element={<Menu />} />
 
         <Route path="/" element={<Navigate to="/users" replace />} />
       </Routes>
