@@ -2,18 +2,18 @@ import React, { useEffect, useState } from "react";
 import { api, handleError } from "helpers/api";
 import { Spinner } from "components/ui/Spinner";
 import { Button } from "components/ui/Button";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import BaseContainer from "components/ui/BaseContainer";
 import PropTypes from "prop-types";
 import "styles/views/Game.scss";
 import { User } from "types";
-import useLogout from "hooks/useLogout";
 
-const Player = ({ user }: { user: User }) => (
-  <div className="player container">
-    <div className="player username">
-      <Link to={"/profile/" + user.id}>{user.username}</Link>
-    </div>
+const Player = ({ user, onClick }: { user: User; onClick: () => void }) => (
+  <div className="player container" onClick={onClick}>
+    <span style={{ marginRight: 8 }}>
+      {user.status === "OFFLINE" ? "🔴" : "🟢"}
+    </span>
+    <div className="player username">{user.username}</div>
     <div className="player name">{user.name}</div>
     <div className="player id">id: {user.id}</div>
   </div>
@@ -21,12 +21,12 @@ const Player = ({ user }: { user: User }) => (
 
 Player.propTypes = {
   user: PropTypes.object,
+  onClick: PropTypes.func,
 };
 
 const Game = () => {
   // use react-router-dom's hook to access navigation, more info: https://reactrouter.com/en/main/hooks/use-navigate
   const navigate = useNavigate();
-  const logout = useLogout();
 
   // define a state variable (using the state hook).
   // if this variable changes, the component will re-render, but the variable will
@@ -34,6 +34,21 @@ const Game = () => {
   // a component can have as many state variables as you like.
   // more information can be found under https://react.dev/learn/state-a-components-memory and https://react.dev/reference/react/useState
   const [users, setUsers] = useState<User[]>(null);
+
+  const logout = async () => {
+    try {
+      const currentUserId = localStorage.getItem("userId");
+
+      if (currentUserId) {
+        const response = await api.post("/users/logout", { id: currentUserId });
+      }
+
+      localStorage.removeItem("userId");
+      navigate("/login");
+    } catch (error) {
+      alert(`Something went wrong during the logout: \n${handleError(error)}`);
+    }
+  };
 
   // the effect hook can be used to react to change in your component.
   // in this case, the effect hook is only run once, the first time the component is mounted
@@ -78,30 +93,30 @@ const Game = () => {
     fetchData();
   }, []);
 
-  let content = <Spinner />;
-
-  if (users) {
-    content = (
-      <div className="game">
-        <ul className="game user-list">
-          {users.map((user: User) => (
-            <li key={user.id}>
-              <Player user={user} />
-            </li>
-          ))}
-        </ul>
-        <Button width="100%" onClick={logout}>
-          Logout
-        </Button>
-      </div>
-    );
-  }
-
   return (
     <BaseContainer className="game container">
       <h2>Happy Coding!</h2>
       <p className="game paragraph">Get all users from secure endpoint:</p>
-      {content}
+
+      {!users ? (
+        <Spinner />
+      ) : (
+        <div className="game">
+          <ul className="game user-list">
+            {(users || []).map((user: User) => (
+              <li key={user.id} style={{ cursor: "pointer" }}>
+                <Player
+                  user={user}
+                  onClick={() => navigate(`/users/${user.id}`)} // This navigates to /game/id
+                />
+              </li>
+            ))}
+          </ul>
+          <Button width="100%" onClick={() => logout()}>
+            Logout
+          </Button>
+        </div>
+      )}
     </BaseContainer>
   );
 };

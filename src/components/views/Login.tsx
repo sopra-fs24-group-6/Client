@@ -18,7 +18,7 @@ const FormField = (props) => {
     <div className="login field">
       <label className="login label">{props.label}</label>
       <input
-        type={props.type}
+        type={props.type} // Use type prop to determine input type
         className="login input"
         placeholder="enter here.."
         value={props.value}
@@ -29,10 +29,10 @@ const FormField = (props) => {
 };
 
 FormField.propTypes = {
-  type: PropTypes.string,
   label: PropTypes.string,
   value: PropTypes.string,
   onChange: PropTypes.func,
+  type: PropTypes.string, // Add PropTypes for type
 };
 
 const Login = () => {
@@ -49,17 +49,16 @@ const Login = () => {
   const doLogin = async () => {
     try {
       const requestBody = JSON.stringify({ username, password });
-      const response = await api.post("/authenticate", requestBody);
+      const response = await api.post("/users/login", { username, password });
 
       // Get the returned user and update a new object.
       const user = new User(response.data);
 
       // Store the token into the local storage.
-      localStorage.setItem("id", user.id);
-      localStorage.setItem("token", user.token);
+      localStorage.setItem("userId", user.id);
 
       // Login successfully worked --> navigate to the route /game in the GameRouter
-      navigate("/game");
+      navigate("/users");
     } catch (error) {
       alert(`Something went wrong during the login: \n${handleError(error)}`);
       navigate("/login");
@@ -74,6 +73,13 @@ const Login = () => {
             label="Username"
             value={username}
             onChange={(un: string) => setUsername(un)}
+            type="text" // Specify type as text for username
+          />
+          <FormField
+            label="Password"
+            value={password}
+            onChange={(n) => setPassword(n)}
+            type="password" // Specify type as password for password
           />
           <div>
             <FormField
@@ -91,7 +97,7 @@ const Login = () => {
           <div className="login button-container">
             <Button
               disabled={!username || !password}
-              width="50%"
+              width="100%"
               onClick={() => doLogin()}
             >
               Login
@@ -100,6 +106,12 @@ const Login = () => {
               Register here
             </Button>
           </div>
+          <span className="register-text">
+            Do not have an account?{" "}
+            <span className="register-cta" onClick={() => navigate("/register")}>
+              Register a new account
+            </span>
+          </span>
         </div>
       </div>
     </BaseContainer>
