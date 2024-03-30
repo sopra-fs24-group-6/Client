@@ -37,8 +37,14 @@ FormField.propTypes = {
 
 const Login = () => {
   const navigate = useNavigate();
-  const [password, setPassword] = useState<string>(undefined);
-  const [username, setUsername] = useState<string>(undefined);
+
+  const [isSecure, setIsSecure] = useState(true);
+  const [password, setPassword] = useState<string>(null);
+  const [username, setUsername] = useState<string>(null);
+
+  const doRegistration = () => {
+    navigate("/register");
+  };
 
   const doLogin = async () => {
     try {
@@ -55,6 +61,7 @@ const Login = () => {
       navigate("/users");
     } catch (error) {
       alert(`Something went wrong during the login: \n${handleError(error)}`);
+      navigate("/login");
     }
   };
 
@@ -74,6 +81,19 @@ const Login = () => {
             onChange={(n) => setPassword(n)}
             type="password" // Specify type as password for password
           />
+          <div>
+            <FormField
+              type={isSecure ? "password" : "text"}
+              label="Password"
+              value={password}
+              onChange={(n) => setPassword(n)}
+            />
+
+            <Button onClick={() => setIsSecure((prev) => !prev)}>
+              {isSecure ? "Show" : "Hide"}
+            </Button>
+          </div>
+
           <div className="login button-container">
             <Button
               disabled={!username || !password}
@@ -81,6 +101,9 @@ const Login = () => {
               onClick={() => doLogin()}
             >
               Login
+            </Button>
+            <Button width="50%" onClick={doRegistration}>
+              Register here
             </Button>
           </div>
           <span className="register-text">
