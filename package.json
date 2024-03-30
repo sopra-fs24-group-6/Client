@@ -5,6 +5,7 @@
   "dependencies": {
     "axios": "^1.6.7",
     "eslint-config-react-app": "^7.0.1",
+    "nes.css": "^2.3.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.21.3",
@@ -41,6 +42,7 @@
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@types/react": "^18.2.70",
     "@types/react-router-dom": "^5.3.3",
-    "sass": "^1.70.0"
+    "sass": "^1.70.0",
+    "style-loader": "^3.3.4"
   }
 }
