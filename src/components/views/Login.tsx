@@ -42,23 +42,22 @@ const Login = () => {
   const [password, setPassword] = useState<string>(null);
   const [username, setUsername] = useState<string>(null);
 
-  const doRegistration = () => {
-    navigate("/register");
-  };
-
   const doLogin = async () => {
     try {
       const requestBody = JSON.stringify({ username, password });
-      const response = await api.post("/users/login", { username, password });
+      const loginResponse = await api.post("/users/login", {
+        username,
+        password,
+      });
 
       // Get the returned user and update a new object.
-      const user = new User(response.data);
+      const loggedInUser = new User(loginResponse.data);
 
       // Store the token into the local storage.
-      localStorage.setItem("userId", user.id);
+      localStorage.setItem("userId", loggedInUser.id);
 
       // Login successfully worked --> navigate to the route /game in the GameRouter
-      navigate("/users");
+      navigate("/menu");
     } catch (error) {
       alert(`Something went wrong during the login: \n${handleError(error)}`);
       navigate("/login");
@@ -75,12 +74,6 @@ const Login = () => {
             onChange={(un: string) => setUsername(un)}
             type="text" // Specify type as text for username
           />
-          <FormField
-            label="Password"
-            value={password}
-            onChange={(n) => setPassword(n)}
-            type="password" // Specify type as password for password
-          />
           <div>
             <FormField
               type={isSecure ? "password" : "text"}
@@ -88,7 +81,6 @@ const Login = () => {
               value={password}
               onChange={(n) => setPassword(n)}
             />
-
             <Button onClick={() => setIsSecure((prev) => !prev)}>
               {isSecure ? "Show" : "Hide"}
             </Button>
@@ -102,13 +94,13 @@ const Login = () => {
             >
               Login
             </Button>
-            <Button width="50%" onClick={doRegistration}>
-              Register here
-            </Button>
           </div>
           <span className="register-text">
-            Do not have an account?{" "}
-            <span className="register-cta" onClick={() => navigate("/register")}>
+            Don't have an account yet?{" "}
+            <span
+              className="register-cta"
+              onClick={() => navigate("/register")}
+            >
               Register a new account
             </span>
           </span>
