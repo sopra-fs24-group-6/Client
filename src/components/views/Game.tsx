@@ -37,10 +37,10 @@ const Game = () => {
 
   const logout = async () => {
     try {
-      const currentUserId = localStorage.getItem("userId");
+      const userId = localStorage.getItem("userId");
 
-      if (currentUserId) {
-        const response = await api.post("/users/logout", { id: currentUserId });
+      if (userId) {
+        await api.put("/logout", { userId });
       }
 
       localStorage.removeItem("userId");

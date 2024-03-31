@@ -28,9 +28,10 @@ const Browser = () => {
   };
   const joinLobby = async (selectedLobby) => {
     setSelectedLobby(selectedLobby);
-    const userId = localStorage.getItem("id");
+    // const userId = localStorage.getItem("id");
+    const userId = "2"; // ***This is for test***
     if (!selectedLobby.password) {
-      await api.put("lobbies/" + selectedLobby.id, userId);
+      await api.post("/lobbies/" + selectedLobby.id + "/players", { userId });
       navigate("/lobbies/" + selectedLobby.id);
     } else {
       setPasswordPrompt(true);
@@ -39,9 +40,10 @@ const Browser = () => {
 
   const passwordSubmit = async () => {
     try {
-      await api.post("/lobbies" + selectedLobby.id + "authenticate,", password);
-      const userId = localStorage.getItem("id");
-      await api.put("lobbies/" + selectedLobby.id, userId);
+      await api.post("/lobbies/" + selectedLobby.id + "/authentication", { password });
+      // const userId = localStorage.getItem("id");
+      const userId = "3"; // ***This is for test***
+      await api.post("/lobbies/" + selectedLobby.id + "/players", { userId });
       navigate("/lobbies/" + selectedLobby.id);
     } catch (error) {
       alert(

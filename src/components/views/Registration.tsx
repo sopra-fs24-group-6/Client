@@ -37,14 +37,14 @@ const Registration = () => {
 
   const doRegistration = async () => {
     try {
-      await api.post("/users/register", {
+      await api.post("/users", {
         username,
         password,
         name,
       });
 
       // Perform automatic login after registration
-      const loginResponse = await api.post("/users/login", {
+      const loginResponse = await api.post("/login", {
         username,
         password,
       });

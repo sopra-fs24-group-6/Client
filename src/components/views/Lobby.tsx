@@ -45,11 +45,13 @@ const GameLobby = () => {
     try {
       const lobbyAdmin = localStorage.getItem("id");
       const requestBody = JSON.stringify({
-        lobbyAdmin,
+        //lobbyAdmin,
+        "lobbyAdmin": "1", // ***This is for test***
         name,
         password,
         playerLimit,
-        themes,
+        //themes,
+        "themes": ["Animal", "Food"], // ***This is for test***
         rounds,
         roundTimer,
         clueTimer,
@@ -80,9 +82,7 @@ const GameLobby = () => {
         clueTimer,
         discussionTimer,
       });
-      const response = await api.put("/lobbies/" + lobby.id, requestBody);
-      const updatedLobby = new Lobby(response.data);
-      setLobby(updatedLobby);
+      await api.put("/lobbies/" + lobby.id, requestBody);
     } catch (error) {
       alert(
         `Something went wrong while updating the lobby: \n${handleError(error)}`

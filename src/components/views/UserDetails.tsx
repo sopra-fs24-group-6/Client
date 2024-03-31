@@ -40,7 +40,7 @@ const UserDetails = () => {
     const newBirthDate = birthDateInputRef?.current?.value;
 
     try {
-      const response = await api.put(`/users/${userId}`, {
+      await api.put(`/users/${userId}`, {
         username: newUsername,
         birthDate: new Date(newBirthDate),
       });
