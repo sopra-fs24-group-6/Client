@@ -3,6 +3,8 @@ import { api, handleError } from "helpers/api";
 import { useNavigate } from "react-router-dom";
 import "styles/views/Browser.scss";
 import "styles/ui/popUp.scss";
+import CustomButton from "components/ui/CustomButton";
+import BaseContainer from "components/ui/BaseContainer";
 import lobbyList from "components/placeholders/lobbylist";
 
 const Browser = () => {
@@ -51,9 +53,9 @@ const Browser = () => {
   };
 
   return (
-    <div className="container">
-      <h2>Lobby Browser</h2>
-      <table>
+    <BaseContainer>
+      <h2 style={{ textAlign: "center", margin: "20px 0" }}>Lobby Browser</h2>
+      <table style={{ margin: "0 auto", textAlign: "center" }}>
         <thead>
           <tr>
             <th style={{ width: "auto", padding: "10px", textAlign: "center" }}>
@@ -95,13 +97,23 @@ const Browser = () => {
                 {lobby.themes.join(", ")}
               </td>
               <td style={{ padding: "10px", textAlign: "center" }}>
-                <button onClick={() => joinLobby(lobby)}>Join</button>
+                <CustomButton
+                  text="Join"
+                  className="small w100 hover-green"
+                  onClick={() => joinLobby(lobby)}
+                ></CustomButton>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-      <button onClick={getLobbies}>Refresh</button>
+      <div style={{ textAlign: "center", margin: "20px auto" }}>
+        <CustomButton
+          text="Refresh"
+          className="small w100 hover-green"
+          onClick={getLobbies}
+        ></CustomButton>
+      </div>
 
       {/* Password Prompt Popup */}
       {passwordPrompt && (
@@ -113,12 +125,20 @@ const Browser = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-            <button onClick={passwordSubmit}>Submit</button>
-            <button onClick={() => setPasswordPrompt(false)}>Cancel</button>
+            <CustomButton
+              text="Submit"
+              className="small w100 hover-green"
+              onClick={passwordSubmit}
+            ></CustomButton>
+            <CustomButton
+              text="Cancel"
+              className="small w100 hover-red"
+              onClick={() => setPasswordPrompt(false)}
+            ></CustomButton>
           </div>
         </div>
       )}
-    </div>
+    </BaseContainer>
   );
 };
 

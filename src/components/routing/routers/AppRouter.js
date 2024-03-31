@@ -6,9 +6,7 @@ import { LoginGuard } from "../routeProtectors/LoginGuard";
 import Login from "../../views/Login";
 import UserDetails from "../../views/UserDetails";
 import Menu from "../../views/Menu";
-import Register from "../../views/Register";
-import Profile from "../../views/Profile";
-import Edit from "../../views/Edit";
+import Registration from "../../views/Registration";
 import Lobby from "../../views/Lobby";
 import Browser from "../../views/Browser";
 
@@ -34,7 +32,7 @@ const AppRouter = () => {
           <Route path="/login" element={<Login />} />
         </Route>
 
-        <Route path="/register" element={<Register />} />
+        <Route path="/register" element={<Registration />} />
           
         <Route path="/menu" element={<Menu />} />
           
