@@ -12,10 +12,10 @@ const NESContainerW: React.FC<NESContainerProps> = ({
   children,
   className,
 }) => {
-  const containerClassName = `nes-container custom-style with-title ${className || ""
-    }`.trim();
+  //const containerClassName = `nes-container custom-style with-title ${className || ""}`;
+  
   return (
-    <div className={containerClassName}>
+    <div className={`nes-container custom-style with-title ${className}`}>
       {title && <p className="title">{title}</p>}
       {children}
     </div>

@@ -1,5 +1,40 @@
 .nes-container.custom-style {
-  width: 75%;
-  margin-left: auto;
-  margin-right: auto;
+  display: flex; // This needs to be set for flex-direction, justify-content, and align-items to work
+  flex-direction: column; // Stacks children vertically.
+  justify-content: center; // Centers children horizontally in the container.
+  align-items: center;
+
+  &.left {
+    width: 50%;
+    margin-left: calc(50% - calc((50% - 0.25rem)));
+    margin-right: auto;
+  }
+
+  &.right {
+    width: 50%;
+    margin-right: calc(50% - calc((50% - 0.25rem)));
+    margin-left: auto;
+  }
+
+  &.center {
+    width: 75%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .setting-container {
+    display: flex; // Use flexbox for horizontal alignment
+    flex-direction: row; // Align children in a row
+    align-items: center; // Align children vertically in the center
+    gap: 0.5rem; // Add some space between the label and the field
+  
+    // .setting-label {
+    //   // Styles for your label
+    // }
+  
+    .setting-field {
+      // Styles for your input field
+      flex-grow: 1; // Input field takes up the remaining space
+    }
+  }
 }

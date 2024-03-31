@@ -11,8 +11,17 @@
   gap: 0.5rem;
 }
 
-.App {
-  font-family: 'Press Start 2P', system-ui, sans-serif;
+.Center {
+  font-family: "Press Start 2P", system-ui, sans-serif;
   text-align: center;
   margin-top: 0.5rem;
+}
+
+.Flex {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.Space {
+  padding-top: 0.5rem;
 }

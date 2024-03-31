@@ -1,21 +1,27 @@
 import React from "react";
+import { NavLink } from "react-router-dom";
 import "../../styles/ui/NavBar.scss";
 
 function NavBar() {
-  return(
+  return (
     <nav className="nav">
-      <a>
+      <NavLink to="/menu" className="nav-item">
         Word Wolf
-      </a>
+      </NavLink>
       <ul>
-        <li className="active">
-          Profile
+        <li>
+          <NavLink to="/" className="nav-item">
+            Friends
+          </NavLink>
         </li>
-        <li className="active">
-          Search
+        <li>
+          <NavLink to="/" className="nav-item">
+            Profile
+          </NavLink>
         </li>
       </ul>
     </nav>
-  )
+  );
 }
+
 export default NavBar;

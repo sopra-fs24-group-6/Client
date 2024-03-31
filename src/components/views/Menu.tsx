@@ -8,18 +8,22 @@ import "../../styles/ui/Fonts.scss";
 import "../../styles/ui/CustomButton.scss";
 import NESContainerW from "../ui/NESContainerW";
 import CustomButton from "../ui/CustomButton";
+import useLogout from "hooks/useLogout";
 
 const Menu = () => {
+  const navigate = useNavigate();
+  const logout = useLogout();
+
   return (
     <>
       <NavBar />
-      <div className="App">
+      <div className="Center">
         <NesContainer title="Welcome to">
           <h1 className="press-start-font">Word Wolf</h1>
         </NesContainer>
       </div>
       <div className="Extension">
-        <NESContainerW title="Pick an option">
+        <NESContainerW title="Pick an option" className="center">
           <CustomButton
             text="Play"
             className="large w50 hover-green"
@@ -29,12 +33,12 @@ const Menu = () => {
             <CustomButton
               text="Create Lobby"
               className="w25 hover-green"
-              onClick={() => console.log("Create Lobby button clicked!")}
+              onClick={() => navigate("/lobby")}
             />
             <CustomButton
               text="Game Browser"
               className="w25 hover-green"
-              onClick={() => console.log("Game Browser button clicked!")}
+              onClick={() => navigate("/browser")}
             />
           </div>
           <div className="button-container">
@@ -46,7 +50,7 @@ const Menu = () => {
             <CustomButton
               text="Sign out"
               className="w25 hover-red"
-              onClick={() => console.log("Game Browser button clicked!")}
+              onClick={() => logout}
             />
           </div>
         </NESContainerW>
