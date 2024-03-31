@@ -19,6 +19,7 @@ const GameLobby = () => {
   const [playerLimit, setPlayerLimit] = useState(4);
   const [playerCount, setPlayerCount] = useState(null);
   const [themes, setThemes] = useState<Array<any>>(null);
+  const [rounds, setRounds] = useState(3);
   const [roundTimer, setRoundTimer] = useState(60);
   const [clueTimer, setClueTimer] = useState(10);
   const [discussionTimer, setDiscussionTimer] = useState(60);
@@ -34,6 +35,7 @@ const GameLobby = () => {
     playerLimit,
     playerCount,
     themes,
+    rounds,
     roundTimer,
     clueTimer,
     discussionTimer,
@@ -48,6 +50,7 @@ const GameLobby = () => {
         password,
         playerLimit,
         themes,
+        rounds,
         roundTimer,
         clueTimer,
         discussionTimer,
@@ -72,6 +75,7 @@ const GameLobby = () => {
         playerLimit,
         playerCount,
         themes,
+        rounds,
         roundTimer,
         clueTimer,
         discussionTimer,
@@ -155,6 +159,20 @@ const GameLobby = () => {
             disabled={!isAdmin}
           >
             {[3, 4, 5, 6].map((count) => (
+              <option key={count} value={count}>
+                {count}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label>Rounds:</label>
+          <select
+            value={rounds}
+            onChange={(e) => setRounds(parseInt(e.target.value))}
+            disabled={!isAdmin}
+          >
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((count) => (
               <option key={count} value={count}>
                 {count}
               </option>
