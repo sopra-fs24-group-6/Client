@@ -103,6 +103,14 @@ const GameLobby = () => {
     }
   };
 
+  const kickPlayer = async (player) => {
+    try {
+      await api.delete("/games/" + lobby.id + "/" + player.id);
+    } catch (error) {
+      alert(`Could not kick player: \n${handleError(error)}`);
+    }
+  };
+
   const startGame = async () => {
     try {
       await api.post("/games", lobby);
@@ -215,7 +223,6 @@ const GameLobby = () => {
                     text="Create Lobby"
                     className="50 hover-orange"
                     onClick={() => createLobby()}
-                    disabled={!isAdmin}
                   />
                 </div>
               )}
@@ -225,7 +232,6 @@ const GameLobby = () => {
                     text="Start Game"
                     className="50 hover-green"
                     onClick={() => startGame()}
-                    disabled={!isAdmin}
                   />
                 </div>
               )}
@@ -237,7 +243,18 @@ const GameLobby = () => {
             </h2>
             <ul className="list-style">
               {players.map((player, index) => (
-                <li key={index}>{player}</li>
+                <li key={index}>
+                  {player}
+                  {isAdmin && (
+                    <CustomButton
+                      text="Kick"
+                      className="small left-padding hover-orange"
+                      onClick={() => kickPlayer(player)}
+                    >
+                      Kick Player
+                    </CustomButton>
+                  )}
+                </li>
               ))}
             </ul>
           </NESContainerW>
