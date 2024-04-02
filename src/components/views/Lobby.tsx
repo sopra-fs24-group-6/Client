@@ -27,6 +27,7 @@ const GameLobby = () => {
   const [playerLimit, setPlayerLimit] = useState(4);
   const [playerCount, setPlayerCount] = useState(null);
   const [themes, setThemes] = useState<Array<any>>(null);
+  const [rounds, setRounds] = useState(3);
   const [roundTimer, setRoundTimer] = useState(60);
   const [clueTimer, setClueTimer] = useState(10);
   const [discussionTimer, setDiscussionTimer] = useState(60);
@@ -46,6 +47,7 @@ const GameLobby = () => {
     playerLimit,
     playerCount,
     themes,
+    rounds,
     roundTimer,
     clueTimer,
     discussionTimer,
@@ -60,6 +62,7 @@ const GameLobby = () => {
         password,
         playerLimit,
         themes,
+        rounds,
         roundTimer,
         clueTimer,
         discussionTimer,
@@ -84,6 +87,7 @@ const GameLobby = () => {
         playerLimit,
         playerCount,
         themes,
+        rounds,
         roundTimer,
         clueTimer,
         discussionTimer,
@@ -165,10 +169,18 @@ const GameLobby = () => {
                 />
               </div>
               <div className="Space Flex">
+                <label>Round Limit:</label>
+                <Limiter
+                  disabled={!isAdmin}
+                />
+              </div>
+              
+              <div className="Space Flex">
                 <label>Round Timer:</label>
                 <Slider
                   min={60}
                   max={120}
+                  step={10}
                   value={roundTimer}
                   onChange={(e) => setRoundTimer(e.target.value)}
                   disabled={!isAdmin}
@@ -179,6 +191,7 @@ const GameLobby = () => {
                 <Slider
                   min={10}
                   max={120}
+                  step={10}
                   value={clueTimer}
                   onChange={(e) => setClueTimer(e.target.value)}
                   disabled={!isAdmin}
@@ -189,6 +202,7 @@ const GameLobby = () => {
                 <Slider
                   min={60}
                   max={120}
+                  step={10}
                   value={discussionTimer}
                   onChange={(e) => setDiscussionTimer(e.target.value)}
                   disabled={!isAdmin}
@@ -228,6 +242,7 @@ const GameLobby = () => {
               ))}
             </ul>
           </NESContainerW>
+
         </div>
       </div>
     </>

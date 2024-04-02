@@ -1,8 +1,8 @@
-import React, {useState} from "react";
-import {api, handleError} from "helpers/api";
+import React, { useState } from "react";
+import { api, handleError } from "helpers/api";
 import User from "models/User";
-import {useNavigate} from "react-router-dom";
-import {Button} from "components/ui/Button";
+import { useNavigate } from "react-router-dom";
+import { Button } from "components/ui/Button";
 import "styles/views/Login.scss";
 import BaseContainer from "components/ui/BaseContainer";
 import PropTypes from "prop-types";
@@ -37,15 +37,11 @@ const Registration = () => {
 
   const doRegistration = async () => {
     try {
-      const response = await api.post("/users/register", {
+      await api.post("/users/register", {
         username,
         password,
         name,
       });
-
-      const user = new User(response.data);
-
-      localStorage.setItem("userId", user.id); // Store user id after registration
 
       // Perform automatic login after registration
       const loginResponse = await api.post("/users/login", {
@@ -59,7 +55,9 @@ const Registration = () => {
       // Navigate to the desired route
       navigate("/users");
     } catch (error) {
-      alert(`Something went wrong during the registration: \n${handleError(error)}`);
+      alert(
+        `Something went wrong during the registration: \n${handleError(error)}`
+      );
     }
   };
 
@@ -91,7 +89,7 @@ const Registration = () => {
               width="100%"
               onClick={() => doRegistration()}
             >
-              Registration
+              Register
             </Button>
           </div>
         </div>
