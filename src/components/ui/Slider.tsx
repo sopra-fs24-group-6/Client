@@ -4,12 +4,20 @@ import "../../styles/ui/AppBody.scss"; // Adjust the path as necessary
 interface SliderProps {
   min: number;
   max: number;
+  step: number;
   value: number;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   disabled?: boolean;
 }
 
-const Slider: React.FC<SliderProps> = ({ min, max, value, onChange, disabled }) => {
+const Slider: React.FC<SliderProps> = ({
+  min,
+  max,
+  step,
+  value,
+  onChange,
+  disabled,
+}) => {
   return (
     <>
       <span className="slider-value">{value}</span>
@@ -18,6 +26,7 @@ const Slider: React.FC<SliderProps> = ({ min, max, value, onChange, disabled }) 
         className="slider"
         min={min}
         max={max}
+        step={step}
         value={value}
         onChange={onChange}
         disabled={disabled}
