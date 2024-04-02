@@ -1,29 +1,43 @@
 import React from "react";
-import PropTypes from "prop-types";
 
-const NESRadioButton = ({ name, options, defaultValue }) => {
+interface Option {
+  label: string;
+  value: string | boolean;
+}
+
+interface NESRadioButtonProps {
+  name: string;
+  options: Option[];
+  defaultValue?: string | boolean;
+  onChange: (value: string) => void;
+  disabled?: boolean;
+}
+
+const NESRadioButton: React.FC<NESRadioButtonProps> = ({
+  name,
+  options,
+  defaultValue,
+  onChange,
+  disabled,
+}) => {
   return (
     <div>
       {options.map((option) => (
-        <label key={option.value}>
-          <input 
-            type="radio" 
-            className="nes-radio" 
-            name={name} 
-            value={option.value} 
+        <label key={option.value.toString()}>
+          <input
+            type="radio"
+            className="nes-radio"
+            name={name}
+            value={option.value.toString()}
             defaultChecked={defaultValue === option.value}
+            onChange={(e) => onChange(e.target.value)}
+            disabled={disabled}
           />
           <span>{option.label}</span>
         </label>
       ))}
     </div>
   );
-};
-
-NESRadioButton.propTypes = {
-  name: PropTypes.string.isRequired,
-  options: PropTypes.arrayOf(PropTypes.string).isRequired,
-  defaultValue: PropTypes.string,
 };
 
 export default NESRadioButton;
