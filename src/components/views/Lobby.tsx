@@ -108,7 +108,7 @@ const GameLobby = () => {
   };
 
   const handleRoundLimitChange = (value) => {
-    setRoundLimit(value);
+    setRounds(value);
   };
 
   const kickPlayer = async (player) => {
