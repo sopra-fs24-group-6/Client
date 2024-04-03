@@ -103,6 +103,14 @@ const GameLobby = () => {
     }
   };
 
+  const handlePlayerLimitChange = (value) => {
+    setPlayerLimit(value);
+  };
+
+  const handleRoundLimitChange = (value) => {
+    setRoundLimit(value);
+  };
+
   const kickPlayer = async (player) => {
     try {
       await api.delete("/lobbies/" + lobby.id + "/players/" + player.id);
@@ -173,11 +181,17 @@ const GameLobby = () => {
               )}
               <div className="Space Flex">
                 <label>Player Limit:</label>
-                <PlayerLimiter disabled={!isAdmin} />
+                <PlayerLimiter
+                  disabled={!isAdmin}
+                  onPlayerLimitChange={handlePlayerLimitChange}
+                />
               </div>
               <div className="Space Flex">
                 <label>Round Limit:</label>
-                <RoundLimiter disabled={!isAdmin} />
+                <RoundLimiter
+                  disabled={!isAdmin}
+                  onRoundLimitChange={handleRoundLimitChange}
+                />
               </div>
 
               <div className="Space Flex">
@@ -250,9 +264,7 @@ const GameLobby = () => {
                       text="Kick"
                       className="small-kick margin-kick hover-red"
                       onClick={() => kickPlayer(player)}
-                    >
-                      Kick Player
-                    </CustomButton>
+                    ></CustomButton>
                   )}
                 </li>
               ))}
