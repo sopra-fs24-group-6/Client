@@ -201,7 +201,7 @@ const GameLobby = () => {
                   max={120}
                   step={10}
                   value={roundTimer}
-                  onChange={(e) => setRoundTimer(e.target.value)}
+                  onChange={(e) => setRoundTimer(parseInt(e.target.value))}
                   disabled={!isAdmin}
                 />
               </div>
@@ -212,7 +212,7 @@ const GameLobby = () => {
                   max={120}
                   step={10}
                   value={clueTimer}
-                  onChange={(e) => setClueTimer(e.target.value)}
+                  onChange={(e) => setClueTimer(parseInt(e.target.value))}
                   disabled={!isAdmin}
                 />
               </div>
@@ -223,7 +223,7 @@ const GameLobby = () => {
                   max={120}
                   step={10}
                   value={discussionTimer}
-                  onChange={(e) => setDiscussionTimer(e.target.value)}
+                  onChange={(e) => setDiscussionTimer(parseInt(e.target.value))}
                   disabled={!isAdmin}
                 />
               </div>
