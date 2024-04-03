@@ -46,7 +46,7 @@ const Login = () => {
   };
 
   return (
-    <NesContainer title="">
+    <NESContainerW title="">
       <div className="login container">
         <label>Username:</label>
         <input
@@ -85,7 +85,7 @@ const Login = () => {
           </span>
         </span>
       </div>
-    </NesContainer>
+    </NESContainerW>
   );
 };
 

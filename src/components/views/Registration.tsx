@@ -43,7 +43,7 @@ const Registration = () => {
   };
 
   return (
-    <NesContainer title="">
+    <NESContainerW title="">
       <div className="login container">
         <label>Username:</label>
         <input
@@ -82,7 +82,7 @@ const Registration = () => {
           ></CustomButton>
         </div>
       </div>
-    </NesContainer>
+    </NESContainerW>
   );
 };
 
