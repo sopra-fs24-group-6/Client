@@ -9,7 +9,8 @@ import NavBar from "../ui/NavBar";
 import NesContainer from "../ui/NESContainer";
 import NESContainerW from "../ui/NESContainerW";
 import NESRadioButton from "../ui/NESRadioButtons";
-import Limiter from "../ui/PlayerLimiter";
+import PlayerLimiter from "../ui/PlayerLimiter";
+import RoundLimiter from "../ui/RoundLimiter";
 import Slider from "../ui/Slider";
 import CustomButton from "../ui/CustomButton";
 //import ThemePopUp from "../ui/ThemePopUp";
@@ -102,6 +103,14 @@ const GameLobby = () => {
     }
   };
 
+  const kickPlayer = async (player) => {
+    try {
+      await api.delete("/lobbies/" + lobby.id + "/players/" + player.id);
+    } catch (error) {
+      alert(`Could not kick player: \n${handleError(error)}`);
+    }
+  };
+
   const startGame = async () => {
     try {
       await api.post("/games", lobby);
@@ -118,7 +127,7 @@ const GameLobby = () => {
   return (
     <>
       <NavBar />
-      <div className="Center" >
+      <div className="Center">
         <NesContainer title="">
           <h1 className="press-start-font">Lobby Settings</h1>
         </NesContainer>
@@ -141,7 +150,7 @@ const GameLobby = () => {
                   name="Lobby Type"
                   options={[
                     { label: "Public", value: "public" },
-                    { label: "Private", value: "private" }
+                    { label: "Private", value: "private" },
                   ]}
                   defaultValue={isPrivate ? "private" : "public"}
                   onChange={lobbyTypeChanger}
@@ -164,17 +173,13 @@ const GameLobby = () => {
               )}
               <div className="Space Flex">
                 <label>Player Limit:</label>
-                <Limiter
-                  disabled={!isAdmin}
-                />
+                <PlayerLimiter disabled={!isAdmin} />
               </div>
               <div className="Space Flex">
                 <label>Round Limit:</label>
-                <Limiter
-                  disabled={!isAdmin}
-                />
+                <RoundLimiter disabled={!isAdmin} />
               </div>
-              
+
               <div className="Space Flex">
                 <label>Round Timer:</label>
                 <Slider
@@ -218,7 +223,6 @@ const GameLobby = () => {
                     text="Create Lobby"
                     className="50 hover-orange"
                     onClick={() => createLobby()}
-                    disabled={!isAdmin}
                   />
                 </div>
               )}
@@ -228,21 +232,32 @@ const GameLobby = () => {
                     text="Start Game"
                     className="50 hover-green"
                     onClick={() => startGame()}
-                    disabled={!isAdmin}
                   />
                 </div>
               )}
             </div>
           </NESContainerW>
           <NESContainerW title="Players Joined" className="right">
-            <h2>Players {players.length} / {playerLimit}</h2>
+            <h2>
+              Players {players.length} / {playerLimit}
+            </h2>
             <ul className="list-style">
               {players.map((player, index) => (
-                <li key={index}>{player}</li>
+                <li className="Aligner" key={index}>
+                  {player}
+                  {isAdmin && (
+                    <CustomButton
+                      text="Kick"
+                      className="small-kick margin-kick hover-red"
+                      onClick={() => kickPlayer(player)}
+                    >
+                      Kick Player
+                    </CustomButton>
+                  )}
+                </li>
               ))}
             </ul>
           </NESContainerW>
-
         </div>
       </div>
     </>

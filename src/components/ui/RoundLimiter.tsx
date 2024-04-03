@@ -4,9 +4,9 @@ interface LimiterProps {
   disabled?: boolean;
 }
 
-const PlayerLimiter: React.FC<LimiterProps> = ({ disabled }) => {
+const RoundLimiter: React.FC<LimiterProps> = ({ disabled }) => {
   return (
-    <select className="player-limit-selector" disabled={disabled}>
+    <select className="Round-limit-selector" disabled={disabled}>
       {[...Array(6)].map((_, index) => (
         <option key={index} value={index + 3}>
           {index + 3}
@@ -16,4 +16,4 @@ const PlayerLimiter: React.FC<LimiterProps> = ({ disabled }) => {
   );
 };
 
-export default PlayerLimiter;
+export default RoundLimiter;

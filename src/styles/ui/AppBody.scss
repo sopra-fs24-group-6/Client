@@ -51,3 +51,11 @@
   letter-spacing: 0.1em;
   padding: 5px;
 }
+
+.Aligner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  //justify-content: space-between;
+  margin-bottom: 0.4rem;
+}
