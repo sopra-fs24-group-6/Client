@@ -34,7 +34,7 @@ const Registration = () => {
       localStorage.setItem("userId", loggedInUser.id); // Update user id in local storage
 
       // Navigate to the desired route
-      navigate("/users");
+      navigate("/menu");
     } catch (error) {
       alert(
         `Something went wrong during the registration: \n${handleError(error)}`

@@ -15,7 +15,10 @@ function NavBar() {
           </NavLink>
         </li>
         <li>
-          <NavLink to="/" className="nav-item">
+          <NavLink
+            to={`/users/${localStorage.getItem("userId")}`}
+            className="nav-item"
+          >
             Profile
           </NavLink>
         </li>
