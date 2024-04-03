@@ -105,7 +105,7 @@ const GameLobby = () => {
 
   const kickPlayer = async (player) => {
     try {
-      await api.delete("/games/" + lobby.id + "/" + player.id);
+      await api.delete("/lobbies/" + lobby.id + "/players/" + player.id);
     } catch (error) {
       alert(`Could not kick player: \n${handleError(error)}`);
     }
@@ -243,12 +243,12 @@ const GameLobby = () => {
             </h2>
             <ul className="list-style">
               {players.map((player, index) => (
-                <li key={index}>
+                <li className="Aligner" key={index}>
                   {player}
                   {isAdmin && (
                     <CustomButton
                       text="Kick"
-                      className="small left-padding hover-orange"
+                      className="small-kick margin-kick hover-red"
                       onClick={() => kickPlayer(player)}
                     >
                       Kick Player
