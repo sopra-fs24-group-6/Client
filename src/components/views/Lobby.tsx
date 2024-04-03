@@ -103,6 +103,14 @@ const GameLobby = () => {
     }
   };
 
+  const handlePlayerLimitChange = (value) => {
+    setPlayerLimit(value);
+  };
+
+  const handleRoundLimitChange = (value) => {
+    setRounds(value);
+  };
+
   const kickPlayer = async (player) => {
     try {
       await api.delete("/lobbies/" + lobby.id + "/players/" + player.id);
@@ -173,11 +181,17 @@ const GameLobby = () => {
               )}
               <div className="Space Flex">
                 <label>Player Limit:</label>
-                <PlayerLimiter disabled={!isAdmin} />
+                <PlayerLimiter
+                  disabled={!isAdmin}
+                  onPlayerLimitChange={handlePlayerLimitChange}
+                />
               </div>
               <div className="Space Flex">
                 <label>Round Limit:</label>
-                <RoundLimiter disabled={!isAdmin} />
+                <RoundLimiter
+                  disabled={!isAdmin}
+                  onRoundLimitChange={handleRoundLimitChange}
+                />
               </div>
 
               <div className="Space Flex">
@@ -187,7 +201,7 @@ const GameLobby = () => {
                   max={120}
                   step={10}
                   value={roundTimer}
-                  onChange={(e) => setRoundTimer(e.target.value)}
+                  onChange={(e) => setRoundTimer(parseInt(e.target.value))}
                   disabled={!isAdmin}
                 />
               </div>
@@ -198,7 +212,7 @@ const GameLobby = () => {
                   max={120}
                   step={10}
                   value={clueTimer}
-                  onChange={(e) => setClueTimer(e.target.value)}
+                  onChange={(e) => setClueTimer(parseInt(e.target.value))}
                   disabled={!isAdmin}
                 />
               </div>
@@ -209,7 +223,7 @@ const GameLobby = () => {
                   max={120}
                   step={10}
                   value={discussionTimer}
-                  onChange={(e) => setDiscussionTimer(e.target.value)}
+                  onChange={(e) => setDiscussionTimer(parseInt(e.target.value))}
                   disabled={!isAdmin}
                 />
               </div>
@@ -250,9 +264,7 @@ const GameLobby = () => {
                       text="Kick"
                       className="small-kick margin-kick hover-red"
                       onClick={() => kickPlayer(player)}
-                    >
-                      Kick Player
-                    </CustomButton>
+                    ></CustomButton>
                   )}
                 </li>
               ))}

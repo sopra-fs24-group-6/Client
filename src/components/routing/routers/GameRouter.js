@@ -2,7 +2,7 @@ import React from "react";
 import {Navigate, Route, Routes} from "react-router-dom";
 import Game from "../../views/Game";
 import PropTypes from "prop-types";
-import UserDetails from "../../views/UserDetails"
+import UserDetails from "../../views/Profile"
 
 const GameRouter = () => {
   return (
