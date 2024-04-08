@@ -6,6 +6,7 @@ import { Button } from "components/ui/Button";
 import "styles/views/Register.scss";
 import BaseContainer from "components/ui/BaseContainer";
 import PropTypes from "prop-types";
+import languages from 'helpers/languages.json';
 
 const FormFieldReg = (props) => {
   return (
@@ -35,6 +36,7 @@ const Register = () => {
   const [isSecure, setIsSecure] = useState(true);
   const [password, setPassword] = useState<string>(null);
   const [username, setUsername] = useState<string>(null);
+  const [language, setLanguage] = useState('en');
 
   const navigateBack = () => {
     navigate("/login");
@@ -77,6 +79,17 @@ const Register = () => {
               value={password}
               onChange={setPassword}
             />
+
+        <select
+          value={language}
+          onChange={(e) => setLanguage(e.target.value)}
+        >
+          {languages.map((lang) => (
+        <option key={lang.code} value={lang.code}>
+          {lang.name}
+        </option>
+      ))}
+        </select>
 
             <Button onClick={() => setIsSecure((prev) => !prev)}>
               {isSecure ? "Show" : "Hide"}
