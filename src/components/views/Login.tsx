@@ -79,7 +79,7 @@ const Login = () => {
           ></CustomButton>
         </div>
         <span className="register-text">
-          Don't have an account yet?{" "}
+          `Don&apos;t have an account yet?`
           <span className="register-cta" onClick={() => navigate("/register")}>
             Register a new account
           </span>
