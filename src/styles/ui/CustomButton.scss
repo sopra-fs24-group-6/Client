@@ -1,0 +1,66 @@
+// styles/CustomButton.scss
+.custom-button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+
+  //background-color: #88D498;
+  background-color: #212529;
+  color: #fff;
+
+  &.hover-green:hover:not(:disabled) {
+    background-color: darken(#88D498, 10%);
+    //background-color: darken(#084C61, 10%);
+  }
+
+  &.hover-red:hover:not(:disabled) {
+    background-color: darken(#AD2831, 10%);
+    //background-color: darken(#084C61, 10%);
+  }
+
+  &.hover-orange:hover:not(:disabled) {
+    background-color: darken(#F68E5F, 10%);
+    //background-color: darken(#084C61, 10%);
+  }
+
+  &:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+  }
+
+  &.small {
+    font-size: 0.75rem;
+    padding: 5px 10px;
+  }
+
+  &.large {
+    font-size: 1.25rem;
+    padding: 15px 30px;
+  }
+
+  &.w50 {
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+  }
+
+  &.w25 {
+    width: calc(25% - 0.25rem);
+    // margin-left: auto;
+    // margin-right: auto;
+    // display: block;
+  }
+
+  &.small-kick {
+    font-size: 0.5em;
+    padding: 5px 8px;
+  }
+
+  &.margin-kick {
+    margin-left: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+}
