@@ -43,6 +43,7 @@ const GameDemo = () => {
     const stompClient = new Client({
       // url is defined in helper/getBrokerURL.js
       brokerURL: getBrokerURL(),
+      connectHeaders: { userId },
       onConnect: () => {
         console.log("Connected");
         setConnected(true);
@@ -57,7 +58,7 @@ const GameDemo = () => {
 
         // subscribe chat
         // message has content<String>, userId<Long>, username<String>
-        stompClient.subscribe(`/topic/${lobbyId}/chat`, (message) => {
+        stompClient.subscribe(`/queue/${userId}/chat`, (message) => {
           const newChatMessage = JSON.parse(message.body);
           setChatMessages((prevChatMessages) => [...prevChatMessages, newChatMessage]);
         });
@@ -136,7 +137,7 @@ const GameDemo = () => {
       const chatMessage = {
         content: draftMessage,
         userId: userId,
-        gameId: lobbyId,
+        lobbyId: lobbyId,
       };
       client.publish({
         destination: `/app/chat/${lobbyId}/sendMessage`,
