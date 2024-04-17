@@ -6,6 +6,7 @@ import { Button } from "components/ui/Button";
 import "styles/views/Login.scss";
 import BaseContainer from "components/ui/BaseContainer";
 import PropTypes from "prop-types";
+import languages from 'helpers/languages.json';
 
 const FormField = (props) => {
   return (
@@ -34,19 +35,21 @@ const Registration = () => {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
+  const [language, setLanguage] = useState('en');
 
   const doRegistration = async () => {
     try {
       await api.post("/users", {
         username,
         password,
-        name,
+        language,
       });
 
       // Perform automatic login after registration
       const loginResponse = await api.post("/login", {
         username,
         password,
+        language,
       });
 
       const loggedInUser = new User(loginResponse.data);
@@ -83,6 +86,15 @@ const Registration = () => {
             onChange={(n) => setPassword(n)}
             type="password"
           />
+          <select
+          value={language}
+          onChange={(e) => setLanguage(e.target.value)}>
+          {languages.map((lang) => (
+            <option key={lang.code} value={lang.code}>
+          {lang.name}
+        </option>
+      ))}
+        </select>
           <div className="login button-container">
             <Button
               disabled={!username || !password}

@@ -5,23 +5,27 @@ import { Spinner } from "components/ui/Spinner";
 import BaseContainer from "components/ui/BaseContainer";
 import "styles/views/Game.scss";
 import { Button } from "components/ui/Button";
+import languages from 'helpers/languages.json';
 
 const UserDetails = () => {
   const navigate = useNavigate();
   const { userId } = useParams(); // Extract the user ID from the URL
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-
   const [isEditable, setIsEditable] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState('en');
 
   const usernameInputRef = useRef(null);
   const birthDateInputRef = useRef(null);
+  // const languageInputRef = useRef(null);
+  
 
   useEffect(() => {
     const fetchUserDetails = async () => {
       setIsLoading(true);
       try {
         const response = await api.get(`/users/${userId}`);
+        console.log(response.data)
         setUser(response.data);
 
         setIsLoading(false);
@@ -38,11 +42,16 @@ const UserDetails = () => {
   const updateUserData = async () => {
     const newUsername = usernameInputRef?.current?.value;
     const newBirthDate = birthDateInputRef?.current?.value;
+    // const newLanguage = languageInputRef?.current?.value;
+    const newLanguage = selectedLanguage;
+
+    console.log(newLanguage)
 
     try {
       await api.put(`/users/${userId}`, {
         username: newUsername,
         birthDate: new Date(newBirthDate),
+        language: newLanguage,
       });
 
       navigate(0);
@@ -134,6 +143,28 @@ const UserDetails = () => {
               </div>
             ) : (
               <p className="info-text">{user.birthDate || "Not provided"}</p>
+            )}
+          </div>
+          <div>
+            <span className="info-title">Language:</span>
+
+            {isEditable ? (
+              <div className="editable-input">
+                <select
+                  defaultValue={`${user.language}`}
+                  value={selectedLanguage}
+                  onChange={(e) => setSelectedLanguage(e.target.value)}>
+                  {languages.map((lang) => (
+                    <option key={lang.code} value={lang.code}>
+                      {lang.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ) : (
+              <p className="info-text">
+                {languages.find(lang => lang.code === user.language)?.name || "Unknown Language"}
+              </p>
             )}
           </div>
           <div>
