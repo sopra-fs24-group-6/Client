@@ -1,0 +1,15 @@
+h1,
+p {
+  font-family: Lato;
+}
+
+.countdown-timer-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.countdown-timer-time {
+  font-size: 40px;
+}
