@@ -6,6 +6,8 @@ import { Button } from "components/ui/Button";
 import "styles/views/Edit.scss";
 import BaseContainer from "components/ui/BaseContainer";
 import PropTypes from "prop-types";
+import languages from 'helpers/languages.json';
+
 
 const FormField = (props) => {
     return (
@@ -27,18 +29,19 @@ const FormField = (props) => {
     message: PropTypes.string,
     onChange: PropTypes.func,
   };
-  
+
   const Edit = () => {
     const navigate = useNavigate();
     const [birthday, setBirthday] = useState<string>("");
     const [username, setUsername] = useState<string>(null);
+    const [language, setLanguage] = useState('en');
     const id = localStorage.getItem("id")
     console.log('Current User', localStorage.getItem("id"))
   
     const doEdit = async () => {
       try {
         
-        const requestBody = JSON.stringify({ username, birthday});
+        const requestBody = JSON.stringify({ username, birthday, language});
         console.log(requestBody)
         const response = await api.put(`/users/${id}`, requestBody);
   
@@ -55,7 +58,7 @@ const FormField = (props) => {
     };
   
     return (
-      <BaseContainer width>
+      <BaseContainer>
         <div className="edit container">
           <div className="edit form">
           <h4 className="title">Edit Profile</h4>
@@ -71,6 +74,15 @@ const FormField = (props) => {
               onChange={(n) => setBirthday(n)}
               message = "optional"
             />
+            <select
+              value={language}
+              onChange={(e) => setLanguage(e.target.value)}>
+                {languages.map((lang) => (
+                  <option key={lang.code} value={lang.code}>
+                  {lang.name}
+                  </option>
+                ))}
+            </select>
             <div className="edit button-container">
               <Button
                 disabled={!username}

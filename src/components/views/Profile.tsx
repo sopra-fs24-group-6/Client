@@ -6,6 +6,8 @@ import "styles/views/Profile.scss";
 import BaseContainer from "components/ui/BaseContainer";
 import { Spinner } from "../ui/Spinner";
 import PropTypes from "prop-types";
+import languages from 'helpers/languages.json';
+
 
 const FormField = (props) => {
   return (
@@ -37,6 +39,7 @@ const Profile = () => {
   const [username, setUsername] = useState(null);
   const [birthday, setBirthday] = useState(null);
   const [updateTrigger, setUpdateTrigger] = useState(false);
+  const [language, setLanguage] = useState('en');
 
   const backToGame = async () => {
     navigate("/game")
@@ -71,6 +74,7 @@ const Profile = () => {
         <ul className="player user-list">
           <li>Username: {user.username}</li>
           <li>Status: {user.status}</li>
+          <li>Language: {user.language}</li>
           <li>Creation_Date:  {user.creationDate}</li>
           <li>Birthday: {user.birthday}</li>
         </ul>

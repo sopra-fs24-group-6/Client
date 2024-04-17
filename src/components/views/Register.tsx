@@ -48,10 +48,13 @@ const Register = () => {
       const requestBody = JSON.stringify({
         username,
         password,
+        language,
       });
       // Assuming `api` is set up to point to your backend, adjust the endpoint to `/users`
-      const response = await api.post("/users", requestBody);
+      const response = await api.post("/register", requestBody);
       const user = new User(response.data);
+
+      console.log({language})
 
       localStorage.setItem("token", user.token);
       localStorage.setItem("id", user.id);
@@ -77,7 +80,7 @@ const Register = () => {
               type={isSecure ? "password" : "text"}
               label="Password"
               value={password}
-              onChange={setPassword}
+              onChange={(pwd: string) => setPassword(pwd)}
             />
 
         <select
