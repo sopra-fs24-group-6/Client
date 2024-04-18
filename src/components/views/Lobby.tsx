@@ -38,6 +38,7 @@ const GameLobby = () => {
   };
 
   useEffect(() => {
+    console.log('UserId:', localStorage.getItem("userId"));
     if (isPublished) {
       updateLobby();
     }
@@ -59,7 +60,7 @@ const GameLobby = () => {
       const lobbyAdmin = localStorage.getItem("id");
       const requestBody = JSON.stringify({
         //lobbyAdmin,
-        "lobbyAdmin": "1", // ***This is for test***
+        "lobbyAdmin": localStorage.getItem('userId'), // ***This is for test***
         name,
         password,
         playerLimit,
@@ -74,6 +75,7 @@ const GameLobby = () => {
       const lobby = new Lobby(response.data);
       setLobby(lobby);
       isPublished = true;
+      navigate("/demo");
     } catch (error) {
       alert(
         `Something went wrong while creating the lobby: \n${handleError(error)}`

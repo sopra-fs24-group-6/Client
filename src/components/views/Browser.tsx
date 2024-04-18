@@ -19,6 +19,20 @@ const Browser = () => {
   const [password, setPassword] = useState(null);
   const [selectedLobby, setSelectedLobby] = useState(null);
 
+  //*** For Testing Purposes***
+  useEffect(() => {
+    // Immediately-invoked function expression (IIFE) with an async function
+    (async () => {
+      try {
+        const response = await api.get("/lobbies");
+        setLobbies(response.data);
+        console.log(response.data)
+      } catch (error) {
+        alert(`Something went wrong when trying to fetch available lobbies: \n${handleError(error)}`);
+      }
+    })();
+  }, []); 
+
   const getLobbies = async () => {
     try {
       const response = await api.get("/lobbies");
@@ -34,10 +48,13 @@ const Browser = () => {
   const joinLobby = async (selectedLobby) => {
     setSelectedLobby(selectedLobby);
     // const userId = localStorage.getItem("id");
-    const userId = "2"; // ***This is for test***
+    // const userId = "2"; // ***This is for test***
+    const userId = localStorage.getItem('userId') // ***For Testing purposes***
     if (!selectedLobby.password) {
       await api.post("/lobbies/" + selectedLobby.id + "/players", { userId });
-      navigate("/lobbies/" + selectedLobby.id);
+      // navigate("/lobbies/" + selectedLobby.id);
+      //For testing purposes
+      navigate("/demo")
     } else {
       setPasswordPrompt(true);
     }
