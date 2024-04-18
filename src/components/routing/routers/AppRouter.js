@@ -9,6 +9,7 @@ import Menu from "../../views/Menu";
 import Registration from "../../views/Registration";
 import Lobby from "../../views/Lobby";
 import Browser from "../../views/Browser";
+import GameDemo from "../../views/GameDemo";
 
 /**
  * Main router of your application.
@@ -39,6 +40,8 @@ const AppRouter = () => {
         <Route path="/lobby" element={<Lobby />} />
 
         <Route path="/browser" element={<Browser />} />
+
+        <Route path="/demo" element={<GameDemo/>} />
 
         <Route path="/" element={
           <Login />
