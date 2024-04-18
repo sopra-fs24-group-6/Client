@@ -1,0 +1,24 @@
+.container {
+    display: flex;
+    height: 100vh;
+  }
+  
+  .settings {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background-color: #f0f0f0; /* Example background color */
+  }
+
+  .players {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background-color: #f0f0f0; /* Example background color */
+  }

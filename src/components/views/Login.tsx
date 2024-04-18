@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { api, handleError } from "helpers/api";
 import User from "models/User";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Button } from "components/ui/Button";
 import "styles/views/Login.scss";
 import BaseContainer from "components/ui/BaseContainer";
@@ -18,7 +18,7 @@ const FormField = (props) => {
     <div className="login field">
       <label className="login label">{props.label}</label>
       <input
-        type={props.type}
+        type={props.type} // Use type prop to determine input type
         className="login input"
         placeholder="enter here.."
         value={props.value}
@@ -29,10 +29,10 @@ const FormField = (props) => {
 };
 
 FormField.propTypes = {
-  type: PropTypes.string,
   label: PropTypes.string,
   value: PropTypes.string,
   onChange: PropTypes.func,
+  type: PropTypes.string, // Add PropTypes for type
 };
 
 const Login = () => {
@@ -42,28 +42,24 @@ const Login = () => {
   const [password, setPassword] = useState<string>(null);
   const [username, setUsername] = useState<string>(null);
 
-  const doRegistration = () => {
-    navigate("/register")
-  };
-
   const doLogin = async () => {
     try {
       const requestBody = JSON.stringify({ username, password });
-      const response = await api.post("/login", requestBody);
+      const loginResponse = await api.post("/login", {
+        username,
+        password,
+      });
 
       // Get the returned user and update a new object.
-      const user = new User(response.data);
+      const loggedInUser = new User(loginResponse.data);
 
       // Store the token into the local storage.
-      localStorage.setItem("id", user.id);
-      localStorage.setItem("token", user.token);
+      localStorage.setItem("userId", loggedInUser.id);
 
       // Login successfully worked --> navigate to the route /game in the GameRouter
-      navigate("/game");
+      navigate("/menu");
     } catch (error) {
-      alert(
-        `Something went wrong during the login: \n${handleError(error)}`
-      );
+      alert(`Something went wrong during the login: \n${handleError(error)}`);
       navigate("/login");
     }
   };
@@ -76,6 +72,7 @@ const Login = () => {
             label="Username"
             value={username}
             onChange={(un: string) => setUsername(un)}
+            type="text" // Specify type as text for username
           />
           <div>
             <FormField
@@ -84,27 +81,29 @@ const Login = () => {
               value={password}
               onChange={(n) => setPassword(n)}
             />
-
-            <Button onClick={() => setIsSecure(prev => !prev)}>
+            <Button onClick={() => setIsSecure((prev) => !prev)}>
               {isSecure ? "Show" : "Hide"}
             </Button>
           </div>
-          
+
           <div className="login button-container">
             <Button
               disabled={!username || !password}
-              width="50%"
+              width="100%"
               onClick={() => doLogin()}
             >
               Login
             </Button>
-            <Button
-              width="50%"
-              onClick={doRegistration}
-            >
-              Register here
-            </Button>
           </div>
+          <span className="register-text">
+            Don't have an account yet?{" "}
+            <span
+              className="register-cta"
+              onClick={() => navigate("/register")}
+            >
+              Register a new account
+            </span>
+          </span>
         </div>
       </div>
     </BaseContainer>
