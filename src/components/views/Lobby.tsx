@@ -5,6 +5,15 @@ import User from "models/User";
 import Lobby from "models/Lobby";
 import "styles/views/Lobby.scss";
 import initialPlayers from "components/placeholders/playerlist";
+import NavBar from "../ui/NavBar";
+import NesContainer from "../ui/NESContainer";
+import NESContainerW from "../ui/NESContainerW";
+import NESRadioButton from "../ui/NESRadioButtons";
+import PlayerLimiter from "../ui/PlayerLimiter";
+import RoundLimiter from "../ui/RoundLimiter";
+import Slider from "../ui/Slider";
+import CustomButton from "../ui/CustomButton";
+//import ThemePopUp from "../ui/ThemePopUp";
 
 const GameLobby = () => {
   const navigate = useNavigate();
@@ -23,6 +32,10 @@ const GameLobby = () => {
   const [roundTimer, setRoundTimer] = useState(60);
   const [clueTimer, setClueTimer] = useState(10);
   const [discussionTimer, setDiscussionTimer] = useState(60);
+
+  const lobbyTypeChanger = (value) => {
+    setIsPrivate(value === "private");
+  };
 
   useEffect(() => {
     if (isPublished) {
@@ -90,6 +103,33 @@ const GameLobby = () => {
     }
   };
 
+  const handlePlayerLimitChange = (value) => {
+    setPlayerLimit(value);
+  };
+
+  const handleRoundLimitChange = (value) => {
+    setRounds(value);
+  };
+
+  const kickPlayer = async (player) => {
+    try {
+      const requesterId = localStorage.getItem("userId");
+      if (!requesterId) {
+        alert("No requesterId found in local storage.");
+        
+        return;
+      }
+      const requestBody = {
+        userId: requesterId,
+      };
+      await api.delete("/lobbies/" + lobby.id + "/players/" + player.id, {
+        data: requestBody,
+      });
+    } catch (error) {
+      alert(`Could not kick player: \n${handleError(error)}`);
+    }
+  };
+
   const startGame = async () => {
     try {
       await api.post("/games", lobby);
@@ -102,140 +142,269 @@ const GameLobby = () => {
       );
     }
   };
+
   return (
-    <div className="container">
-      <div className="settings">
-        <h2>Lobby Settings</h2>
-        <div>
-          <label>Lobby Name:</label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            disabled={!isAdmin}
-          />
-        </div>
-        <div>
-          <div>
-            Lobby Type:
-            <label>
-              Public
-              <input
-                type="radio"
-                name="isPrivate"
-                checked={!isPrivate}
-                onChange={() => setIsPrivate(false)}
-                disabled={!isAdmin}
-              />
-            </label>
-            <label>
-              Private
-              <input
-                type="radio"
-                name="isPrivate"
-                checked={isPrivate}
-                onChange={() => setIsPrivate(true)}
-                disabled={!isAdmin}
-              />
-            </label>
-          </div>
-        </div>
-        {isPrivate && (
-          <div>
-            <label>Lobby Password:</label>
-            <input
-              type="text"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              disabled={!isAdmin}
-            />
-          </div>
-        )}
-        <div>
-          <label>Player Limit:</label>
-          <select
-            value={playerLimit}
-            onChange={(e) => setPlayerLimit(parseInt(e.target.value))}
-            disabled={!isAdmin}
-          >
-            {[3, 4, 5, 6].map((count) => (
-              <option key={count} value={count}>
-                {count}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label>Rounds:</label>
-          <select
-            value={rounds}
-            onChange={(e) => setRounds(parseInt(e.target.value))}
-            disabled={!isAdmin}
-          >
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((count) => (
-              <option key={count} value={count}>
-                {count}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label>Round Timer:</label>
-          <input
-            type="range"
-            min={30}
-            max={300}
-            step={10}
-            value={roundTimer}
-            onChange={(e) => setRoundTimer(parseInt(e.target.value))}
-            disabled={!isAdmin}
-          />
-          <span>{roundTimer} seconds</span>
-        </div>
-        <div>
-          <label>Clue Timer:</label>
-          <input
-            type="range"
-            min={5}
-            max={30}
-            step={5}
-            value={clueTimer}
-            onChange={(e) => setClueTimer(parseInt(e.target.value))}
-            disabled={!isAdmin}
-          />
-          <span>{clueTimer} seconds</span>
-        </div>
-        <div>
-          <label>Discussion Timer:</label>
-          <input
-            type="range"
-            min={30}
-            max={300}
-            step={10}
-            value={discussionTimer}
-            onChange={(e) => setDiscussionTimer(parseInt(e.target.value))}
-            disabled={!isAdmin}
-          />
-          <span>{discussionTimer} seconds</span>
-        </div>
-        <div>
-          {!isPublished && <button onClick={createLobby}>Create Lobby</button>}
-          {isPublished && isAdmin && (
-            <button onClick={startGame}>Start Game</button>
-          )}
+    <>
+      <NavBar />
+      <div className="Center">
+        <NesContainer title="">
+          <h1 className="press-start-font">Lobby Settings</h1>
+        </NesContainer>
+        <div className="Extension Flex">
+          <NESContainerW title="Choose Settings" className="left">
+            <div className="wrapper">
+              <div className="setting-container">
+                <label>Lobby Name:</label>
+                <input
+                  className="setting-field"
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  disabled={!isAdmin}
+                />
+              </div>
+              <div className="Space Flex">
+                <label> Lobby Type:</label>
+                <NESRadioButton
+                  name="Lobby Type"
+                  options={[
+                    { label: "Public", value: "public" },
+                    { label: "Private", value: "private" },
+                  ]}
+                  defaultValue={isPrivate ? "private" : "public"}
+                  onChange={lobbyTypeChanger}
+                  disabled={!isAdmin}
+                />
+              </div>
+              {isPrivate && (
+                <div className="setting-container">
+                  <div className="Space Flex">
+                    <label>Password:</label>
+                    <input
+                      className="setting-field"
+                      type="text"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      disabled={!isAdmin}
+                    />
+                  </div>
+                </div>
+              )}
+              <div className="Space Flex">
+                <label>Player Limit:</label>
+                <PlayerLimiter
+                  disabled={!isAdmin}
+                  onPlayerLimitChange={handlePlayerLimitChange}
+                />
+              </div>
+              <div className="Space Flex">
+                <label>Round Limit:</label>
+                <RoundLimiter
+                  disabled={!isAdmin}
+                  onRoundLimitChange={handleRoundLimitChange}
+                />
+              </div>
+
+              <div className="Space Flex">
+                <label>Round Timer:</label>
+                <Slider
+                  min={60}
+                  max={120}
+                  step={10}
+                  value={roundTimer}
+                  onChange={(e) => setRoundTimer(parseInt(e.target.value))}
+                  disabled={!isAdmin}
+                />
+              </div>
+              <div className="Space Flex">
+                <label>Clue Timer:</label>
+                <Slider
+                  min={10}
+                  max={120}
+                  step={10}
+                  value={clueTimer}
+                  onChange={(e) => setClueTimer(parseInt(e.target.value))}
+                  disabled={!isAdmin}
+                />
+              </div>
+              <div className="Space Flex">
+                <label>Discussion Timer:</label>
+                <Slider
+                  min={60}
+                  max={120}
+                  step={10}
+                  value={discussionTimer}
+                  onChange={(e) => setDiscussionTimer(parseInt(e.target.value))}
+                  disabled={!isAdmin}
+                />
+              </div>
+              <div className="Space Flex">
+                <label>Themes:</label>
+                {/* <ThemePopUp /> */}
+              </div>
+              {!isPublished && isAdmin && (
+                <div className="Space">
+                  <CustomButton
+                    text="Create Lobby"
+                    className="50 hover-orange"
+                    onClick={() => createLobby()}
+                  />
+                </div>
+              )}
+              {isPublished && isAdmin && (
+                <div className="Space">
+                  <CustomButton
+                    text="Start Game"
+                    className="50 hover-green"
+                    onClick={() => startGame()}
+                  />
+                </div>
+              )}
+            </div>
+          </NESContainerW>
+          <NESContainerW title="Players Joined" className="right">
+            <h2>
+              Players {players.length} / {playerLimit}
+            </h2>
+            <ul className="list-style">
+              {players.map((player, index) => (
+                <li className="Aligner" key={index}>
+                  {player}
+                  {isAdmin && (
+                    <CustomButton
+                      text="Kick"
+                      className="small-kick margin-kick hover-red"
+                      onClick={() => kickPlayer(player)}
+                    ></CustomButton>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </NESContainerW>
         </div>
       </div>
-      <div className="players">
-        <h2>
-          Players {players.length} / {playerLimit}
-        </h2>
-        <ul>
-          {players.map((player, index) => (
-            <li key={index}>{player}</li>
-          ))}
-        </ul>
-      </div>
-    </div>
+    </>
   );
 };
+
 export default GameLobby;
+
+//   <div className="container">
+//     <div className="settings">
+//       <h2>Lobby Settings</h2>
+//       <div>
+//         <label>Lobby Name:</label>
+//         <input
+//           type="text"
+//           value={name}
+//           onChange={(e) => setName(e.target.value)}
+//           disabled={!isAdmin}
+//         />
+//       </div>
+//       <div>
+//         <div>
+//           Lobby Type:
+//           <label>
+//             Public
+//             <input
+//               type="radio"
+//               name="isPrivate"
+//               checked={!isPrivate}
+//               onChange={() => setIsPrivate(false)}
+//               disabled={!isAdmin}
+//             />
+//           </label>
+//           <label>
+//             Private
+//             <input
+//               type="radio"
+//               name="isPrivate"
+//               checked={isPrivate}
+//               onChange={() => setIsPrivate(true)}
+//               disabled={!isAdmin}
+//             />
+//           </label>
+//         </div>
+//       </div>
+//       {isPrivate && (
+//         <div>
+//           <label>Lobby Password:</label>
+//           <input
+//             type="text"
+//             value={password}
+//             onChange={(e) => setPassword(e.target.value)}
+//             disabled={!isAdmin}
+//           />
+//         </div>
+//       )}
+//       <div>
+//         <label>Player Limit:</label>
+//         <select
+//           value={playerLimit}
+//           onChange={(e) => setPlayerLimit(parseInt(e.target.value))}
+//           disabled={!isAdmin}
+//         >
+//           {[3, 4, 5, 6].map((count) => (
+//             <option key={count} value={count}>
+//               {count}
+//             </option>
+//           ))}
+//         </select>
+//       </div>
+//       <div>
+//         <label>Round Timer:</label>
+//         <input
+//           type="range"
+//           min={30}
+//           max={300}
+//           step={10}
+//           value={roundTimer}
+//           onChange={(e) => setRoundTimer(parseInt(e.target.value))}
+//           disabled={!isAdmin}
+//         />
+//         <span>{roundTimer} seconds</span>
+//       </div>
+//       <div>
+//         <label>Clue Timer:</label>
+//         <input
+//           type="range"
+//           min={5}
+//           max={30}
+//           step={5}
+//           value={clueTimer}
+//           onChange={(e) => setClueTimer(parseInt(e.target.value))}
+//           disabled={!isAdmin}
+//         />
+//         <span>{clueTimer} seconds</span>
+//       </div>
+//       <div>
+//         <label>Discussion Timer:</label>
+//         <input
+//           type="range"
+//           min={30}
+//           max={300}
+//           step={10}
+//           value={discussionTimer}
+//           onChange={(e) => setDiscussionTimer(parseInt(e.target.value))}
+//           disabled={!isAdmin}
+//         />
+//         <span>{discussionTimer} seconds</span>
+//       </div>
+//       <div>
+//         {!isPublished && <button onClick={createLobby}>Create Lobby</button>}
+//         {isPublished && isAdmin && (
+//           <button onClick={startGame}>Start Game</button>
+//         )}
+//       </div>
+//     </div>
+//     <div className="players">
+//       <h2>
+//         Players {players.length} / {playerLimit}
+//       </h2>
+//       <ul>
+//         {players.map((player, index) => (
+//           <li key={index}>{player}</li>
+//         ))}
+//       </ul>
+//     </div>
+//   </div>

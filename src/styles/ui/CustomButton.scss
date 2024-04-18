@@ -9,17 +9,17 @@
   background-color: #212529;
   color: #fff;
 
-  &.hover-green:hover {
+  &.hover-green:hover:not(:disabled) {
     background-color: darken(#88D498, 10%);
     //background-color: darken(#084C61, 10%);
   }
 
-  &.hover-red:hover {
+  &.hover-red:hover:not(:disabled) {
     background-color: darken(#AD2831, 10%);
     //background-color: darken(#084C61, 10%);
   }
 
-  &.hover-orange:hover {
+  &.hover-orange:hover:not(:disabled) {
     background-color: darken(#F68E5F, 10%);
     //background-color: darken(#084C61, 10%);
   }
@@ -46,10 +46,28 @@
     display: block;
   }
 
-  &.w25{
+  &.w25 {
     width: calc(25% - 0.25rem);
     // margin-left: auto;
     // margin-right: auto;
     // display: block;
   }
+
+  &.w55 {
+    width: 55%;
+    margin-left: 8%;
+    // margin-right: auto;
+    // display: block;
+  }
+
+  &.small-kick {
+    font-size: 0.5em;
+    padding: 5px 8px;
+  }
+
+  &.margin-kick {
+    margin-left: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
 }

@@ -25,15 +25,20 @@ body {
   gap: 1rem;
 }
 
-.nav a {
-  color: inherit;
+.nav-item {
+  color: white;
   text-decoration: none;
+  padding: 10px 15px;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+  display: inline-flex; // Make sure it's inline-flex or inline-block
+  align-items: center; // Align text vertically
 }
 
-.nav li:hover {
-  background-color: #777;
+.nav-item:visited {
+  color: white;
 }
 
-.nav li.active {
-  background-color: #555;
+.nav-item:hover {
+  text-decoration: none;
+  transform: scale(1.2); // Enlarge the link on hover
 }

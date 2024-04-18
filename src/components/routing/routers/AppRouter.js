@@ -4,7 +4,7 @@ import { GameGuard } from "../routeProtectors/GameGuard";
 import GameRouter from "./GameRouter";
 import { LoginGuard } from "../routeProtectors/LoginGuard";
 import Login from "../../views/Login";
-import UserDetails from "../../views/UserDetails";
+import Profile from "../../views/Profile";
 import Menu from "../../views/Menu";
 import Registration from "../../views/Registration";
 import Lobby from "../../views/Lobby";
@@ -25,7 +25,7 @@ const AppRouter = () => {
       <Routes>
         <Route path="/users/*" element={<GameGuard />}>
           <Route path="/users/*" element={<GameRouter base="/users" />} />
-          <Route path=":userId" element={<UserDetails />} />
+          <Route path=":userId" element={<Profile />} />
         </Route>
 
         <Route path="/login" element={<LoginGuard />}>
@@ -41,10 +41,8 @@ const AppRouter = () => {
         <Route path="/browser" element={<Browser />} />
 
         <Route path="/" element={
-          <Navigate to="/game" replace />
+          <Login />
         }/>
-
-        <Route path="/" element={<Navigate to="/users" replace />} />
       </Routes>
     </BrowserRouter>
   );

@@ -2,39 +2,19 @@ import React, { useState } from "react";
 import { api, handleError } from "helpers/api";
 import User from "models/User";
 import { useNavigate } from "react-router-dom";
-import { Button } from "components/ui/Button";
 import "styles/views/Login.scss";
-import BaseContainer from "components/ui/BaseContainer";
-import PropTypes from "prop-types";
+import NesContainer from "../ui/NESContainer";
+import NESContainerW from "../ui/NESContainerW";
+import CustomButton from "../ui/CustomButton";
 import languages from 'helpers/languages.json';
-
-const FormField = (props) => {
-  return (
-    <div className="login field">
-      <label className="login label">{props.label}</label>
-      <input
-        type={props.type}
-        className="login input"
-        placeholder="enter here.."
-        value={props.value}
-        onChange={(e) => props.onChange(e.target.value)}
-      />
-    </div>
-  );
-};
-
-FormField.propTypes = {
-  label: PropTypes.string,
-  value: PropTypes.string,
-  onChange: PropTypes.func,
-  type: PropTypes.string,
-};
+import "../../styles/ui/AppBody.scss";
 
 const Registration = () => {
   const navigate = useNavigate();
-  const [name, setName] = useState("");
-  const [password, setPassword] = useState("");
-  const [username, setUsername] = useState("");
+  const [isSecure, setIsSecure] = useState(true);
+  const [name, setName] = useState(null);
+  const [password, setPassword] = useState(null);
+  const [username, setUsername] = useState(null);
   const [language, setLanguage] = useState('en');
 
   const doRegistration = async () => {
@@ -56,7 +36,7 @@ const Registration = () => {
       localStorage.setItem("userId", loggedInUser.id); // Update user id in local storage
 
       // Navigate to the desired route
-      navigate("/users");
+      navigate("/menu");
     } catch (error) {
       alert(
         `Something went wrong during the registration: \n${handleError(error)}`
@@ -65,49 +45,100 @@ const Registration = () => {
   };
 
   return (
-    <BaseContainer>
-      <div className="login container">
-        <div className="login form">
-          <FormField
-            label="Name"
-            value={name}
-            onChange={(un) => setName(un)}
-            type="text"
-          />
-          <FormField
-            label="Username"
-            value={username}
-            onChange={(un) => setUsername(un)}
-            type="text"
-          />
-          <FormField
-            label="Password"
-            value={password}
-            onChange={(n) => setPassword(n)}
-            type="password"
-          />
-          <select
-          value={language}
-          onChange={(e) => setLanguage(e.target.value)}>
-          {languages.map((lang) => (
-            <option key={lang.code} value={lang.code}>
-          {lang.name}
-        </option>
-      ))}
-        </select>
-          <div className="login button-container">
-            <Button
-              disabled={!username || !password}
-              width="100%"
-              onClick={() => doRegistration()}
-            >
-              Register
-            </Button>
-          </div>
-        </div>
+    <>
+      <div className="Center">
+        <NesContainer title="Word Wolf">
+          <h1 className="press-start-font">Register Here</h1>
+        </NesContainer>
       </div>
-    </BaseContainer>
+      <div className="Extension">
+        <NESContainerW title="Welcome" className="center">
+          <div className="field-aligner">
+            <label className="log-label">Username:</label>
+            <input
+              className="log-field"
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+          </div>
+          <div className="field-aligner">
+            <label className="log-label">Password:</label>
+            <input
+              className="log-field"
+              type={isSecure ? "password" : "text"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <select
+              value={language}
+              onChange={(e) => setLanguage(e.target.value)}>
+              {languages.map((lang) => (
+                <option key={lang.code} value={lang.code}>
+                {lang.name}
+              </option>
+            ))}
+            </select>
+            <CustomButton
+              text={isSecure ? "Show" : "Hide"}
+              className={
+                isSecure ? "small 50 hover-green" : "small 50 hover-orange"
+              }
+              onClick={() => setIsSecure(!isSecure)}
+            />
+          </div>
+          <CustomButton
+            text="Register"
+            disabled={!username || !password}
+            className="w55 hover-green"
+            onClick={() => doRegistration()}>
+          </CustomButton>
+        </NESContainerW>
+      </div>
+    </>
   );
 };
 
 export default Registration;
+
+
+{/* <NESContainerW title="">
+<div className="login container">
+<label>Username:</label>
+<input
+className="username-field"
+type="text"
+value={username}
+onChange={(e) => setUsername(e.target.value)}
+/>
+<label>Name:</label>
+<input
+className="name-field"
+type="text"
+value={name}
+onChange={(e) => setName(e.target.value)}
+/>
+<label>Password:</label>
+<input
+className="username-field"
+type={isSecure ? "password" : "text"}
+value={password}
+onChange={(e) => setPassword(e.target.value)}
+/>
+<CustomButton
+text={isSecure ? "Show" : "Hide"}
+className={
+  isSecure ? "small 50 hover-green" : "small 50 hover-orange"
+}
+onClick={() => setIsSecure((prev) => !prev)}
+/>
+<div className="login button-container">
+<CustomButton
+  text="Register"
+  disabled={!username || !name || !password}
+  className="50 hover-green"
+  onClick={() => doRegistration()}
+></CustomButton>
+</div>
+</div>
+</NESContainerW> */}

@@ -6,6 +6,11 @@ import "styles/ui/popUp.scss";
 import CustomButton from "components/ui/CustomButton";
 import BaseContainer from "components/ui/BaseContainer";
 import lobbyList from "components/placeholders/lobbylist";
+import NavBar from "../ui/NavBar";
+import NesContainer from "../ui/NESContainer";
+import "styles/views/Lobby.scss";
+import NESContainerW from "../ui/NESContainerW";
+
 
 const Browser = () => {
   const navigate = useNavigate();
@@ -55,93 +60,167 @@ const Browser = () => {
   };
 
   return (
-    <BaseContainer>
-      <h2 style={{ textAlign: "center", margin: "20px 0" }}>Lobby Browser</h2>
-      <table style={{ margin: "0 auto", textAlign: "center" }}>
-        <thead>
-          <tr>
-            <th style={{ width: "auto", padding: "10px", textAlign: "center" }}>
-              Lobby Name
-            </th>
-            <th style={{ width: "auto", padding: "10px", textAlign: "center" }}>
-              Lobby Type
-            </th>
-            <th style={{ width: "auto", padding: "10px", textAlign: "center" }}>
-              Players
-            </th>
-            <th style={{ width: "auto", padding: "10px", textAlign: "center" }}>
-              Player Limit
-            </th>
-            <th style={{ width: "auto", padding: "10px", textAlign: "center" }}>
-              Themes
-            </th>
-            <th
-              style={{ width: "auto", padding: "10px", textAlign: "center" }}
-            ></th>
-          </tr>
-        </thead>
-        <tbody>
-          {lobbies.map((lobby) => (
-            <tr key={lobby.id}>
-              <td style={{ padding: "10px", textAlign: "center" }}>
-                {lobby.name}
-              </td>
-              <td style={{ padding: "10px", textAlign: "center" }}>
-                {lobby.password ? "Private" : "Public"}
-              </td>
-              <td style={{ padding: "10px", textAlign: "center" }}>
-                {lobby.players.length}
-              </td>
-              <td style={{ padding: "10px", textAlign: "center" }}>
-                {lobby.playerLimit}
-              </td>
-              <td style={{ padding: "10px", textAlign: "center" }}>
-                {lobby.themes.join(", ")}
-              </td>
-              <td style={{ padding: "10px", textAlign: "center" }}>
-                <CustomButton
-                  text="Join"
-                  className="small w100 hover-green"
-                  onClick={() => joinLobby(lobby)}
-                ></CustomButton>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <div style={{ textAlign: "center", margin: "20px auto" }}>
-        <CustomButton
-          text="Refresh"
-          className="small w100 hover-green"
-          onClick={getLobbies}
-        ></CustomButton>
-      </div>
-
-      {/* Password Prompt Popup */}
-      {passwordPrompt && (
-        <div className="popup-container">
-          <div className="popup">
-            <input
-              type="password"
-              placeholder="Enter lobby password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            <CustomButton
-              text="Submit"
-              className="small w100 hover-green"
-              onClick={passwordSubmit}
-            ></CustomButton>
-            <CustomButton
-              text="Cancel"
-              className="small w100 hover-red"
-              onClick={() => setPasswordPrompt(false)}
-            ></CustomButton>
-          </div>
+    <>
+      <NavBar />
+      <div className="Center">
+        <NesContainer title="">
+          <h1 className="press-start-font">Lobby Browser</h1>
+        </NesContainer>
+        <div className="Space">
+          <NESContainerW title="Join a lobby" className="center">
+            <table style={{ margin: "0 auto", textAlign: "center" }}>
+              <thead>
+                <tr>
+                  <th className="table-header"> Lobby Name</th>
+                  <th className="table-header">Lobby Type</th>
+                  <th className="table-header">Players</th>
+                  <th className="table-header">Player Limit</th>
+                  <th className="table-header">Themes</th>
+                  <th className="table-header"></th>
+                </tr>
+              </thead>
+              <tbody>
+                {lobbies.map((lobby) => (
+                  <tr key={lobby.id}>
+                    <td className="browser-items">
+                      {lobby.name}
+                    </td>
+                    <td className="browser-items">
+                      {lobby.password ? "Private" : "Public"}
+                    </td>
+                    <td className="browser-items">
+                      {lobby.players.length}
+                    </td>
+                    <td className="browser-items">
+                      {lobby.playerLimit}
+                    </td>
+                    <td className="browser-items">
+                      {lobby.themes.join(", ")}
+                    </td>
+                    <td className="browser-items">
+                      <CustomButton
+                        text="Join"
+                        className="small hover-green"
+                        onClick={() => joinLobby(lobby)}
+                      ></CustomButton>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {passwordPrompt && (
+              <div className="popup-container">
+                <div className="popup">
+                  <input
+                    type="password"
+                    placeholder="Enter lobby password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                  <CustomButton
+                    text="Submit"
+                    className="small hover-green"
+                    onClick={passwordSubmit}
+                  ></CustomButton>
+                  <CustomButton
+                    text="Cancel"
+                    className="small hover-red"
+                    onClick={() => setPasswordPrompt(false)}
+                  ></CustomButton>
+                </div>
+              </div>
+            )}
+          </NESContainerW>
         </div>
-      )}
-    </BaseContainer>
+      </div>
+    </>
   );
 };
 
 export default Browser;
+
+// <BaseContainer>
+//   <h2 style={{ textAlign: "center", margin: "20px 0" }}>Lobby Browser</h2>
+//   <table style={{ margin: "0 auto", textAlign: "center" }}>
+//     <thead>
+//       <tr>
+//         <th style={{ width: "auto", padding: "10px", textAlign: "center" }}>
+//           Lobby Name
+//         </th>
+//         <th style={{ width: "auto", padding: "10px", textAlign: "center" }}>
+//           Lobby Type
+//         </th>
+//         <th style={{ width: "auto", padding: "10px", textAlign: "center" }}>
+//           Players
+//         </th>
+//         <th style={{ width: "auto", padding: "10px", textAlign: "center" }}>
+//           Player Limit
+//         </th>
+//         <th style={{ width: "auto", padding: "10px", textAlign: "center" }}>
+//           Themes
+//         </th>
+//         <th
+//           style={{ width: "auto", padding: "10px", textAlign: "center" }}
+//         ></th>
+//       </tr>
+//     </thead>
+//     <tbody>
+//       {lobbies.map((lobby) => (
+//         <tr key={lobby.id}>
+//           <td style={{ padding: "10px", textAlign: "center" }}>
+//             {lobby.name}
+//           </td>
+//           <td style={{ padding: "10px", textAlign: "center" }}>
+//             {lobby.password ? "Private" : "Public"}
+//           </td>
+//           <td style={{ padding: "10px", textAlign: "center" }}>
+//             {lobby.players.length}
+//           </td>
+//           <td style={{ padding: "10px", textAlign: "center" }}>
+//             {lobby.playerLimit}
+//           </td>
+//           <td style={{ padding: "10px", textAlign: "center" }}>
+//             {lobby.themes.join(", ")}
+//           </td>
+//           <td style={{ padding: "10px", textAlign: "center" }}>
+//             <CustomButton
+//               text="Join"
+//               className="small w100 hover-green"
+//               onClick={() => joinLobby(lobby)}
+//             ></CustomButton>
+//           </td>
+//         </tr>
+//       ))}
+//     </tbody>
+//   </table>
+//   <div style={{ textAlign: "center", margin: "20px auto" }}>
+//     <CustomButton
+//       text="Refresh"
+//       className="small w100 hover-green"
+//       onClick={getLobbies}
+//     ></CustomButton>
+//   </div>
+//   {/* Password Prompt Popup */}
+//   {passwordPrompt && (
+//     <div className="popup-container">
+//       <div className="popup">
+//         <input
+//           type="password"
+//           placeholder="Enter lobby password"
+//           value={password}
+//           onChange={(e) => setPassword(e.target.value)}
+//         />
+//         <CustomButton
+//           text="Submit"
+//           className="small w100 hover-green"
+//           onClick={passwordSubmit}
+//         ></CustomButton>
+//         <CustomButton
+//           text="Cancel"
+//           className="small w100 hover-red"
+//           onClick={() => setPasswordPrompt(false)}
+//         ></CustomButton>
+//       </div>
+//     </div>
+//   )}
+// </BaseContainer>

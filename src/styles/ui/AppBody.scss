@@ -11,8 +11,94 @@
   gap: 0.5rem;
 }
 
-.App {
-  font-family: 'Press Start 2P', system-ui, sans-serif;
+.Center {
+  font-family: "Press Start 2P", system-ui, sans-serif;
   text-align: center;
   margin-top: 0.5rem;
+}
+
+.Flex {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.Space {
+  padding-top: 0.5rem;
+}
+
+.slider-value {
+  margin-left: 8px;
+  min-width: 30px;
+  text-align: right;
+}
+
+.list-style {
+  list-style: none;
+}
+
+.table-header {
+  width: auto;
+  padding: 5px 35px;
+  text-align: center;
+  font-size: 0.8em;
+  letter-spacing: 0.1em;
+}
+
+.browser-items {
+  width: auto;
+  text-align: center;
+  font-size: 0.7em;
+  letter-spacing: 0.1em;
+  padding: 5px;
+}
+
+.Aligner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  //justify-content: space-between;
+  margin-bottom: 0.4rem;
+}
+// LOGIN components
+.field-aligner {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 0.5rem;
+  margin-left: 25%;
+}
+
+.log-label {
+  margin-right: 0.5rem;
+  width: 100px;
+  padding-top: 8px;
+}
+
+.log-field {
+  flex-grow: 0;
+  margin-right: 0.5rem;
+  margin-left: 2.5rem;
+}
+
+.Shifter {
+  margin-left: 25%;
+}
+
+.register-text2 {
+  width: 100%;
+  text-align: center;
+  margin-top: 16px;
+  font-size: small;
+}
+
+.register-cta2 {
+  margin-left: 0.5rem;
+  text-decoration: underline;
+  font-weight: 600;
+  font-size: small;
+
+  &:hover {
+    color: #88D498;
+    cursor: pointer;
+  }
 }
