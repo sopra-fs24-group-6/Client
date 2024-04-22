@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { subscribeToWebSocket, sendMessage } from "helpers/WebSocketManager";
+import { subscribeToGameWebSocket } from "../../helpers/GameWebSocketManager.js";
 import { User } from "types";
 import { api, handleError } from "helpers/api";
 import ClueOverlay from "../ui/ClueOverlay";
@@ -19,13 +19,21 @@ const Game = () => {
   const [clue, setClue] = useState("");
   const [draftMessage, setDraftMessage] = useState("");
   const [players, setPlayers] = useState([]);
+  const [sendMessage, setSendMessage] = useState(null);
   const player = localStorage.getItem("userId");
+  const lobbyId = localStorage.getItem("lobbyId");
 
   const isWolf = (player) => {
     return wolf.id === player;
   };
 
   useEffect(() => {
+    const handlePlayers = (players) => {
+      setPlayers(players);
+    };
+    const handlePhase = (phase) => {
+      setPhase(phase);
+    };
     const handleChat = (chat) => {
       setChat(chat);
     };
@@ -40,7 +48,6 @@ const Game = () => {
 
     const handleRoundTimer = (roundTimer) => {
       setRoundTimer(roundTimer);
-      setPhase("clue");
     };
 
     const handleClueTimer = (clueTimer) => {
@@ -49,30 +56,28 @@ const Game = () => {
 
     const handleDiscussionTimer = (discussionTimer) => {
       setDiscussionTimer(discussionTimer);
-      setPhase("discussion");
     };
 
     const handleVoteTimer = (voteTimer) => {
       setVoteTimer(voteTimer);
-      setPhase("vote");
     };
 
-    subscribeToWebSocket(
-      player,
-      lobby,
-      handleChat,
-      handleClue,
-      handleTurn,
-      handleRoundTimer,
-      handleClueTimer,
-      handleDiscussionTimer,
-      handleVoteTimer
+    setSendMessage(
+      subscribeToGameWebSocket(
+        player,
+        lobbyId,
+        handlePlayers,
+        handlePhase,
+        handleChat,
+        handleClue,
+        handleTurn,
+        handleRoundTimer,
+        handleClueTimer,
+        handleDiscussionTimer,
+        handleVoteTimer
+      )
     );
   }, []);
-
-  const handleClueSubmit = (clue) => {
-    sendMessage(clue);
-  };
 
   return (
     <div>
@@ -84,21 +89,21 @@ const Game = () => {
         {isWolf ? (
           <p>You are the wolf! Try to blend in.</p>
         ) : (
-          <p>This round's word is: {clue}</p>
+          <p>This round&apos;s word is: {clue}</p>
         )}
       </div>
       <div>
         {phase === "clue" && <p>Time remaining:{roundTimer} seconds</p>}
       </div>
       <div>
-        {phase == "clue" && isCurrentPlayerTurn && (
+        {phase === "clue" && isCurrentPlayerTurn && (
           <>
             <p>Time remaining: {clueTimer} seconds</p>
-            <input
+            {/* <input
               type="text"
               placeholder="Enter your clue"
-              onChange={(e) => handleClueSubmit(e.target.value)}
-            />
+              onChange={(e) => sendMessage(e.target.value)}
+            /> */}
           </>
         )}
       </div>
@@ -118,19 +123,37 @@ const Game = () => {
           </div>
         ))}
       </div>
-      <input
-        type="text"
-        value={draftMessage}
-        onChange={(e) => setDraftMessage(e.target.value)}
-        disabled={phase !== "discussion"}
-        onKeyPress={(e) => e.key === "Enter" && sendMessage()}
-        placeholder="Type a message..."
-        style={{ width: "80%", marginRight: "10px" }}
-      />
-      <button onClick={sendMessage} disabled={phase !== "discussion"}>
-        Send
-      </button>
-      {phase === "vote" && (
+      {phase === "clue" && (
+        <>
+          <input
+            type="text"
+            value={draftMessage}
+            onChange={(e) => setDraftMessage(e.target.value)}
+            disabled={!isCurrentPlayerTurn}
+            onKeyPress={(e) => e.key === "Enter" && sendMessage()}
+            placeholder="Type a clue..."
+            style={{ width: "80%", marginRight: "10px" }}
+          />
+          <button onClick={sendMessage} disabled={!isCurrentPlayerTurn}>
+            Send
+          </button>
+        </>
+      )}
+      {phase === "discussion" && (
+        <>
+          <input
+            type="text"
+            value={draftMessage}
+            onChange={(e) => setDraftMessage(e.target.value)}
+            onKeyPress={(e) => e.key === "Enter" && sendMessage()}
+            placeholder="Type a message..."
+            style={{ width: "80%", marginRight: "10px" }}
+          />
+          <button onClick={sendMessage}>Send</button>
+        </>
+      )}
+
+      {/* {phase === "vote" && (
         <div>
           {players.map((player) => (
             <div key={player.id}>
@@ -139,7 +162,7 @@ const Game = () => {
             </div>
           ))}
         </div>
-      )}
+      )} */}
     </div>
   );
 };

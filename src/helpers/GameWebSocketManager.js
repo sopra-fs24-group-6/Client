@@ -2,10 +2,9 @@ import React, { useState, useEffect } from "react";
 import { Client } from "@stomp/stompjs";
 import { getBrokerURL } from "helpers/getBrokerURL"
 
-const subscribeToWebSocket = (userId, lobbyId, chatCallback, clueCallback, turnCallback, roundTimerCallback, clueTimerCallback, discussionTimerCallback, voteTimerCallback) => {
+const subscribeToGameWebSocket = (userId, lobbyId, playersCallback, phaseCallback, chatCallback, clueCallback, turnCallback, roundTimerCallback, clueTimerCallback, discussionTimerCallback, voteTimerCallback) => {
     const [client, setClient] = useState(null);
     const [connected, setConnected] = useState(false);
-    const [sendMessage, setSendMessage] = useState(null);
     const [chatMessages, setChatMessages] = useState([]);
 
     useEffect(() => {
@@ -24,6 +23,25 @@ const subscribeToWebSocket = (userId, lobbyId, chatCallback, clueCallback, turnC
               const event = JSON.parse(message.body);
               const newLog = `(Event notification: ${event.eventType})`;
               setGameLog((prevGameLog) => [...prevGameLog, newLog]);
+              if (event.eventType === "startRound") {
+                phaseCallback("clue");
+              }
+              else if (event.eventType === "startDiscussion") {
+                phaseCallback("discussion");
+              }
+              else if (event.eventType === "startVoting") {
+                phaseCallback("vote")
+              }
+              else if (event.eventType === "EndRound") {
+                phaseCallback("endRound");
+              }
+            });
+
+            // subscribe players
+            // message has content<list> of players in the game
+            stompClient.subscribe(`/topic/${lobbyId}/players`, (message) => {
+              const players = JSON.parse(message.body);
+              playersCallback(players);
             });
     
             // subscribe chat
@@ -31,7 +49,7 @@ const subscribeToWebSocket = (userId, lobbyId, chatCallback, clueCallback, turnC
             stompClient.subscribe(`/queue/${userId}/chat`, (message) => {
               const newChatMessage = JSON.parse(message.body);
               setChatMessages((prevChatMessages) => [...prevChatMessages, newChatMessage]);
-              chatCallback(chatMessages)
+              chatCallback(chatMessages);
             });
     
             // subscribe round timer
@@ -86,7 +104,6 @@ const subscribeToWebSocket = (userId, lobbyId, chatCallback, clueCallback, turnC
             });
 
             // Set the sendMessage function
-        setSendMessage(() => {
           const sendMessage = (draftMessage) => {
             if (client && connected && draftMessage) {
               const chatMessage = {
@@ -101,9 +118,10 @@ const subscribeToWebSocket = (userId, lobbyId, chatCallback, clueCallback, turnC
             } else {
               console.log("STOMP connection is not established or draftMessage is empty.");
             }
+            return sendMessage;
           };
-          return sendMessage;
-        });
+          
+        
     
     
           },
@@ -127,6 +145,5 @@ const subscribeToWebSocket = (userId, lobbyId, chatCallback, clueCallback, turnC
           window.removeEventListener("beforeunload", handleBeforeUnload);
         };
       }, [userId]);
-      return {sendMessage}
     } 
-    export {subscribeToWebSocket};
+    export {subscribeToGameWebSocket};

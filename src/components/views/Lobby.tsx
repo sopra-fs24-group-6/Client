@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { api, handleError } from "helpers/api";
+import {
+  subscribeToLobbyWebSocket,
+  sendMessage,
+} from "helpers/LobbyWebSocketManager";
 import { useNavigate } from "react-router-dom";
 import User from "models/User";
 import Lobby from "models/Lobby";
@@ -32,13 +36,35 @@ const GameLobby = () => {
   const [roundTimer, setRoundTimer] = useState(60);
   const [clueTimer, setClueTimer] = useState(10);
   const [discussionTimer, setDiscussionTimer] = useState(60);
+  const [chat, setChat] = useState([]);
+  const [sendMessage, setSendMessage] = useState(null);
 
   const lobbyTypeChanger = (value) => {
     setIsPrivate(value === "private");
   };
 
   useEffect(() => {
-    if (isPublished) {
+    const handleChat = (chat) => {
+      setChat(chat);
+    };
+
+    const handleLobbyUpdate = (lobby) => {
+      setLobby(lobby);
+    };
+
+    const handleGameStart = (status) => {
+      if (status === "startGame") {
+        navigate(`/game/${lobby.id}`);
+      }
+    };
+
+    setSendMessage(
+      subscribeToLobbyWebSocket(handleChat, handleLobbyUpdate, handleGameStart)
+    );
+  }, []);
+
+  useEffect(() => {
+    if (isPublished && isAdmin) {
       updateLobby();
     }
   }, [
@@ -71,6 +97,7 @@ const GameLobby = () => {
       const response = await api.post("/lobbies", requestBody);
       const lobby = new Lobby(response.data);
       setLobby(lobby);
+      localStorage.setItem("lobbyId", lobby.id);
       isPublished = true;
     } catch (error) {
       alert(
@@ -122,7 +149,6 @@ const GameLobby = () => {
   const startGame = async () => {
     try {
       await api.post("/games", lobby);
-      navigate("/game");
     } catch (error) {
       alert(
         `Something went wrong when trying to start the game: \n${handleError(
