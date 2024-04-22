@@ -1,3 +1,7 @@
-const initialPlayers = ["Player 1", "Player 2", "Player 3"];
+const initialPlayers = [
+    { userId: 'default1', username: 'Player1' },
+    { userId: 'default2', username: 'Player2' },
+    { userId: 'default3', username: 'Player3' },
+  ];
 
 export default initialPlayers;

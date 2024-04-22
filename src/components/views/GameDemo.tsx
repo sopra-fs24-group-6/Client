@@ -88,6 +88,7 @@ const GameDemo = () => {
         // subscribe clue turn
         // message has userId<Long>
         stompClient.subscribe(`/topic/${lobbyId}/clueTurn`, (message) => {
+
           const event = JSON.parse(message.body);
           const newLog = `Clue phase: Player ${event.userId}'s turn.`;
           setGameLog((prevGameLog) => [...prevGameLog, newLog]);
@@ -104,6 +105,7 @@ const GameDemo = () => {
         // subscribe word assignment
         // message has word<String>. if null, it indicates Wolf.
         stompClient.subscribe(`/queue/${userId}/wordAssignment`, (message) => {
+          console.log('Hi')
           const event = JSON.parse(message.body);
           // const newLog = event.word ? `Your assigned word is: ${event.word}` : "You're wolf.";
           const newLog = event.word;

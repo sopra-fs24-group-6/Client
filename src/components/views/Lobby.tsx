@@ -13,15 +13,18 @@ import PlayerLimiter from "../ui/PlayerLimiter";
 import RoundLimiter from "../ui/RoundLimiter";
 import Slider from "../ui/Slider";
 import CustomButton from "../ui/CustomButton";
+import { Client } from "@stomp/stompjs";
+import { getBrokerURL } from "helpers/getBrokerURL"
 //import ThemePopUp from "../ui/ThemePopUp";
 
 const GameLobby = () => {
   const navigate = useNavigate();
-  let isPublished = false;
+  // let isPublished = false;
   let isAdmin = true;
   const [lobby, setLobby] = useState(null);
 
   const [isPrivate, setIsPrivate] = useState(false);
+  const [isPublished, setIsPublished] = useState(false);
   const [name, setName] = useState<string>(null);
   const [password, setPassword] = useState<string>(null);
   const [players, setPlayers] = useState(initialPlayers);
@@ -32,16 +35,64 @@ const GameLobby = () => {
   const [roundTimer, setRoundTimer] = useState(60);
   const [clueTimer, setClueTimer] = useState(10);
   const [discussionTimer, setDiscussionTimer] = useState(60);
+  const [client, setClient] = useState(null);
+  const [connected, setConnected] = useState(false);
+  const [lobbyId, setLobbyId] = useState(1);
+  // Need to refresh this lobbyId whenever we receive a new lobbyId
+  // const [isEditable, setIsEditable] = useState(true);
 
   const lobbyTypeChanger = (value) => {
     setIsPrivate(value === "private");
   };
 
   useEffect(() => {
-    console.log('UserId:', localStorage.getItem("userId"));
-    if (isPublished) {
-      updateLobby();
-    }
+    
+    console.log(isPublished)
+    // if (isPublished) {
+    //   updateLobby();
+    // }
+
+    const userId = localStorage.getItem('userId')
+    const stompClient = new Client({
+      // url is defined in helper/getBrokerURL.js
+      brokerURL: getBrokerURL(),
+      connectHeaders: {userId},
+      onConnect: () => {
+        console.log("Connected");
+        console.log('lobbyId:', lobbyId);
+        setConnected(true);
+
+        // ask for playerlists
+        // The return type is a list of playerDTO with their username and userId.
+        stompClient.subscribe(`/lobbies/${lobbyId}/players`, (message) => {
+          const response = JSON.parse(message.body);
+          console.log('Hi')
+          console.log(response);
+          // setPlayers(response.data);
+          // console.log(players)
+        });
+
+      },
+      onStompError: (frame) => {
+        console.error("Broker reported error: " + frame.headers["message"]);
+        console.error("Additional details: " + frame.body);
+        setConnected(false);
+      },
+    });
+    stompClient.activate();
+    setClient(stompClient);
+
+    // if close window or move to another page, then disconnect
+    const handleBeforeUnload = () => {
+      stompClient.deactivate();
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      stompClient.deactivate();
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+
   }, [
     name,
     password,
@@ -53,6 +104,7 @@ const GameLobby = () => {
     roundTimer,
     clueTimer,
     discussionTimer,
+    lobbyId,
   ]);
 
   const createLobby = async () => {
@@ -74,8 +126,10 @@ const GameLobby = () => {
       const response = await api.post("/lobbies", requestBody);
       const lobby = new Lobby(response.data);
       setLobby(lobby);
-      isPublished = true;
-      navigate("/demo");
+      setLobbyId(lobby.id);
+      setIsPublished(true);
+      console.log(response.data)
+      // navigate("/demo");
     } catch (error) {
       alert(
         `Something went wrong while creating the lobby: \n${handleError(error)}`
@@ -83,27 +137,27 @@ const GameLobby = () => {
     }
   };
 
-  const updateLobby = async () => {
-    try {
-      const requestBody = JSON.stringify({
-        name,
-        password,
-        players,
-        playerLimit,
-        playerCount,
-        themes,
-        rounds,
-        roundTimer,
-        clueTimer,
-        discussionTimer,
-      });
-      await api.put("/lobbies/" + lobby.id, requestBody);
-    } catch (error) {
-      alert(
-        `Something went wrong while updating the lobby: \n${handleError(error)}`
-      );
-    }
-  };
+  // const updateLobby = async () => {
+  //   try {
+  //     const requestBody = JSON.stringify({
+  //       name,
+  //       password,
+  //       players,
+  //       playerLimit,
+  //       playerCount,
+  //       themes,
+  //       rounds,
+  //       roundTimer,
+  //       clueTimer,
+  //       discussionTimer,
+  //     });
+  //     await api.put("/lobbies/" + lobby.id, requestBody);
+  //   } catch (error) {
+  //     alert(
+  //       `Something went wrong while updating the lobby: \n${handleError(error)}`
+  //     );
+  //   }
+  // };
 
   const handlePlayerLimitChange = (value) => {
     setPlayerLimit(value);
@@ -131,6 +185,7 @@ const GameLobby = () => {
       alert(`Could not kick player: \n${handleError(error)}`);
     }
   };
+
 
   const startGame = async () => {
     try {
@@ -268,16 +323,16 @@ const GameLobby = () => {
             <h2>
               Players {players.length} / {playerLimit}
             </h2>
-            <ul className="list-style">
-              {players.map((player, index) => (
-                <li className="Aligner" key={index}>
-                  {player}
-                  {isAdmin && (
+                <ul className="list-style">
+                {players.map((player, index) => (
+                <li className="Aligner" key={player.userId || index}>  {/* Use userId as key if available */}
+                {player.username} {/* Display the player's username */}
+                {isAdmin && (
                     <CustomButton
                       text="Kick"
                       className="small-kick margin-kick hover-red"
                       onClick={() => kickPlayer(player)}
-                    ></CustomButton>
+                    />
                   )}
                 </li>
               ))}
