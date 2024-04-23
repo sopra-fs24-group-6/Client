@@ -3,11 +3,10 @@ import { api, handleError } from "helpers/api";
 import User from "models/User";
 import { useNavigate } from "react-router-dom";
 import "styles/views/Login.scss";
-import BaseContainer from "components/ui/BaseContainer";
-import PropTypes from "prop-types";
 import NesContainer from "../ui/NESContainer";
 import NESContainerW from "../ui/NESContainerW";
 import CustomButton from "../ui/CustomButton";
+import "../../styles/ui/AppBody.scss";
 
 const Registration = () => {
   const navigate = useNavigate();
@@ -43,47 +42,91 @@ const Registration = () => {
   };
 
   return (
-    <NESContainerW title="">
-      <div className="login container">
-        <label>Username:</label>
-        <input
-          className="username-field"
-          type="text"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <label>Name:</label>
-        <input
-          className="name-field"
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-        <label>Password:</label>
-        <input
-          className="username-field"
-          type={isSecure ? "password" : "text"}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <CustomButton
-          text={isSecure ? "Show" : "Hide"}
-          className={
-            isSecure ? "small 50 hover-green" : "small 50 hover-orange"
-          }
-          onClick={() => setIsSecure((prev) => !prev)}
-        />
-        <div className="login button-container">
+    <>
+      <div className="Center">
+        <NesContainer title="Word Wolf">
+          <h1 className="press-start-font">Register Here</h1>
+        </NesContainer>
+      </div>
+      <div className="Extension">
+        <NESContainerW title="Welcome" className="center">
+          <div className="field-aligner">
+            <label className="log-label">Username:</label>
+            <input
+              className="log-field"
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+          </div>
+          <div className="field-aligner">
+            <label className="log-label">Password:</label>
+            <input
+              className="log-field"
+              type={isSecure ? "password" : "text"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <CustomButton
+              text={isSecure ? "Show" : "Hide"}
+              className={
+                isSecure ? "small 50 hover-green" : "small 50 hover-orange"
+              }
+              onClick={() => setIsSecure(!isSecure)}
+            />
+          </div>
           <CustomButton
             text="Register"
-            disabled={!username || !name || !password}
-            className="50 hover-green"
-            onClick={() => doRegistration()}
-          ></CustomButton>
-        </div>
+            disabled={!username || !password}
+            className="w55 hover-green"
+            onClick={() => doRegistration()}>
+          </CustomButton>
+        </NESContainerW>
       </div>
-    </NESContainerW>
+    </>
   );
 };
 
 export default Registration;
+
+
+{/* <NESContainerW title="">
+<div className="login container">
+<label>Username:</label>
+<input
+className="username-field"
+type="text"
+value={username}
+onChange={(e) => setUsername(e.target.value)}
+/>
+<label>Name:</label>
+<input
+className="name-field"
+type="text"
+value={name}
+onChange={(e) => setName(e.target.value)}
+/>
+<label>Password:</label>
+<input
+className="username-field"
+type={isSecure ? "password" : "text"}
+value={password}
+onChange={(e) => setPassword(e.target.value)}
+/>
+<CustomButton
+text={isSecure ? "Show" : "Hide"}
+className={
+  isSecure ? "small 50 hover-green" : "small 50 hover-orange"
+}
+onClick={() => setIsSecure((prev) => !prev)}
+/>
+<div className="login button-container">
+<CustomButton
+  text="Register"
+  disabled={!username || !name || !password}
+  className="50 hover-green"
+  onClick={() => doRegistration()}
+></CustomButton>
+</div>
+</div>
+</NESContainerW> */}
