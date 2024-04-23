@@ -10,4 +10,5 @@ export const getBrokerURL = () => {
   // if local environment, returns "ws://localhost:8080/ws"
   // if app engine, returns "wss://xxxxxx/ws"
   return `${wsScheme}://${host}/ws`;
+
 }

@@ -9,6 +9,7 @@ import Menu from "../../views/Menu";
 import Registration from "../../views/Registration";
 import Lobby from "../../views/Lobby";
 import Browser from "../../views/Browser";
+
 import Game from "../../views/Game";
 
 /**
