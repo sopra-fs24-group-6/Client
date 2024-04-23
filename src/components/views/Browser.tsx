@@ -11,7 +11,6 @@ import NesContainer from "../ui/NESContainer";
 import "styles/views/Lobby.scss";
 import NESContainerW from "../ui/NESContainerW";
 
-
 const Browser = () => {
   const navigate = useNavigate();
   const [lobbies, setLobbies] = useState(lobbyList);
@@ -36,7 +35,8 @@ const Browser = () => {
     const userId = localStorage.getItem("id");
     if (!selectedLobby.password) {
       await api.put("lobbies/" + selectedLobby.id, userId);
-      navigate("/lobbies/" + selectedLobby.id);
+      localStorage.setItem("lobbyId", selectedLobby.id);
+      navigate("/lobby");
     } else {
       setPasswordPrompt(true);
     }
@@ -47,7 +47,8 @@ const Browser = () => {
       await api.post("/lobbies" + selectedLobby.id + "authenticate,", password);
       const userId = localStorage.getItem("id");
       await api.put("lobbies/" + selectedLobby.id, userId);
-      navigate("/lobbies/" + selectedLobby.id);
+      localStorage.setItem("lobbyId", selectedLobby.id);
+      navigate("/lobby");
     } catch (error) {
       alert(
         `Something went wrong during the authentifiation: \n${handleError(
@@ -80,21 +81,13 @@ const Browser = () => {
               <tbody>
                 {lobbies.map((lobby) => (
                   <tr key={lobby.id}>
-                    <td className="browser-items">
-                      {lobby.name}
-                    </td>
+                    <td className="browser-items">{lobby.name}</td>
                     <td className="browser-items">
                       {lobby.password ? "Private" : "Public"}
                     </td>
-                    <td className="browser-items">
-                      {lobby.players.length}
-                    </td>
-                    <td className="browser-items">
-                      {lobby.playerLimit}
-                    </td>
-                    <td className="browser-items">
-                      {lobby.themes.join(", ")}
-                    </td>
+                    <td className="browser-items">{lobby.players.length}</td>
+                    <td className="browser-items">{lobby.playerLimit}</td>
+                    <td className="browser-items">{lobby.themes.join(", ")}</td>
                     <td className="browser-items">
                       <CustomButton
                         text="Join"

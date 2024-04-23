@@ -9,7 +9,8 @@ import Menu from "../../views/Menu";
 import Registration from "../../views/Registration";
 import Lobby from "../../views/Lobby";
 import Browser from "../../views/Browser";
-import GameDemo from "../../views/GameDemo";
+
+import Game from "../../views/Game";
 
 /**
  * Main router of your application.
@@ -41,7 +42,7 @@ const AppRouter = () => {
 
         <Route path="/browser" element={<Browser />} />
 
-        <Route path="/demo" element={<GameDemo/>} />
+        <Route path="/game/:lobbyId" element={<Game />} />
 
         <Route path="/" element={
           <Login />

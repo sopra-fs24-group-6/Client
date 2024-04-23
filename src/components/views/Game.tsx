@@ -1,124 +1,169 @@
 import React, { useEffect, useState } from "react";
-import { api, handleError } from "helpers/api";
-import { Spinner } from "components/ui/Spinner";
-import { Button } from "components/ui/Button";
-import { useNavigate } from "react-router-dom";
-import BaseContainer from "components/ui/BaseContainer";
-import PropTypes from "prop-types";
-import "styles/views/Game.scss";
+import { subscribeToGameWebSocket } from "../../helpers/GameWebSocketManager.js";
 import { User } from "types";
-
-const Player = ({ user, onClick }: { user: User; onClick: () => void }) => (
-  <div className="player container" onClick={onClick}>
-    <span style={{ marginRight: 8 }}>
-      {user.status === "OFFLINE" ? "🔴" : "🟢"}
-    </span>
-    <div className="player username">{user.username}</div>
-    <div className="player name">{user.name}</div>
-    <div className="player id">id: {user.id}</div>
-  </div>
-);
-
-Player.propTypes = {
-  user: PropTypes.object,
-  onClick: PropTypes.func,
-};
+import { api, handleError } from "helpers/api";
+import ClueOverlay from "../ui/ClueOverlay";
+//import Timer from "../ui/Timer";
 
 const Game = () => {
-  // use react-router-dom's hook to access navigation, more info: https://reactrouter.com/en/main/hooks/use-navigate
-  const navigate = useNavigate();
+  const [phase, setPhase] = useState<string>("");
+  const [words, setWords] = useState([]); //needed with every rounstart hook
+  const [wolf, setWolf] = useState<User>(null); //needed with every rounstart hook
+  const [round, setRound] = useState(1); // needed with every roundstart hook
+  const [isCurrentPlayerTurn, setIsCurrentPlayerTurn] = useState(false);
+  const [chat, setChat] = useState([]);
+  const [roundTimer, setRoundTimer] = useState(null);
+  const [clueTimer, setClueTimer] = useState(null);
+  const [discussionTimer, setDiscussionTimer] = useState(null);
+  const [voteTimer, setVoteTimer] = useState(null);
+  const [clue, setClue] = useState("");
+  const [draftMessage, setDraftMessage] = useState("");
+  const [players, setPlayers] = useState([]);
+  const [sendMessage, setSendMessage] = useState(null);
+  const player = localStorage.getItem("userId");
+  const lobbyId = localStorage.getItem("lobbyId");
 
-  // define a state variable (using the state hook).
-  // if this variable changes, the component will re-render, but the variable will
-  // keep its value throughout render cycles.
-  // a component can have as many state variables as you like.
-  // more information can be found under https://react.dev/learn/state-a-components-memory and https://react.dev/reference/react/useState
-  const [users, setUsers] = useState<User[]>(null);
-
-  const logout = async () => {
-    try {
-      const currentUserId = localStorage.getItem("userId");
-
-      if (currentUserId) {
-        const response = await api.post("/users/logout", { id: currentUserId });
-      }
-
-      localStorage.removeItem("userId");
-      navigate("/login");
-    } catch (error) {
-      alert(`Something went wrong during the logout: \n${handleError(error)}`);
-    }
+  const isWolf = (player) => {
+    return wolf.id === player;
   };
 
-  // the effect hook can be used to react to change in your component.
-  // in this case, the effect hook is only run once, the first time the component is mounted
-  // this can be achieved by leaving the second argument an empty array.
-  // for more information on the effect hook, please see https://react.dev/reference/react/useEffect
   useEffect(() => {
-    // effect callbacks are synchronous to prevent race conditions. So we put the async function inside:
-    async function fetchData() {
-      try {
-        const response = await api.get("/users");
+    const handlePlayers = (players) => {
+      setPlayers(players);
+    };
+    const handlePhase = (phase) => {
+      setPhase(phase);
+    };
+    const handleChat = (chat) => {
+      setChat(chat);
+    };
 
-        // delays continuous execution of an async operation for 1 second.
-        // This is just a fake async call, so that the spinner can be displayed
-        // feel free to remove it :)
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+    const handleClue = (clue) => {
+      setClue(clue);
+    };
 
-        // Get the returned users and update the state.
-        setUsers(response.data);
+    const handleTurn = (turn) => {
+      setIsCurrentPlayerTurn(turn === player);
+    };
 
-        // This is just some data for you to see what is available.
-        // Feel free to remove it.
-        console.log("request to:", response.request.responseURL);
-        console.log("status code:", response.status);
-        console.log("status text:", response.statusText);
-        console.log("requested data:", response.data);
+    const handleRoundTimer = (roundTimer) => {
+      setRoundTimer(roundTimer);
+    };
 
-        // See here to get more data.
-        console.log(response);
-      } catch (error) {
-        console.error(
-          `Something went wrong while fetching the users: \n${handleError(
-            error
-          )}`
-        );
-        console.error("Details:", error);
-        alert(
-          "Something went wrong while fetching the users! See the console for details."
-        );
-      }
-    }
+    const handleClueTimer = (clueTimer) => {
+      setClueTimer(clueTimer);
+    };
 
-    fetchData();
+    const handleDiscussionTimer = (discussionTimer) => {
+      setDiscussionTimer(discussionTimer);
+    };
+
+    const handleVoteTimer = (voteTimer) => {
+      setVoteTimer(voteTimer);
+    };
+
+    setSendMessage(
+      subscribeToGameWebSocket(
+        player,
+        lobbyId,
+        handlePlayers,
+        handlePhase,
+        handleChat,
+        handleClue,
+        handleTurn,
+        handleRoundTimer,
+        handleClueTimer,
+        handleDiscussionTimer,
+        handleVoteTimer
+      )
+    );
   }, []);
 
   return (
-    <BaseContainer className="game container">
-      <h2>Happy Coding!</h2>
-      <p className="game paragraph">Get all users from secure endpoint:</p>
-
-      {!users ? (
-        <Spinner />
-      ) : (
-        <div className="game">
-          <ul className="game user-list">
-            {(users || []).map((user: User) => (
-              <li key={user.id} style={{ cursor: "pointer" }}>
-                <Player
-                  user={user}
-                  onClick={() => navigate(`/users/${user.id}`)} // This navigates to /game/id
-                />
-              </li>
-            ))}
-          </ul>
-          <Button width="100%" onClick={() => logout()}>
-            Logout
-          </Button>
-        </div>
+    <div>
+      <h2>Phase: {phase}</h2>
+      {phase === "clue" && (
+        <ClueOverlay isWolf={isWolf(player)} words={words} round={round} />
       )}
-    </BaseContainer>
+      <div>
+        {isWolf ? (
+          <p>You are the wolf! Try to blend in.</p>
+        ) : (
+          <p>This round&apos;s word is: {clue}</p>
+        )}
+      </div>
+      <div>
+        {phase === "clue" && <p>Time remaining:{roundTimer} seconds</p>}
+      </div>
+      <div>
+        {phase === "clue" && isCurrentPlayerTurn && (
+          <>
+            <p>Time remaining: {clueTimer} seconds</p>
+            {/* <input
+              type="text"
+              placeholder="Enter your clue"
+              onChange={(e) => sendMessage(e.target.value)}
+            /> */}
+          </>
+        )}
+      </div>
+      <div
+        id="messageList"
+        style={{
+          height: "200px",
+          overflowY: "scroll",
+          marginBottom: "20px",
+          border: "1px solid #ccc",
+          padding: "10px",
+        }}
+      >
+        {chat.map((msg, index) => (
+          <div key={index}>
+            {msg.userId}: {msg.content}
+          </div>
+        ))}
+      </div>
+      {phase === "clue" && (
+        <>
+          <input
+            type="text"
+            value={draftMessage}
+            onChange={(e) => setDraftMessage(e.target.value)}
+            disabled={!isCurrentPlayerTurn}
+            onKeyPress={(e) => e.key === "Enter" && sendMessage()}
+            placeholder="Type a clue..."
+            style={{ width: "80%", marginRight: "10px" }}
+          />
+          <button onClick={sendMessage} disabled={!isCurrentPlayerTurn}>
+            Send
+          </button>
+        </>
+      )}
+      {phase === "discussion" && (
+        <>
+          <input
+            type="text"
+            value={draftMessage}
+            onChange={(e) => setDraftMessage(e.target.value)}
+            onKeyPress={(e) => e.key === "Enter" && sendMessage()}
+            placeholder="Type a message..."
+            style={{ width: "80%", marginRight: "10px" }}
+          />
+          <button onClick={sendMessage}>Send</button>
+        </>
+      )}
+
+      {/* {phase === "vote" && (
+        <div>
+          {players.map((player) => (
+            <div key={player.id}>
+              <p>{player.name}</p>
+              <button onClick={() => handleVote(player.id)}>Vote</button>
+            </div>
+          ))}
+        </div>
+      )} */}
+    </div>
   );
 };
-
 export default Game;

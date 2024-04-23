@@ -3,6 +3,7 @@
   "version": "0.24.0",
   "private": true,
   "dependencies": {
+    "@stomp/stompjs": "^7.0.0",
     "axios": "^1.6.7",
     "eslint-config-react-app": "^7.0.1",
     "nes.css": "^2.3.0",
