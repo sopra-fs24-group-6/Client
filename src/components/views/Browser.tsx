@@ -54,7 +54,7 @@ const Browser = () => {
       await api.post("/lobbies/" + selectedLobby.id + "/players", { userId });
       // navigate("/lobbies/" + selectedLobby.id);
       //For testing purposes
-      navigate("/demo")
+      navigate("/lobby")
     } else {
       setPasswordPrompt(true);
     }

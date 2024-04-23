@@ -66,7 +66,15 @@ const GameLobby = () => {
         // The return type is a list of playerDTO with their username and userId.
         stompClient.subscribe(`/lobbies/${lobbyId}/players`, (message) => {
           const response = JSON.parse(message.body);
-          console.log('Hi')
+          console.log('Player List: ')
+          console.log(response);
+          // setPlayers(response.data);
+          // console.log(players)
+        });
+
+        stompClient.subscribe(`/lobbies/${lobbyId}/lobby_info`, (message) => {
+          const response = JSON.parse(message.body);
+          console.log('Lobby info: ')
           console.log(response);
           // setPlayers(response.data);
           // console.log(players)
@@ -126,7 +134,7 @@ const GameLobby = () => {
       const response = await api.post("/lobbies", requestBody);
       const lobby = new Lobby(response.data);
       setLobby(lobby);
-      setLobbyId(lobby.id);
+      // setLobbyId(lobby.id);
       setIsPublished(true);
       console.log(response.data)
       // navigate("/demo");
@@ -136,6 +144,7 @@ const GameLobby = () => {
       );
     }
   };
+
 
   // const updateLobby = async () => {
   //   try {
