@@ -13,6 +13,7 @@ const PlayerLimiter: React.FC<LimiterProps> = ({
     const selectedValue = parseInt(e.target.value);
     onPlayerLimitChange(selectedValue);
   };
+  
   return (
     <select
       className="player-limit-selector"

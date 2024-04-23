@@ -18,6 +18,20 @@ const Browser = () => {
   const [password, setPassword] = useState(null);
   const [selectedLobby, setSelectedLobby] = useState(null);
 
+  //*** For Testing Purposes***
+  useEffect(() => {
+    // Immediately-invoked function expression (IIFE) with an async function
+    (async () => {
+      try {
+        const response = await api.get("/lobbies");
+        setLobbies(response.data);
+        console.log(response.data)
+      } catch (error) {
+        alert(`Something went wrong when trying to fetch available lobbies: \n${handleError(error)}`);
+      }
+    })();
+  }, []); 
+
   const getLobbies = async () => {
     try {
       const response = await api.get("/lobbies");
@@ -34,9 +48,8 @@ const Browser = () => {
     setSelectedLobby(selectedLobby);
     const userId = localStorage.getItem("id");
     if (!selectedLobby.password) {
-      await api.put("lobbies/" + selectedLobby.id, userId);
-      localStorage.setItem("lobbyId", selectedLobby.id);
-      navigate("/lobby");
+      await api.post("/lobbies/" + selectedLobby.id + "/players", { userId });
+      navigate("/lobbies/" + selectedLobby.id);
     } else {
       setPasswordPrompt(true);
     }
@@ -44,11 +57,10 @@ const Browser = () => {
 
   const passwordSubmit = async () => {
     try {
-      await api.post("/lobbies" + selectedLobby.id + "authenticate,", password);
+      await api.post("/lobbies/" + selectedLobby.id + "/authentication", { password });
       const userId = localStorage.getItem("id");
-      await api.put("lobbies/" + selectedLobby.id, userId);
-      localStorage.setItem("lobbyId", selectedLobby.id);
-      navigate("/lobby");
+      await api.post("/lobbies/" + selectedLobby.id + "/players", { userId });
+      navigate("/lobbies/" + selectedLobby.id);
     } catch (error) {
       alert(
         `Something went wrong during the authentifiation: \n${handleError(
