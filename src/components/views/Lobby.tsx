@@ -47,9 +47,19 @@ const GameLobby = () => {
     const handleChat = (chat) => {
       setChat(chat);
     };
-
+    //if(!isAdmin)
     const handleLobbyUpdate = (lobby) => {
       setLobby(lobby);
+      setName(lobby.name);
+      setPassword(lobby.password);
+      setPlayers(lobby.players);
+      setPlayerLimit(lobby.playerLimit);
+      setPlayerCount(lobby.playerCount);
+      setThemes(lobby.themes);
+      setRounds(lobby.rounds);
+      setRoundTimer(lobby.roundTimer);
+      setClueTimer(lobby.clueTimer);
+      setDiscussionTimer(lobby.discussionTimer);
     };
 
     const handleGameStart = (status) => {
