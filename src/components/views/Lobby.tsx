@@ -722,7 +722,7 @@ const GameLobby = () => {
   //     subscribeToLobbyWebSocket(handleLobbyUpdate, handlePlayer)
   //     //subscribeToLobbyWebSocket(handleChat,handleLobbyUpdate, handleGameStart, handlePlayer)
   //   );
-  const { sendMessage, connected } = useLobbyWebSocket(
+  const { sendMessage, connected, client } = useLobbyWebSocket(
     lobbyId,
     startGameCallback,
     lobbyCallback,
@@ -816,15 +816,14 @@ const GameLobby = () => {
     }
   };
 
-  const startGame = async () => {
-    try {
-      await api.post("/lobbies/" + lobbyId + "/startGame");
-    } catch (error) {
-      alert(
-        `Something went wrong when trying to start the game: \n${handleError(
-          error
-        )}`
-      );
+  const startGame = () => {
+    if (client && connected) {
+      client.publish({
+        destination: `app/${lobbyId}/startGame`,
+        body: JSON.stringify({ lobbyId, userId }),
+      });
+    } else {
+      console.log("STOMP connection is not established.");
     }
   };
 

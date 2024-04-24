@@ -25,6 +25,7 @@ export const useLobbyWebSocket = (lobbyId, startGameCallback, lobbyCallback, pla
     });
 
     const subscribeToChannels = (client) => {
+
       // subscribe game events
       // message has eventType<String>, like "startGame", "startRound".
         client.subscribe(`/topic/${lobbyId}/gameEvents`, (message) => {
@@ -66,5 +67,5 @@ export const useLobbyWebSocket = (lobbyId, startGameCallback, lobbyCallback, pla
     }
   };
 
-  return { sendMessage, connected };
+  return { sendMessage, connected, client };
 };
