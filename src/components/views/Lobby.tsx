@@ -810,7 +810,18 @@ const GameLobby = () => {
 
   const kickPlayer = async (player) => {
     try {
-      await api.delete("/lobbies/" + lobby.id + "/players/" + player.id);
+      const requesterId = localStorage.getItem("userId");
+      if (!requesterId) {
+        alert("No requesterId found in local storage.");
+        
+        return;
+      }
+      const requestBody = {
+        userId: requesterId,
+      };
+      await api.delete("/lobbies/" + lobby.id + "/players/" + player.id, {
+        data: requestBody,
+      });
     } catch (error) {
       alert(`Could not kick player: \n${handleError(error)}`);
     }
