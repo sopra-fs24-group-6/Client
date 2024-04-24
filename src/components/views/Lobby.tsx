@@ -17,14 +17,17 @@ import PlayerLimiter from "../ui/PlayerLimiter";
 import RoundLimiter from "../ui/RoundLimiter";
 import Slider from "../ui/Slider";
 import CustomButton from "../ui/CustomButton";
-//import ThemePopUp from "../ui/ThemePopUp";
+import ThemePopUp from "components/ui/ThemePopUp";
+
+import { Client } from "@stomp/stompjs";
+import { getBrokerURL } from "helpers/getBrokerURL"
 
 const GameLobby = () => {
   const navigate = useNavigate();
   let isPublished = false;
   let isAdmin = true;
   const [lobby, setLobby] = useState(null);
-
+  const [admin, setAdmin] = useState(null);
   const [isPrivate, setIsPrivate] = useState(false);
   const [name, setName] = useState<string>(null);
   const [password, setPassword] = useState<string>(null);
@@ -38,12 +41,42 @@ const GameLobby = () => {
   const [discussionTimer, setDiscussionTimer] = useState(60);
   const [chat, setChat] = useState([]);
   const [sendMessage, setSendMessage] = useState(null);
+  const [availableThemes, setAvailableThemes] = useState([]);
+  const [selectedThemes, setSelectedThemes] = useState([]);
+  const [showThemePopUp, setShowThemePopUp] = useState(false);
+  const userId = localStorage.getItem("userId");
+
+
+  const [client, setClient] = useState(null);
+  const [connected, setConnected] = useState(false);
+  const [lobbyId, setLobbyId] = useState(1);
+
 
   const lobbyTypeChanger = (value) => {
     setIsPrivate(value === "private");
   };
 
   useEffect(() => {
+    const fetchStandardLobby = async () => {
+      try {
+        const response = await api.get('/lobby'); // Replace with your actual endpoint
+        const lobby = response.data;
+        setAvailableThemes(lobby.themes);
+        setRounds(lobby.rounds);
+        setRoundTimer(lobby.roundTimer);
+        setClueTimer(lobby.clueTimer);
+        setDiscussionTimer(lobby.discussionTimer);
+        setPlayerLimit(lobby.playerLimit);
+        // we need a vote timer?
+      } catch (error) {
+        console.error(`Failed to fetch standard lobby: ${handleError(error)}`);
+      }
+    };
+
+    if (!isPublished) {
+      fetchStandardLobby();
+    }
+
     const handleChat = (chat) => {
       setChat(chat);
     };
@@ -60,6 +93,8 @@ const GameLobby = () => {
       setRoundTimer(lobby.roundTimer);
       setClueTimer(lobby.clueTimer);
       setDiscussionTimer(lobby.discussionTimer);
+      setIsPrivate(lobby.isPrivate);
+      isAdmin = (userId === lobby.lobbyAdmin);
     };
 
     const handleGameStart = (status) => {
@@ -83,26 +118,28 @@ const GameLobby = () => {
     players,
     playerLimit,
     playerCount,
-    themes,
+    selectedThemes,
     rounds,
     roundTimer,
     clueTimer,
     discussionTimer,
+    isPrivate
   ]);
 
   const createLobby = async () => {
     try {
-      const lobbyAdmin = localStorage.getItem("id");
+      const lobbyAdmin = userId;
       const requestBody = JSON.stringify({
         lobbyAdmin,
         name,
         password,
         playerLimit,
-        themes,
+        selectedThemes,
         rounds,
         roundTimer,
         clueTimer,
         discussionTimer,
+        isPrivate
       });
       const response = await api.post("/lobbies", requestBody);
       const lobby = new Lobby(response.data);
@@ -124,11 +161,12 @@ const GameLobby = () => {
         players,
         playerLimit,
         playerCount,
-        themes,
+        selectedThemes,
         rounds,
         roundTimer,
         clueTimer,
         discussionTimer,
+        isPrivate
       });
       const response = await api.put("/lobbies/" + lobby.id, requestBody);
       const updatedLobby = new Lobby(response.data);
@@ -166,6 +204,85 @@ const GameLobby = () => {
         )}`
       );
     }
+  };
+
+  useEffect(() => {
+    
+    console.log(isPublished)
+    // if (isPublished) {
+    //   updateLobby();
+    // }
+
+    const userId = localStorage.getItem('userId')
+    const stompClient = new Client({
+      // url is defined in helper/getBrokerURL.js
+      brokerURL: getBrokerURL(),
+      connectHeaders: {userId},
+      onConnect: () => {
+        console.log("Connected");
+        console.log('lobbyId:', lobbyId);
+        setConnected(true);
+
+        // ask for playerlists
+        // The return type is a list of playerDTO with their username and userId.
+        stompClient.subscribe(`/lobbies/${lobbyId}/players`, (message) => {
+          const response = JSON.parse(message.body);
+          console.log('Player List: ')
+          console.log(response);
+          // setPlayers(response.data);
+          // console.log(players)
+        });
+
+        stompClient.subscribe(`/lobbies/${lobbyId}/lobby_info`, (message) => {
+          const response = JSON.parse(message.body);
+          console.log('Lobby info: ')
+          console.log(response);
+          // setPlayers(response.data);
+          // console.log(players)
+        });
+
+      },
+      onStompError: (frame) => {
+        console.error("Broker reported error: " + frame.headers["message"]);
+        console.error("Additional details: " + frame.body);
+        setConnected(false);
+      },
+    });
+    stompClient.activate();
+    setClient(stompClient);
+
+    // if close window or move to another page, then disconnect
+    const handleBeforeUnload = () => {
+      stompClient.deactivate();
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      stompClient.deactivate();
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+
+  }, [
+    name,
+    password,
+    players,
+    playerLimit,
+    playerCount,
+    themes,
+    rounds,
+    roundTimer,
+    clueTimer,
+    discussionTimer,
+    lobbyId,
+  ]);
+
+  const handleSelectThemes = (selected) => {
+    setSelectedThemes(selected);
+    setShowThemePopUp(false);
+  };
+
+  const handleThemePopUpClose = () => {
+    setShowThemePopUp(false);
   };
 
   return (
@@ -229,7 +346,6 @@ const GameLobby = () => {
                   onRoundLimitChange={handleRoundLimitChange}
                 />
               </div>
-
               <div className="Space Flex">
                 <label>Round Timer:</label>
                 <Slider
@@ -265,7 +381,24 @@ const GameLobby = () => {
               </div>
               <div className="Space Flex">
                 <label>Themes:</label>
-                {/* <ThemePopUp /> */}
+                <button onClick={() => setShowThemePopUp(true)}
+                  disabled={!isAdmin || themes.length === 0}
+                >
+                  Select Themes
+                </button>
+                {showThemePopUp && (
+                  <ThemePopUp
+                    themes={availableThemes}
+                    selectedThemes={selectedThemes}
+                    onSelect={handleSelectThemes}
+                    onClose={handleThemePopUpClose}
+                  />
+                )}
+                <ul>
+                  {selectedThemes.map((theme) => (
+                    <li key={theme}>{theme}</li>
+                  ))}
+                </ul>
               </div>
               {!isPublished && isAdmin && (
                 <div className="Space">
