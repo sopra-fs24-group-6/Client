@@ -10,6 +10,8 @@ import Registration from "../../views/Registration";
 import Lobby from "../../views/Lobby";
 import Browser from "../../views/Browser";
 
+import Game from "../../views/Game";
+
 /**
  * Main router of your application.
  * In the following class, different routes are rendered. In our case, there is a Login Route with matches the path "/login"
@@ -39,6 +41,8 @@ const AppRouter = () => {
         <Route path="/lobby" element={<Lobby />} />
 
         <Route path="/browser" element={<Browser />} />
+
+        <Route path="/game/:lobbyId" element={<Game />} />
 
         <Route path="/" element={
           <Login />

@@ -25,7 +25,7 @@ const Login = () => {
   const doLogin = async () => {
     try {
       const requestBody = JSON.stringify({ username, password });
-      const loginResponse = await api.post("/users/login", {
+      const loginResponse = await api.post("/login", {
         username,
         password,
       });
