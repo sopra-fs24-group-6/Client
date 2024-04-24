@@ -10,9 +10,15 @@ const GameDemo = () => {
   const [roundTimer, setRoundTimer] = useState(0);
   const [clueTimer, setClueTimer] = useState(0);
   const [discussionTimer, setDiscussionTimer] = useState(0);
+  const [clueMessages, setClueMessages] = useState([]);
+  const [phase, setPhase] = useState<string>("");
+  const [isWolf, setIsWolf] = useState(null);
+  const [word, setWord] = useState("");
+  const [isCurrentPlayerTurn, setIsCurrentPlayerTurn] = useState(false);
+  const [players, setPlayers] = useState([]);
+  const [hasAlreadyVoted, setHasAlreadyVoted] = useState(false);
 
   // these settings are for demo. userId and lobbyId should be set appropriately.
-  const [gameLog, setGameLog] = useState([])
   const [userId, setUserId] = useState("");
   const [userIdInput, setUserIdInput] = useState("");
   const [isUserIdSet, setIsUserIdSet] = useState(false);
@@ -40,7 +46,7 @@ const GameDemo = () => {
    */
   useEffect(() => {
     // Connect WebSocket
-    setUserId(localStorage.getItem('userId'))
+    // setUserId(localStorage.getItem('userId'))
     const stompClient = new Client({
       // url is defined in helper/getBrokerURL.js
       brokerURL: getBrokerURL(),
@@ -53,8 +59,7 @@ const GameDemo = () => {
         // message has eventType<String>, like "startGame", "startRound".
         stompClient.subscribe(`/topic/${lobbyId}/gameEvents`, (message) => {
           const event = JSON.parse(message.body);
-          const newLog = `(Event notification: ${event.eventType})`;
-          setGameLog((prevGameLog) => [...prevGameLog, newLog]);
+          setPhase(event.eventType);
         });
 
         // subscribe chat
@@ -62,6 +67,13 @@ const GameDemo = () => {
         stompClient.subscribe(`/queue/${userId}/chat`, (message) => {
           const newChatMessage = JSON.parse(message.body);
           setChatMessages((prevChatMessages) => [...prevChatMessages, newChatMessage]);
+        });
+
+        // subscribe clue
+        // message has content<String>, userId<Long>, username<String>
+        stompClient.subscribe(`/queue/${userId}/clue`, (message) => {
+          const newClueMessage = JSON.parse(message.body);
+          setClueMessages((prevClueMessages) => [...prevClueMessages, newClueMessage]);
         });
 
         // subscribe round timer
@@ -88,10 +100,8 @@ const GameDemo = () => {
         // subscribe clue turn
         // message has userId<Long>
         stompClient.subscribe(`/topic/${lobbyId}/clueTurn`, (message) => {
-
           const event = JSON.parse(message.body);
-          const newLog = `Clue phase: Player ${event.userId}'s turn.`;
-          setGameLog((prevGameLog) => [...prevGameLog, newLog]);
+          setIsCurrentPlayerTurn(String(event.userId) === String(userId));
         });
 
         // subscribe result
@@ -99,17 +109,25 @@ const GameDemo = () => {
         stompClient.subscribe(`/topic/${lobbyId}/result`, (message) => {
           const event = JSON.parse(message.body);
           const newLog = `Winner role: ${event.winnerRole}. Winner players: ${event.winners}. Loser players: ${event.losers}`;
-          setGameLog((prevGameLog) => [...prevGameLog, newLog]);
         });
 
         // subscribe word assignment
         // message has word<String>. if null, it indicates Wolf.
         stompClient.subscribe(`/queue/${userId}/wordAssignment`, (message) => {
-          console.log('Hi')
           const event = JSON.parse(message.body);
-          // const newLog = event.word ? `Your assigned word is: ${event.word}` : "You're wolf.";
-          const newLog = event.word;
-          setGameLog((prevGameLog) => [...prevGameLog, newLog]);
+          if (event.word === null) {
+            setIsWolf(true);
+          } else {
+            setIsWolf(false);
+          }
+          setWord(event.word);
+        });
+
+        // subscribe players
+        // message has List<PlayerDTO>, PlayerDTO has userId and username
+        stompClient.subscribe(`/topic/${lobbyId}/players`, (message) => {
+          const event = JSON.parse(message.body);
+          setPlayers(event);
         });
 
 
@@ -136,16 +154,34 @@ const GameDemo = () => {
   }, [userId]);
 
 
-  const sendMessage = () => {
+    const sendMessage = () => {
+      if (client && connected && draftMessage) {
+        const chatMessage = {
+          content: draftMessage,
+          userId: userId,
+          lobbyId: lobbyId,
+        };
+        client.publish({
+          destination: `/app/chat/${lobbyId}/sendMessage`,
+          body: JSON.stringify(chatMessage),
+        });
+        setDraftMessage("");
+
+      } else {
+        console.log("STOMP connection is not established.");
+      }
+    };
+
+  const sendClue = () => {
     if (client && connected && draftMessage) {
-      const chatMessage = {
+      const clueMessage = {
         content: draftMessage,
         userId: userId,
         lobbyId: lobbyId,
       };
       client.publish({
-        destination: `/app/chat/${lobbyId}/sendMessage`,
-        body: JSON.stringify(chatMessage),
+        destination: `/app/clue/${lobbyId}/sendMessage`,
+        body: JSON.stringify(clueMessage),
       });
       setDraftMessage("");
 
@@ -154,8 +190,21 @@ const GameDemo = () => {
     }
   };
 
-  const clearMessages = () => {
-    setChatMessages([]);
+  const sendVote = (votedUserId) => {
+    if (client && connected) {
+      const voteMessage = {
+        voterUserId: userId,
+        votedUserId: votedUserId,
+      };
+      client.publish({
+        destination: `/app/vote/${lobbyId}/sendVote`,
+        body: JSON.stringify(voteMessage),
+      });
+      setDraftMessage("");
+      setHasAlreadyVoted(true);
+    } else {
+      console.log("STOMP connection is not established.");
+    }
   };
 
   const startGame = () => {
@@ -169,10 +218,6 @@ const GameDemo = () => {
     }
   }
 
-  const clearGameLog = () => {
-    setGameLog([]);
-  };
-
   // this function is for demo and should be deleted.
   const setUserIdAndHide = () => {
     setUserId(userIdInput);
@@ -182,10 +227,11 @@ const GameDemo = () => {
 
   return (
     <div>
-      <h2>Game Demo</h2>
-
-      {/* This is for demo to set userId manually */}
-      {/* {!isUserIdSet && (
+      {/* This is for demo */}
+      <div>
+        <button onClick={startGame}>StartGame</button>
+      </div>
+      {!isUserIdSet && (
         <>
           <input
             type="number"
@@ -198,42 +244,87 @@ const GameDemo = () => {
       )}
       {isUserIdSet && (
         <div>Your userId is {userId}</div>
-      )} */}
-      <div>Your userId is {userId}</div>
+      )}
+      <hr/>
 
-      {/* Game log */}
+
+      <h2>Phase: {phase}</h2>
+      {/* Assigned word and role  */}
       <div>
-        <button onClick={startGame}>StartGame</button>
-        <button onClick={clearGameLog}>Clear Log</button>
+        {isWolf === null ? (
+          <></>
+        ) : isWolf ? (
+          <p>You are the wolf! Try to blend in.</p>
+        ) : (
+          <p>This round&apos;s word is: {word}</p>
+        )}
       </div>
-      <div>roundTimer: {roundTimer} seconds</div>
-      <div>clueTimer: {clueTimer} seconds</div>
-      <div>discussionTimer: {discussionTimer} seconds</div>
+      {/* Round Timer */}
       <div>
-        <h2>Log</h2>
-        <ul>
-          {gameLog.map((msg, index) => (
-            <li key={index}>{msg}</li>
+        {phase === "clue" && <p>Clue phase remaining:{roundTimer} seconds</p>}
+      </div>
+      {/* Clue Timer and input */}
+      <div>
+        {phase === "clue" && isCurrentPlayerTurn && (
+          <>
+            <p>Your clue turn remaining: {clueTimer} seconds</p>
+            <input
+              type="text"
+              value={draftMessage}
+              onChange={(e) => setDraftMessage(e.target.value)}
+              disabled={!isCurrentPlayerTurn}
+              onKeyPress={(e) => e.key === "Enter" && sendClue()}
+              placeholder="Type a clue..."
+              style={{ width: "80%", marginRight: "10px" }}
+            />
+            <button onClick={sendClue}>Send</button>
+          </>
+        )}
+      </div>
+      {/* Discussion Timer and Chat */}
+      {phase === "discussion" && (
+        <>
+          <p>Discussion phase remaining: {discussionTimer} seconds</p>
+          <input
+            type="text"
+            value={draftMessage}
+            onChange={(e) => setDraftMessage(e.target.value)}
+            onKeyPress={(e) => e.key === "Enter" && sendMessage()}
+            placeholder="Type a message..."
+            style={{ width: "80%", marginRight: "10px" }}
+          />
+          <button onClick={sendMessage}>Send</button>
+        </>
+      )}
+      {/* Voting button */}
+      {phase === "vote" && !hasAlreadyVoted && (
+        <div>
+          {players
+            .filter((player) => String(player.userId) !== String(userId))
+            .map((player) => (
+            <div key={player.userId}>
+              <p>{player.username}</p>
+              <button onClick={() => sendVote(player.userId)}>Vote</button>
+            </div>
           ))}
-        </ul>
-      </div>
-
-      {/* Chat */}
+        </div>
+      )}
+      {phase === "vote" && hasAlreadyVoted && (
+        <p>You have voted. Please wait for voting of other players.</p>
+      )}
+      {/* Clue and Chat log */}
+      <p>Clue log</p>
       <div id="messageList" style={{ height: "200px", overflowY: "scroll", marginBottom: "20px", border: "1px solid #ccc", padding: "10px" }}>
-        {chatMessages.map((msg, index) => (
-          <div key={index}>{msg.userId}: {msg.content}</div>
+        {clueMessages.map((msg, index) => (
+          <div key={index}>{msg.username}: {msg.content}</div>
         ))}
       </div>
-      <input
-        type="text"
-        value={draftMessage}
-        onChange={(e) => setDraftMessage(e.target.value)}
-        onKeyPress={(e) => e.key === "Enter" && sendMessage()}
-        placeholder="Type a message..."
-        style={{ width: "80%", marginRight: "10px" }}
-      />
-      <button onClick={sendMessage}>Send</button>
-      <button onClick={clearMessages}>Clear Chat</button>
+      <p>Discussion log</p>
+      <div id="messageList" style={{ height: "200px", overflowY: "scroll", marginBottom: "20px", border: "1px solid #ccc", padding: "10px" }}>
+        {chatMessages.map((msg, index) => (
+          <div key={index}>{msg.username}: {msg.content}</div>
+        ))}
+      </div>
 
     </div>
   );
