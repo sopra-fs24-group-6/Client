@@ -578,7 +578,7 @@
 // //     </div>
 // //   </div>
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { api, handleError } from "helpers/api";
 // import {
 //   subscribeToLobbyWebSocket,
@@ -608,7 +608,7 @@ const GameLobby = () => {
   //let isPublished = false;
 
   const [isPublished, setIsPublished] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(true);
   const [lobby, setLobby] = useState(null);
   const [admin, setAdmin] = useState(null);
   const [isPrivate, setIsPrivate] = useState(false);
@@ -629,12 +629,12 @@ const GameLobby = () => {
   const userId = localStorage.getItem("userId");
 
   useEffect(() => {
-    if (!isPublished) {
-      setIsAdmin(true);
+    if (admin) {
+      setIsAdmin(userId === admin);
     } else {
-      setIsAdmin(userId === lobby?.lobbyAdmin);
+      setIsAdmin(true);
     }
-  }, [isPublished, lobby, userId]);
+  }, [admin, userId]);
 
   // const [client, setClient] = useState(null);
   // const [connected, setConnected] = useState(false);
@@ -668,8 +668,9 @@ const GameLobby = () => {
   //   //   setChat(chat);
   //   // };
   //   //if(!isAdmin)
-  const handleLobbyUpdate = (lobby) => {
+  const lobbyCallback = useCallback((lobby) => {
     setLobby(lobby);
+    console.log(lobby.name);
     setName(lobby.name);
     setPassword(lobby.password);
     setPlayers(lobby.players);
@@ -681,7 +682,23 @@ const GameLobby = () => {
     setClueTimer(lobby.clueTimer);
     setDiscussionTimer(lobby.discussionTimer);
     setIsPrivate(lobby.isPrivate);
-  };
+  }, []);
+
+  // const lobbyCallback = (lobby) => {
+  //   setLobby(lobby);
+  //   console.log(lobby.name);
+  //   setName(lobby.name);
+  //   setPassword(lobby.password);
+  //   setPlayers(lobby.players);
+  //   setPlayerLimit(lobby.playerLimit);
+  //   setPlayerCount(lobby.playerCount);
+  //   setAvailableThemes(lobby.themes);
+  //   setRounds(lobby.rounds);
+  //   setRoundTimer(lobby.roundTimer);
+  //   setClueTimer(lobby.clueTimer);
+  //   setDiscussionTimer(lobby.discussionTimer);
+  //   setIsPrivate(lobby.isPrivate);
+  // }
 
   //   // const handleGameStart = (status) => {
   //   //   if (status === "startGame") {
@@ -689,21 +706,24 @@ const GameLobby = () => {
   //   //   }
   //   // };
 
-  const handlePlayer = (players) => {
+  const playerCallback = useCallback((data) => {
     setPlayers(players);
-  };
+  }, []);
+
+  // const playerCallback = (players) => {
+  //   setPlayers(players);
+  // }
 
   //   setSendMessage(
   //     subscribeToLobbyWebSocket(handleLobbyUpdate, handlePlayer)
   //     //subscribeToLobbyWebSocket(handleChat,handleLobbyUpdate, handleGameStart, handlePlayer)
   //   );
-  if (!isPublished) {
-    const { sendMessage, connected } = useLobbyWebSocket(
-      lobbyId,
-      handleLobbyUpdate,
-      handlePlayer
-    );
-  }
+  const { sendMessage, connected } = useLobbyWebSocket(
+    lobbyId,
+    lobbyCallback,
+    playerCallback
+  );
+
 
   useEffect(() => {
     if (isPublished && isAdmin) {
@@ -739,10 +759,12 @@ const GameLobby = () => {
         isPrivate,
       });
       const response = await api.post("/lobbies", requestBody);
-      const lobby = new Lobby(response.data);
-      setLobby(lobby);
+      const newlobby = new Lobby(response.data);
+      console.log(newlobby);
+      setLobby(newlobby);
       setLobbyId(lobby.id);
       setIsPublished(true);
+      setAdmin(lobby.host.id);
     } catch (error) {
       alert(
         `Something went wrong while creating the lobby: \n${handleError(error)}`
@@ -751,7 +773,6 @@ const GameLobby = () => {
   };
 
   const updateLobby = async () => {
-    console.log(lobbyId);
     try {
       const requestBody = JSON.stringify({
         name,
@@ -766,9 +787,8 @@ const GameLobby = () => {
         discussionTimer,
         isPrivate,
       });
+      console.log(requestBody);
       const response = await api.put("/lobbies/" + lobbyId, requestBody);
-      const updatedLobby = new Lobby(response.data);
-      setLobby(updatedLobby);
     } catch (error) {
       alert(
         `Something went wrong while updating the lobby: \n${handleError(error)}`
