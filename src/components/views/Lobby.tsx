@@ -54,11 +54,9 @@
 //     setIsAdmin(userId === lobby.lobbyAdmin);
 //   }
 
-
 //   const [client, setClient] = useState(null);
 //   const [connected, setConnected] = useState(false);
 //   const [lobbyId, setLobbyId] = useState(null);
-
 
 //   const lobbyTypeChanger = (value) => {
 //     setIsPrivate(value === "private");
@@ -580,7 +578,6 @@
 // //     </div>
 // //   </div>
 
-
 import React, { useState, useEffect } from "react";
 import { api, handleError } from "helpers/api";
 // import {
@@ -602,7 +599,6 @@ import Slider from "../ui/Slider";
 import CustomButton from "../ui/CustomButton";
 import ThemePopUp from "components/ui/ThemePopUp";
 import { useLobbyWebSocket } from "helpers/LobbyWebSocketManager";
-
 
 // import { Client } from "@stomp/stompjs";
 // import { getBrokerURL } from "helpers/getBrokerURL"
@@ -627,23 +623,22 @@ const GameLobby = () => {
   const [clueTimer, setClueTimer] = useState(10);
   const [discussionTimer, setDiscussionTimer] = useState(60);
   const [chat, setChat] = useState([]);
-  const [sendMessage, setSendMessage] = useState(null);
   const [availableThemes, setAvailableThemes] = useState([]);
   const [selectedThemes, setSelectedThemes] = useState([]);
   const [showThemePopUp, setShowThemePopUp] = useState(false);
   const userId = localStorage.getItem("userId");
 
-  if (!isPublished) {
-    setIsAdmin(true);
-  } else {
-    setIsAdmin(userId === lobby.lobbyAdmin);
-  }
-
+  useEffect(() => {
+    if (!isPublished) {
+      setIsAdmin(true);
+    } else {
+      setIsAdmin(userId === lobby?.lobbyAdmin);
+    }
+  }, [isPublished, lobby, userId]);
 
   // const [client, setClient] = useState(null);
   // const [connected, setConnected] = useState(false);
   const [lobbyId, setLobbyId] = useState(null);
-
 
   const lobbyTypeChanger = (value) => {
     setIsPrivate(value === "private");
@@ -702,14 +697,13 @@ const GameLobby = () => {
   //     subscribeToLobbyWebSocket(handleLobbyUpdate, handlePlayer)
   //     //subscribeToLobbyWebSocket(handleChat,handleLobbyUpdate, handleGameStart, handlePlayer)
   //   );
-  if (isPublished) {
+  if (!isPublished) {
     const { sendMessage, connected } = useLobbyWebSocket(
       lobbyId,
       handleLobbyUpdate,
       handlePlayer
     );
-  };
-
+  }
 
   useEffect(() => {
     if (isPublished && isAdmin) {
@@ -726,7 +720,7 @@ const GameLobby = () => {
     roundTimer,
     clueTimer,
     discussionTimer,
-    isPrivate
+    isPrivate,
   ]);
 
   const createLobby = async () => {
@@ -742,7 +736,7 @@ const GameLobby = () => {
         roundTimer,
         clueTimer,
         discussionTimer,
-        isPrivate
+        isPrivate,
       });
       const response = await api.post("/lobbies", requestBody);
       const lobby = new Lobby(response.data);
@@ -765,12 +759,12 @@ const GameLobby = () => {
         players,
         playerLimit,
         playerCount,
-        selectedThemes,
+        //selectedThemes,
         rounds,
         roundTimer,
         clueTimer,
         discussionTimer,
-        isPrivate
+        isPrivate,
       });
       const response = await api.put("/lobbies/" + lobbyId, requestBody);
       const updatedLobby = new Lobby(response.data);
@@ -985,7 +979,8 @@ const GameLobby = () => {
               </div>
               <div className="Space Flex">
                 <label>Themes:</label>
-                <button onClick={() => setShowThemePopUp(true)}
+                <button
+                  onClick={() => setShowThemePopUp(true)}
                   disabled={!isAdmin || availableThemes.length === 0}
                 >
                   Select Themes
