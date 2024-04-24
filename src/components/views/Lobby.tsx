@@ -668,6 +668,10 @@ const GameLobby = () => {
   //   //   setChat(chat);
   //   // };
   //   //if(!isAdmin)
+  const startGameCallback = useCallback(() => {
+    navigate("/game/" + lobbyId);
+  }, []);
+
   const lobbyCallback = useCallback((lobby) => {
     setLobby(lobby);
     console.log(lobby.name);
@@ -720,10 +724,10 @@ const GameLobby = () => {
   //   );
   const { sendMessage, connected } = useLobbyWebSocket(
     lobbyId,
+    startGameCallback,
     lobbyCallback,
     playerCallback
   );
-
 
   useEffect(() => {
     if (isPublished && isAdmin) {
@@ -762,9 +766,9 @@ const GameLobby = () => {
       const newlobby = new Lobby(response.data);
       console.log(newlobby);
       setLobby(newlobby);
-      setLobbyId(lobby.id);
+      setLobbyId(newlobby.id);
       setIsPublished(true);
-      setAdmin(lobby.host.id);
+      setAdmin(newlobby.host.id);
     } catch (error) {
       alert(
         `Something went wrong while creating the lobby: \n${handleError(error)}`
@@ -814,7 +818,7 @@ const GameLobby = () => {
 
   const startGame = async () => {
     try {
-      await api.post("/games", lobby);
+      await api.post("/lobbies/" + lobbyId + "/startGame");
     } catch (error) {
       alert(
         `Something went wrong when trying to start the game: \n${handleError(
