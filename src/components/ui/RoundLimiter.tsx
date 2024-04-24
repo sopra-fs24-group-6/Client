@@ -13,6 +13,7 @@ const RoundLimiter: React.FC<LimiterProps> = ({
     const selectedValue = parseInt(e.target.value);
     onRoundLimitChange(selectedValue);
   };
+  
   return (
     <select
       className="Round-limit-selector"
