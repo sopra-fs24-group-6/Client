@@ -33,7 +33,7 @@ const Menu = () => {
             <CustomButton
               text="Create Lobby"
               className="w25 hover-green"
-              onClick={() => navigate("/lobby")}
+              onClick={() => navigate("/lobby", { state: { isAdmin: true } })}
             />
             <CustomButton
               text="Game Browser"

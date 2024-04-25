@@ -54,7 +54,7 @@ const Browser = () => {
       await api.post("/lobbies/" + selectedLobby.id + "/players", { userId });
       // navigate("/lobbies/" + selectedLobby.id);
       //For testing purposes
-      navigate("/lobby")
+      navigate(`/lobby/${selectedLobby.id}`, { state: { isAdmin: false } })
     } else {
       setPasswordPrompt(true);
     }
@@ -66,7 +66,7 @@ const Browser = () => {
       // const userId = localStorage.getItem("id");
       const userId = "3"; // ***This is for test***
       await api.post("/lobbies/" + selectedLobby.id + "/players", { userId });
-      navigate("/lobbies/" + selectedLobby.id);
+      navigate(`/lobby/${selectedLobby.id}`, { state: { isAdmin: false } });
     } catch (error) {
       alert(
         `Something went wrong during the authentifiation: \n${handleError(
