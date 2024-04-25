@@ -28,7 +28,8 @@ const GameLobby = () => {
   const [lobby, setLobby] = useState("test");
 
   const { lobbyId: urlLobbyId } = useParams();
-  const [lobbyId, setLobbyId] = useState("test");
+  
+  const [lobbyId, setLobbyId] = useState(null);
 
   const [isPrivate, setIsPrivate] = useState(false);
   const [name, setName] = useState("");
@@ -44,13 +45,12 @@ const GameLobby = () => {
   const [selectedThemes, setSelectedThemes] = useState([]);
   const [showThemePopUp, setShowThemePopUp] = useState(false);
   const userId = localStorage.getItem("userId");
-  //const [gameId, setGameId] = useState();
+
+  const [shouldActivateWebSocket, setShouldActivateWebSocket] = useState(false);
 
   const lobbyTypeChanger = (value) => {
     setIsPrivate(value === "private");
   };
-
-  //const { lobbyId } = useParams();
 
   useEffect(() => {
     setIsAdmin(location.state?.isAdmin || false);
@@ -59,6 +59,33 @@ const GameLobby = () => {
       setLobbyId(urlLobbyId);
     }
   }, [location.state?.isAdmin, urlLobbyId]);
+
+  const createLobby = async () => {
+    const requestBody = {
+      lobbyAdmin: userId,
+      name,
+      password,
+      playerLimit,
+      selectedThemes,
+      rounds,
+      roundTimer,
+      clueTimer,
+      discussionTimer,
+      isPrivate,
+    };
+
+    try {
+      const response = await api.post("/lobbies", requestBody);
+      const newLobby = response.data;
+      setLobby(newLobby);
+      setLobbyId(newLobby.id);
+      localStorage.setItem("lobbyID", newLobby.id);
+      setIsPublished(true);
+      setShouldActivateWebSocket(true);
+    } catch (error) {
+      alert(`Something went wrong while creating the lobby: \n${handleError(error)}`);
+    }
+  };
 
   //   // const fetchStandardLobby = async () => {
   //   //   try {
@@ -85,11 +112,6 @@ const GameLobby = () => {
   //   // };
   //   //if(!isAdmin)
 
-  const startGameCallback = useCallback(() => {
-    //const gameId = localStorage.getItem("lobbyId");
-    navigate("/game/" + lobbyId);
-  }, []);
-
   const lobbyCallback = useCallback((newLobby) => {
     setLobbyId(newLobby.id);
     setName(newLobby.name);
@@ -103,13 +125,17 @@ const GameLobby = () => {
     setClueTimer(newLobby.clueTimer);
     setDiscussionTimer(newLobby.discussionTimer);
     setIsPrivate(newLobby.isPrivate);
-    console.log("lobbyID lobbycallback", lobbyId)
-    console.log("lobby.id lobbycallback", lobby.id)
-  }, []);
+  }, [lobby]);
 
   const playerCallback = useCallback((newPlayers) => {
     setPlayers(newPlayers);
-  }, []);
+  }, [lobby]);
+
+  const startGameCallback = useCallback(() => {
+    //const gameId = localStorage.getItem("lobbyId");
+    console.log("check", lobbyId)
+    navigate("/game/" + lobby.id);
+  }, [lobby]);
 
   //   setSendMessage(
   //     subscribeToLobbyWebSocket(handleLobbyUpdate, handlePlayer)
@@ -117,9 +143,11 @@ const GameLobby = () => {
   //   );
   const { sendMessage, connected, client } = useLobbyWebSocket(
     lobbyId,
+    shouldActivateWebSocket,
     startGameCallback,
     lobbyCallback,
     playerCallback,
+    userId,
   );
 
   // useEffect(() => {
@@ -139,37 +167,6 @@ const GameLobby = () => {
   //   discussionTimer,
   //   isPrivate,
   // ]);
-
-  const createLobby = async () => {
-    const requestBody = {
-      lobbyAdmin: userId,
-      name,
-      password,
-      playerLimit,
-      selectedThemes,
-      rounds,
-      roundTimer,
-      clueTimer,
-      discussionTimer,
-      isPrivate,
-    };
-
-    try {
-      const response = await api.post("/lobbies", requestBody);
-      const newLobby = response.data;
-      console.log("newLobby:", newLobby);
-      setLobby(newLobby);
-      setLobbyId(newLobby.id);
-      localStorage.setItem("lobbyID", newLobby.id);
-      //setGameId(newLobby.id);
-      setIsPublished(true);
-      //console.log("ID", gameId);
-      console.log("ID2", lobbyId);
-      console.log("Lobby:", lobby);
-    } catch (error) {
-      alert(`Something went wrong while creating the lobby: \n${handleError(error)}`);
-    }
-  };
 
   const updateLobby = async () => {
     if (!lobbyId) return;
@@ -221,7 +218,6 @@ const GameLobby = () => {
   };
 
   const startGame = () => {
-    //const gameId = localStorage.getItem("lobbyId");
     if (client && connected) {
       client.publish({
         destination: `/app/startGame`,

@@ -4,23 +4,32 @@ import { getBrokerURL } from "helpers/getBrokerURL";
 
 export const useLobbyWebSocket = (
   lobbyId,
+  shouldActivateWebSocket,
   startGameCallback,
   lobbyCallback,
-  playerCallback
+  playerCallback,
+  userId,
 ) => {
   const [client, setClient] = useState(null);
   const [connected, setConnected] = useState(false);
   const subscriptions = useRef([]);
 
   useEffect(() => {
-    if (!lobbyId || client) return;
+    if (!shouldActivateWebSocket || !lobbyId || client) return;
 
     const stompClient = new Client({
       brokerURL: getBrokerURL(),
+      connectHeaders: {
+        userId,
+      },
       onConnect: () => {
         console.log("Connected to WebSocket");
         setConnected(true);
         subscribeToChannels(stompClient);
+      },
+      onDisconnect: () => {
+        console.log("Disconnected from WebSocket");
+        setConnected(false);
       },
       onStompError: (frame) => {
         console.error("Broker reported error:", frame.headers["message"]);
@@ -34,14 +43,13 @@ export const useLobbyWebSocket = (
 
     return () => {
       console.log("Deactivating WebSocket client");
-      // Unsubscribe from all subscriptions
       subscriptions.current.forEach((sub) => sub.unsubscribe());
-      subscriptions.current = []; // Clear the array of subscriptions
+      subscriptions.current = [];
       stompClient.deactivate();
-      setClient(null); // Clear the client on cleanup
+      setClient(null);
       setConnected(false);
     };
-  }, [lobbyId]);
+  }, [lobbyId, userId, shouldActivateWebSocket]);
 
   const subscribeToChannels = (clientInstance) => {
     console.log(`Subscribing to channels for lobbyId: ${lobbyId}`);
@@ -89,9 +97,7 @@ export const useLobbyWebSocket = (
       console.log(`Sending message to ${destination}:`, message);
       client.publish({ destination, body: JSON.stringify(message) });
     } else {
-      console.log(
-        "Cannot send message, client not connected or not available."
-      );
+      console.log("Cannot send message, client not connected or not available.");
     }
   };
 
