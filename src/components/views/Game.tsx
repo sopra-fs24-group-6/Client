@@ -1,6 +1,6 @@
-
-import React, { useEffect, useState } from "react";
-import { subscribeToGameWebSocket } from "../../helpers/GameWebSocketManager.js";
+import React, { useEffect, useState, useCallback } from "react";
+//import { subscribeToGameWebSocket } from "../../helpers/GameWebSocketManager.js";
+import { useGameWebSocket } from "helpers/GameWebSocketManager";
 import { User } from "types";
 import { api, handleError } from "helpers/api";
 import ClueOverlay from "../ui/ClueOverlay";
@@ -8,8 +8,8 @@ import ClueOverlay from "../ui/ClueOverlay";
 
 const Game = () => {
   const [phase, setPhase] = useState<string>("");
-  const [words, setWords] = useState([]); //needed with every rounstart hook
-  const [wolf, setWolf] = useState<User>(null); //needed with every rounstart hook
+  const [word, setWord] = useState(""); //needed with every rounstart hook
+  const [isWolf, setIsWolf] = useState(false);
   const [round, setRound] = useState(1); // needed with every roundstart hook
   const [isCurrentPlayerTurn, setIsCurrentPlayerTurn] = useState(false);
   const [chat, setChat] = useState([]);
@@ -20,77 +20,86 @@ const Game = () => {
   const [clue, setClue] = useState("");
   const [draftMessage, setDraftMessage] = useState("");
   const [players, setPlayers] = useState([]);
-  const [sendMessage, setSendMessage] = useState(null);
+  //const [sendMessage, setSendMessage] = useState(null);
   const player = localStorage.getItem("userId");
   const lobbyId = localStorage.getItem("lobbyId");
+  const userId = localStorage.getItem("userId");
 
-  const isWolf = (player) => {
-    return wolf.id === player;
-  };
+  const playersCallback = useCallback((players) => {
+    console.log("playerCallback", players);
+    setPlayers(players);
+  }, [])
 
-  useEffect(() => {
-    const handlePlayers = (players) => {
-      setPlayers(players);
-    };
-    const handlePhase = (phase) => {
-      setPhase(phase);
-    };
-    const handleChat = (chat) => {
-      setChat(chat);
-    };
+  const phaseCallback = useCallback((phase) => {
+    console.log("phaseCallback", phase);
+    setPhase(phase);
+  }, [])
 
-    const handleClue = (clue) => {
-      setClue(clue);
-    };
-
-    const handleTurn = (turn) => {
-      setIsCurrentPlayerTurn(turn === player);
-    };
-
-    const handleRoundTimer = (roundTimer) => {
-      setRoundTimer(roundTimer);
-    };
-
-    const handleClueTimer = (clueTimer) => {
-      setClueTimer(clueTimer);
-    };
-
-    const handleDiscussionTimer = (discussionTimer) => {
-      setDiscussionTimer(discussionTimer);
-    };
-
-    const handleVoteTimer = (voteTimer) => {
-      setVoteTimer(voteTimer);
-    };
-
-    setSendMessage(
-      subscribeToGameWebSocket(
-        player,
-        lobbyId,
-        handlePlayers,
-        handlePhase,
-        handleChat,
-        handleClue,
-        handleTurn,
-        handleRoundTimer,
-        handleClueTimer,
-        handleDiscussionTimer,
-        handleVoteTimer
-      )
-    );
+  const wordCallback = useCallback((word) => {
+    console.log("WordCallback", word);
+    if(!word) {
+        setIsWolf(true);
+        setWord("");
+    } else {
+    setWord(word);
+    setIsWolf(false);
+}
   }, []);
+
+  const turnCallback = useCallback((turn) => {
+    console.log("turnCallback", turn);
+    setIsCurrentPlayerTurn(turn === player);
+  }, []);
+
+  const roundTimerCallback = useCallback((roundTimer) => {
+    console.log("roundTimer", roundTimer);
+    setRoundTimer(roundTimer);
+  }, []);
+
+  const clueTimerCallback = useCallback((clueTimer) => {
+    console.log("clueTimer", clueTimer);
+    setClueTimer(clueTimer);
+  }, []);
+
+  const discussionTimerCallback = useCallback((timer) => {
+    console.log("discussionTimer", timer);
+    setDiscussionTimer(timer)
+  }, []);
+
+  // const roleAssignedCallback = useCallback(() => {
+  //   ()
+  // }, []);
+
+  const {
+    sendMessage,
+    connected,
+    chatMessages
+  } = useGameWebSocket(
+    userId,
+    lobbyId,
+    playersCallback,
+    phaseCallback,
+    //chatCallback,
+    wordCallback,
+    turnCallback,
+    roundTimerCallback,
+    clueTimerCallback,
+    discussionTimerCallback,
+    //voteTimerCallback
+    //roleAssignedCallback,
+  );
 
   return (
     <div>
-      <h2>Phase: {phase}</h2>
+      {/* <h2>Phase: {phase}</h2>
       {phase === "clue" && (
-        <ClueOverlay isWolf={isWolf(player)} words={words} round={round} />
-      )}
+        <ClueOverlay isWolf={isWolf(player)} word={word} round={round} />
+      )} */}
       <div>
         {isWolf ? (
           <p>You are the wolf! Try to blend in.</p>
         ) : (
-          <p>This round&apos;s word is: {clue}</p>
+          <p>This round&apos;s word is: {word}</p>
         )}
       </div>
       <div>

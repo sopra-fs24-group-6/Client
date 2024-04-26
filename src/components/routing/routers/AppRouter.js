@@ -40,10 +40,11 @@ const AppRouter = () => {
         <Route path="/menu" element={<Menu />} />
           
         <Route path="/lobby" element={<Lobby />} />
+        <Route path="/lobby/:lobbyId" element={<Lobby />} />
 
         <Route path="/browser" element={<Browser />} />
 
-        <Route path="/game/:lobbyId" element={<Game />} />
+        <Route path="/game/:lobbyId" element={<GameDemo />} />
 
         <Route path="/demo" element={<GameDemo />} />
 

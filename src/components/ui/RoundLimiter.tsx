@@ -2,11 +2,13 @@ import React from "react";
 
 interface LimiterProps {
   disabled?: boolean;
+  value: number;
   onRoundLimitChange: (value: number) => void;
 }
 
 const RoundLimiter: React.FC<LimiterProps> = ({
   disabled,
+  value,
   onRoundLimitChange,
 }) => {
   const handleRoundLimitChange = (e) => {
@@ -17,6 +19,7 @@ const RoundLimiter: React.FC<LimiterProps> = ({
   return (
     <select
       className="Round-limit-selector"
+      value={value}
       disabled={disabled}
       onChange={handleRoundLimitChange}
     >

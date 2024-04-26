@@ -18,12 +18,15 @@ const GameDemo = () => {
   const [players, setPlayers] = useState([]);
   const [hasAlreadyVoted, setHasAlreadyVoted] = useState(false);
   const [gameResult, setGameResult] = useState(null);
+  const lobbyId = localStorage.getItem("lobbyId");
+  const userId = localStorage.getItem("userId");
 
   // these settings are for demo. userId and lobbyId should be set appropriately.
-  const [userId, setUserId] = useState("");
-  const [userIdInput, setUserIdInput] = useState("");
-  const [isUserIdSet, setIsUserIdSet] = useState(false);
-  const lobbyId = "1";
+  // const [userId, setUserId] = useState("");
+  // const [userIdInput, setUserIdInput] = useState("");
+  // const [isUserIdSet, setIsUserIdSet] = useState(false);
+  // const lobbyId = "1";
+
 
 
   /**
@@ -53,6 +56,8 @@ const GameDemo = () => {
       connectHeaders: { userId },
       onConnect: () => {
         console.log("Connected");
+        console.log(lobbyId);
+        console.log(userId);
         setConnected(true);
 
         // subscribe game events
@@ -212,45 +217,45 @@ const GameDemo = () => {
     }
   };
 
-  const startGame = () => {
-    if (client && connected) {
-      client.publish({
-        destination: "/app/startGame",
-        body: JSON.stringify({ lobbyId, userId }),
-      });
-    } else {
-      console.log("STOMP connection is not established.");
-    }
-  }
+  // const startGame = () => {
+  //   if (client && connected) {
+  //     client.publish({
+  //       destination: "/app/startGame",
+  //       body: JSON.stringify({ lobbyId, userId }),
+  //     });
+  //   } else {
+  //     console.log("STOMP connection is not established.");
+  //   }
+  // }
 
   // this function is for demo and should be deleted.
-  const setUserIdAndHide = () => {
-    setUserId(userIdInput);
-    setIsUserIdSet(true);
-  };
+  // const setUserIdAndHide = () => {
+  //   setUserId(userIdInput);
+  //   setIsUserIdSet(true);
+  // };
 
 
   return (
     <div>
       {/* This is for demo to set userId manually */}
-      <div>
-        <button onClick={startGame}>StartGame</button>
-      </div>
-      {!isUserIdSet && (
-        <>
-          <input
-            type="number"
-            value={userIdInput}
-            onChange={(e) => setUserIdInput(e.target.value)}
-            placeholder="Enter your userId..."
-          />
-          <button onClick={setUserIdAndHide}>Set UserId</button>
-        </>
-      )}
-      {isUserIdSet && (
-        <div>Your userId is {userId}</div>
-      )}
-      <hr/>
+      {/*<div>*/}
+      {/*  <button onClick={startGame}>StartGame</button>*/}
+      {/*</div>*/}
+      {/*{!isUserIdSet && (*/}
+      {/*  <>*/}
+      {/*    <input*/}
+      {/*      type="number"*/}
+      {/*      value={userIdInput}*/}
+      {/*      onChange={(e) => setUserIdInput(e.target.value)}*/}
+      {/*      placeholder="Enter your userId..."*/}
+      {/*    />*/}
+      {/*    <button onClick={setUserIdAndHide}>Set UserId</button>*/}
+      {/*  </>*/}
+      {/*)}*/}
+      {/*{isUserIdSet && (*/}
+      {/*  <div>Your userId is {userId}</div>*/}
+      {/*)}*/}
+      {/*<hr/>*/}
 
       {/* Display phase */}
       <h2>Phase: {phase}</h2>

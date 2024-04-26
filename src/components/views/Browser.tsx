@@ -46,10 +46,14 @@ const Browser = () => {
   };
   const joinLobby = async (selectedLobby) => {
     setSelectedLobby(selectedLobby);
-    const userId = localStorage.getItem("id");
+    // const userId = localStorage.getItem("id");
+    // const userId = "2"; // ***This is for test***
+    const userId = localStorage.getItem('userId') // ***For Testing purposes***
     if (!selectedLobby.password) {
       await api.post("/lobbies/" + selectedLobby.id + "/players", { userId });
-      navigate("/lobbies/" + selectedLobby.id);
+      // navigate("/lobbies/" + selectedLobby.id);
+      //For testing purposes
+      navigate(`/lobby/${selectedLobby.id}`, { state: { isAdmin: false } })
     } else {
       setPasswordPrompt(true);
     }
@@ -58,9 +62,10 @@ const Browser = () => {
   const passwordSubmit = async () => {
     try {
       await api.post("/lobbies/" + selectedLobby.id + "/authentication", { password });
-      const userId = localStorage.getItem("id");
+      // const userId = localStorage.getItem("id");
+      const userId = "3"; // ***This is for test***
       await api.post("/lobbies/" + selectedLobby.id + "/players", { userId });
-      navigate("/lobbies/" + selectedLobby.id);
+      navigate(`/lobby/${selectedLobby.id}`, { state: { isAdmin: false } });
     } catch (error) {
       alert(
         `Something went wrong during the authentifiation: \n${handleError(
@@ -93,13 +98,21 @@ const Browser = () => {
               <tbody>
                 {lobbies.map((lobby) => (
                   <tr key={lobby.id}>
-                    <td className="browser-items">{lobby.name}</td>
+                    <td className="browser-items">
+                      {lobby.name}
+                    </td>
                     <td className="browser-items">
                       {lobby.password ? "Private" : "Public"}
                     </td>
-                    <td className="browser-items">{lobby.players.length}</td>
-                    <td className="browser-items">{lobby.playerLimit}</td>
-                    <td className="browser-items">{lobby.themes.join(", ")}</td>
+                    <td className="browser-items">
+                      {lobby.players.length}
+                    </td>
+                    <td className="browser-items">
+                      {lobby.playerLimit}
+                    </td>
+                    <td className="browser-items">
+                      {lobby.themes.join(", ")}
+                    </td>
                     <td className="browser-items">
                       <CustomButton
                         text="Join"
@@ -141,89 +154,3 @@ const Browser = () => {
 };
 
 export default Browser;
-
-// <BaseContainer>
-//   <h2 style={{ textAlign: "center", margin: "20px 0" }}>Lobby Browser</h2>
-//   <table style={{ margin: "0 auto", textAlign: "center" }}>
-//     <thead>
-//       <tr>
-//         <th style={{ width: "auto", padding: "10px", textAlign: "center" }}>
-//           Lobby Name
-//         </th>
-//         <th style={{ width: "auto", padding: "10px", textAlign: "center" }}>
-//           Lobby Type
-//         </th>
-//         <th style={{ width: "auto", padding: "10px", textAlign: "center" }}>
-//           Players
-//         </th>
-//         <th style={{ width: "auto", padding: "10px", textAlign: "center" }}>
-//           Player Limit
-//         </th>
-//         <th style={{ width: "auto", padding: "10px", textAlign: "center" }}>
-//           Themes
-//         </th>
-//         <th
-//           style={{ width: "auto", padding: "10px", textAlign: "center" }}
-//         ></th>
-//       </tr>
-//     </thead>
-//     <tbody>
-//       {lobbies.map((lobby) => (
-//         <tr key={lobby.id}>
-//           <td style={{ padding: "10px", textAlign: "center" }}>
-//             {lobby.name}
-//           </td>
-//           <td style={{ padding: "10px", textAlign: "center" }}>
-//             {lobby.password ? "Private" : "Public"}
-//           </td>
-//           <td style={{ padding: "10px", textAlign: "center" }}>
-//             {lobby.players.length}
-//           </td>
-//           <td style={{ padding: "10px", textAlign: "center" }}>
-//             {lobby.playerLimit}
-//           </td>
-//           <td style={{ padding: "10px", textAlign: "center" }}>
-//             {lobby.themes.join(", ")}
-//           </td>
-//           <td style={{ padding: "10px", textAlign: "center" }}>
-//             <CustomButton
-//               text="Join"
-//               className="small w100 hover-green"
-//               onClick={() => joinLobby(lobby)}
-//             ></CustomButton>
-//           </td>
-//         </tr>
-//       ))}
-//     </tbody>
-//   </table>
-//   <div style={{ textAlign: "center", margin: "20px auto" }}>
-//     <CustomButton
-//       text="Refresh"
-//       className="small w100 hover-green"
-//       onClick={getLobbies}
-//     ></CustomButton>
-//   </div>
-//   {/* Password Prompt Popup */}
-//   {passwordPrompt && (
-//     <div className="popup-container">
-//       <div className="popup">
-//         <input
-//           type="password"
-//           placeholder="Enter lobby password"
-//           value={password}
-//           onChange={(e) => setPassword(e.target.value)}
-//         />
-//         <CustomButton
-//           text="Submit"
-//           className="small w100 hover-green"
-//           onClick={passwordSubmit}
-//         ></CustomButton>
-//         <CustomButton
-//           text="Cancel"
-//           className="small w100 hover-red"
-//           onClick={() => setPasswordPrompt(false)}
-//         ></CustomButton>
-//       </div>
-//     </div>
-//   )}
-// </BaseContainer>
