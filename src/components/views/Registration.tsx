@@ -8,6 +8,7 @@ import NESContainerW from "../ui/NESContainerW";
 import CustomButton from "../ui/CustomButton";
 import languages from 'helpers/languages.json';
 import "../../styles/ui/AppBody.scss";
+import Button from "../ui/Button";
 
 const Registration = () => {
   const navigate = useNavigate();

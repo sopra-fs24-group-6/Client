@@ -7,6 +7,7 @@ import NesContainer from "../ui/NESContainer";
 import NESContainerW from "../ui/NESContainerW";
 import CustomButton from "../ui/CustomButton";
 import "../../styles/ui/AppBody.scss";
+import Button from "../ui/Button";
 
 
 /*
@@ -82,8 +83,8 @@ const Login = () => {
             text="Login"
             className="w55 hover-green"
             disabled={!username || !password}
-            onClick={() => doLogin()}>
-          </CustomButton>
+            onClick={() => doLogin()}
+          />
           <div className="Space">
             <div className="register-text2">
               Don&apos;t have an account yet?
