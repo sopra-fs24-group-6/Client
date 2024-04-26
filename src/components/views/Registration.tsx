@@ -91,8 +91,8 @@ const Registration = () => {
           </div>
           <CustomButton
             text="Register"
-            disabled={!username || !password}
             className="w55 hover-green"
+            disabled={!username || !password}
             onClick={() => doRegistration()}
           />
         </NESContainerW>
