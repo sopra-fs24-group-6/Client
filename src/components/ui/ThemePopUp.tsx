@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../../styles/ui/ThemePopUp.scss";
 
 interface ThemePopUpProps {
@@ -15,6 +15,10 @@ const ThemePopUp: React.FC<ThemePopUpProps> = ({
   onClose,
 }) => {
   const [selectedThemes, setSelectedThemes] = useState<string[]>(initialSelectedThemes);
+
+  useEffect(() => {
+    setSelectedThemes(initialSelectedThemes);
+  }, [initialSelectedThemes]);
 
   const toggle = (theme: string) => {
     setSelectedThemes((prevSelectedThemes) => {

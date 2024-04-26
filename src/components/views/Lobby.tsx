@@ -50,27 +50,25 @@ const GameLobby = () => {
     setIsPrivate(value === "private");
   };
 
+  useEffect(() => {
+    // This will run after selectedThemes has been updated.
+    console.log("selectedThemes has been updated", selectedThemes);
+  }, [selectedThemes]);
+
 //   useEffect(() => {
-//   const fetchStandardLobby = async () => {
+//   const fetchThemes = async () => {
 //     try {
-//       const response = await api.get('/lobbies/' + lobbyId);
-//       const lobby = response.data;
-//       setLobby(lobby);
-//       console.log("What is fetched",lobby);
-//       setAvailableThemes(lobby.themes);
-//       setRounds(lobby.rounds);
-//       setRoundTimer(lobby.roundTimer);
-//       setClueTimer(lobby.clueTimer);
-//       setDiscussionTimer(lobby.discussionTimer);
-//       setPlayerLimit(lobby.playerLimit);
-//       setPlayers(lobby.players);
-//       setPlayerCount(lobby.playerCount);
+//       const response = await api.get('/themes');
+//       const themes = response.data;
+//       setAvailableThemes(themes);
+//       //setSelectedThemes(themes);
+//       console.log("What is fetched",themes);
 //     } catch (error) {
-//       console.error(`Failed to fetch standard lobby: ${handleError(error)}`);
+//       console.error(`Failed to fetch themes: ${handleError(error)}`);
 //     }
 //   };
-//   fetchStandardLobby();
-// },[lobby]);
+//   fetchThemes();
+// },[]);
 
   useEffect(() => {
     setIsAdmin(location.state?.isAdmin || false);
@@ -80,30 +78,66 @@ const GameLobby = () => {
     }
   }, [location.state?.isAdmin, urlLobbyId]);
 
-  const createLobby = async () => {
-    const requestBody = {
-      lobbyAdmin: userId,
-      name,
-      password,
-      playerLimit,
-      selectedThemes,
-      rounds,
-      roundTimer,
-      clueTimer,
-      discussionTimer,
-      isPrivate,
-    };
 
+  const createLobby = async () => {
     try {
-      const response = await api.post("/lobbies", requestBody);
-      const newLobby = response.data;
+      // Fetch themes first
+      const themesResponse = await api.get('/themes');
+      const themes = themesResponse.data;
+      setAvailableThemes(themes);
+      setSelectedThemes(themes);
+  
+      const requestBody = {
+        lobbyAdmin: userId,
+        name,
+        password,
+        playerLimit,
+        //availableThemes,
+        selectedThemes,
+        rounds,
+        roundTimer,
+        clueTimer,
+        discussionTimer,
+        isPrivate,
+      };
+  
+      const lobbyResponse = await api.post("/lobbies", requestBody);
+      const newLobby = lobbyResponse.data;
       setLobby(newLobby);
+      console.log("themes on creation", newLobby.themes);
       setLobbyId(newLobby.id);
       setIsPublished(true);
     } catch (error) {
-      alert(`Something went wrong while creating the lobby: \n${handleError(error)}`);
+      alert(`Something went wrong: \n${handleError(error)}`);
     }
   };
+  
+
+  // const createLobby = async () => {
+  //   const requestBody = {
+  //     lobbyAdmin: userId,
+  //     name,
+  //     password,
+  //     playerLimit,
+  //     selectedThemes,
+  //     rounds,
+  //     roundTimer,
+  //     clueTimer,
+  //     discussionTimer,
+  //     isPrivate,
+  //   };
+
+  //   try {
+  //     const response = await api.post("/lobbies", requestBody);
+  //     const newLobby = response.data;
+  //     setLobby(newLobby);
+  //     console.log("themes on creation", newLobby.themes);
+  //     setLobbyId(newLobby.id);
+  //     setIsPublished(true);
+  //   } catch (error) {
+  //     alert(`Something went wrong while creating the lobby: \n${handleError(error)}`);
+  //   }
+  // };
 
     // const fetchStandardLobby = async () => {
     //   try {
@@ -138,13 +172,15 @@ const GameLobby = () => {
     setPlayers(newLobby.players);
     setPlayerLimit(newLobby.playerLimit);
     setPlayerCount(newLobby.playerCount);
-    setAvailableThemes(newLobby.themes);
+    //setAvailableThemes(availableThemes);
+    setSelectedThemes(newLobby.themes);
     setRounds(newLobby.rounds);
     setRoundTimer(newLobby.roundTimer);
     setClueTimer(newLobby.clueTimer);
     setDiscussionTimer(newLobby.discussionTimer);
     setIsPrivate(newLobby.isPrivate);
-  }, []);
+    console.log("Themes on update", newLobby.themes)
+  }, [selectedThemes]);
 
   const playerCallback = useCallback((newPlayers) => {
     setPlayers(newPlayers);
@@ -200,7 +236,9 @@ const GameLobby = () => {
       clueTimer,
       discussionTimer,
       isPrivate,
+      selectedThemes
     };
+    console.log("Update method log", selectedThemes);
 
     try {
       await api.put(`/lobbies/${lobbyId}`, requestBody);
