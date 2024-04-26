@@ -52,7 +52,7 @@ export const useLobbyWebSocket = (
 
   const subscribeToChannels = (clientInstance) => {
     console.log(`Subscribing to channels for lobbyId: ${lobbyId}`);
-
+    
     const gameEventsSub = clientInstance.subscribe(
       `/topic/${lobbyId}/gameEvents`,
       (message) => {

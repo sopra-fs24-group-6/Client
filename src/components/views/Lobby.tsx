@@ -377,7 +377,7 @@ const GameLobby = () => {
               <div className="Space Flex">
                 <label>Round Timer:</label>
                 <Slider
-                  min={60}
+                  min={5}
                   max={120}
                   step={10}
                   value={roundTimer}
@@ -388,7 +388,7 @@ const GameLobby = () => {
               <div className="Space Flex">
                 <label>Clue Timer:</label>
                 <Slider
-                  min={10}
+                  min={5}
                   max={120}
                   step={10}
                   value={clueTimer}
@@ -399,7 +399,7 @@ const GameLobby = () => {
               <div className="Space Flex">
                 <label>Discussion Timer:</label>
                 <Slider
-                  min={60}
+                  min={5}
                   max={120}
                   step={10}
                   value={discussionTimer}
