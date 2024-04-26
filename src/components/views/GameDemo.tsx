@@ -17,6 +17,7 @@ const GameDemo = () => {
   const [isCurrentPlayerTurn, setIsCurrentPlayerTurn] = useState(false);
   const [players, setPlayers] = useState([]);
   const [hasAlreadyVoted, setHasAlreadyVoted] = useState(false);
+  const [gameResult, setGameResult] = useState(null);
 
   // these settings are for demo. userId and lobbyId should be set appropriately.
   const [userId, setUserId] = useState("");
@@ -46,7 +47,6 @@ const GameDemo = () => {
    */
   useEffect(() => {
     // Connect WebSocket
-    // setUserId(localStorage.getItem('userId'))
     const stompClient = new Client({
       // url is defined in helper/getBrokerURL.js
       brokerURL: getBrokerURL(),
@@ -60,6 +60,10 @@ const GameDemo = () => {
         stompClient.subscribe(`/topic/${lobbyId}/gameEvents`, (message) => {
           const event = JSON.parse(message.body);
           setPhase(event.eventType);
+          if (event.eventType === "endGame") {
+            // TODO: navigate appropriate routing
+            alert("end game");
+          }
         });
 
         // subscribe chat
@@ -104,11 +108,12 @@ const GameDemo = () => {
           setIsCurrentPlayerTurn(String(event.userId) === String(userId));
         });
 
-        // subscribe result
-        // message has winnerRole<String>, winners<List<Long>>, losers<List<Long>>
+        // subscribe game result
+        // message has winnerRole<String>, winners<List<PlayerDTO>>, losers<List<PlayerDTO>>. PlayerDTO has userId and username
         stompClient.subscribe(`/topic/${lobbyId}/result`, (message) => {
           const event = JSON.parse(message.body);
-          const newLog = `Winner role: ${event.winnerRole}. Winner players: ${event.winners}. Loser players: ${event.losers}`;
+          console.log(event);
+          setGameResult(event);
         });
 
         // subscribe word assignment
@@ -227,7 +232,7 @@ const GameDemo = () => {
 
   return (
     <div>
-      {/* This is for demo */}
+      {/* This is for demo to set userId manually */}
       <div>
         <button onClick={startGame}>StartGame</button>
       </div>
@@ -247,8 +252,9 @@ const GameDemo = () => {
       )}
       <hr/>
 
-
+      {/* Display phase */}
       <h2>Phase: {phase}</h2>
+
       {/* Assigned word and role  */}
       <div>
         {isWolf === null ? (
@@ -259,10 +265,12 @@ const GameDemo = () => {
           <p>This round&apos;s word is: {word}</p>
         )}
       </div>
+
       {/* Round Timer */}
       <div>
         {phase === "clue" && <p>Clue phase remaining:{roundTimer} seconds</p>}
       </div>
+
       {/* Clue Timer and input */}
       <div>
         {phase === "clue" && isCurrentPlayerTurn && (
@@ -281,6 +289,7 @@ const GameDemo = () => {
           </>
         )}
       </div>
+
       {/* Discussion Timer and Chat */}
       {phase === "discussion" && (
         <>
@@ -296,6 +305,7 @@ const GameDemo = () => {
           <button onClick={sendMessage}>Send</button>
         </>
       )}
+
       {/* Voting button */}
       {phase === "vote" && !hasAlreadyVoted && (
         <div>
@@ -312,6 +322,16 @@ const GameDemo = () => {
       {phase === "vote" && hasAlreadyVoted && (
         <p>You have voted. Please wait for voting of other players.</p>
       )}
+
+      {/* Result */}
+      {phase === "gameResult" && gameResult && (
+        <div>
+          <p>Winner role: {gameResult.winnerRole}</p>
+          <p>Winners: {gameResult.winners.map(w => `${w.username}`).join(", ")}</p>
+          <p>Losers: {gameResult.losers.map(l => `${l.username}`).join(", ")}</p>
+        </div>
+      )}
+
       {/* Clue and Chat log */}
       <p>Clue log</p>
       <div id="messageList" style={{ height: "200px", overflowY: "scroll", marginBottom: "20px", border: "1px solid #ccc", padding: "10px" }}>
