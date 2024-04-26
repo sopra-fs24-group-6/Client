@@ -455,7 +455,7 @@
 //                       text="Kick"
 //                       className="small-kick margin-kick hover-red"
 //                       onClick={() => kickPlayer(player)}
-//                     ></CustomButton>
+//                     />
 //                   )}
 //                 </li>
 //               ))}

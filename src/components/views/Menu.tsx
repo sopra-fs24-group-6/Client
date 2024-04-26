@@ -28,7 +28,7 @@ const Menu = () => {
             text="Play"
             className="large w50 hover-green"
             onClick={() => console.log("Play button clicked!")}
-          ></CustomButton>
+          />
           <div className="button-container">
             <CustomButton
               text="Create Lobby"

@@ -141,7 +141,7 @@ onClick={() => setIsSecure((prev) => !prev)}
   disabled={!username || !name || !password}
   className="50 hover-green"
   onClick={() => doRegistration()}
-></CustomButton>
+/>
 </div>
 </div>
 </NESContainerW> */}

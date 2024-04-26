@@ -191,7 +191,7 @@ const Profile = () => {
               text="Go Back"
               className="hover-orange"
               onClick={() => navigate("/users")}
-            ></CustomButton>
+            />
           </div>
         </NESContainerW>
         <NESContainerW title="Friends">
