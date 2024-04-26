@@ -37,13 +37,13 @@ const Game = () => {
 
   const wordCallback = useCallback((word) => {
     console.log("WordCallback", word);
-    if(!word) {
-        setIsWolf(true);
-        setWord("");
+    if (!word) {
+      setIsWolf(true);
+      setWord("");
     } else {
-    setWord(word);
-    setIsWolf(false);
-}
+      setWord(word);
+      setIsWolf(false);
+    }
   }, []);
 
   const turnCallback = useCallback((turn) => {
@@ -176,4 +176,5 @@ const Game = () => {
     </div>
   );
 };
+
 export default Game;

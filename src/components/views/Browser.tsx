@@ -48,7 +48,7 @@ const Browser = () => {
     setSelectedLobby(selectedLobby);
     // const userId = localStorage.getItem("id");
     // const userId = "2"; // ***This is for test***
-    const userId = localStorage.getItem('userId') // ***For Testing purposes***
+    const userId = localStorage.getItem("userId") // ***For Testing purposes***
     if (!selectedLobby.password) {
       await api.post("/lobbies/" + selectedLobby.id + "/players", { userId });
       // navigate("/lobbies/" + selectedLobby.id);

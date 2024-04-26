@@ -6,7 +6,7 @@ import "styles/views/Login.scss";
 import NesContainer from "../ui/NESContainer";
 import NESContainerW from "../ui/NESContainerW";
 import CustomButton from "../ui/CustomButton";
-import languages from 'helpers/languages.json';
+import languages from "helpers/languages.json";
 import "../../styles/ui/AppBody.scss";
 import Button from "../ui/Button";
 
@@ -16,7 +16,7 @@ const Registration = () => {
   const [name, setName] = useState(null);
   const [password, setPassword] = useState(null);
   const [username, setUsername] = useState(null);
-  const [language, setLanguage] = useState('en');
+  const [language, setLanguage] = useState("en");
 
   const doRegistration = async () => {
     try {

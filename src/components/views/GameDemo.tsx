@@ -29,8 +29,6 @@ const GameDemo = () => {
   // const [isUserIdSet, setIsUserIdSet] = useState(false);
   // const lobbyId = "1";
 
-
-
   /**
    * WebSocket Notes
    *
@@ -165,23 +163,23 @@ const GameDemo = () => {
   }, [userId]);
 
 
-    const sendMessage = () => {
-      if (client && connected && draftMessage) {
-        const chatMessage = {
-          content: draftMessage,
-          userId: userId,
-          lobbyId: lobbyId,
-        };
-        client.publish({
-          destination: `/app/chat/${lobbyId}/sendMessage`,
-          body: JSON.stringify(chatMessage),
-        });
-        setDraftMessage("");
+  const sendMessage = () => {
+    if (client && connected && draftMessage) {
+      const chatMessage = {
+        content: draftMessage,
+        userId: userId,
+        lobbyId: lobbyId,
+      };
+      client.publish({
+        destination: `/app/chat/${lobbyId}/sendMessage`,
+        body: JSON.stringify(chatMessage),
+      });
+      setDraftMessage("");
 
-      } else {
-        console.log("STOMP connection is not established.");
-      }
-    };
+    } else {
+      console.log("STOMP connection is not established.");
+    }
+  };
 
   const sendClue = () => {
     if (client && connected && draftMessage) {
@@ -318,11 +316,11 @@ const GameDemo = () => {
           {players
             .filter((player) => String(player.userId) !== String(userId))
             .map((player) => (
-            <div key={player.userId}>
-              <p>{player.username}</p>
-              <button onClick={() => sendVote(player.userId)}>Vote</button>
-            </div>
-          ))}
+              <div key={player.userId}>
+                <p>{player.username}</p>
+                <button onClick={() => sendVote(player.userId)}>Vote</button>
+              </div>
+            ))}
         </div>
       )}
       {phase === "vote" && hasAlreadyVoted && (

@@ -55,20 +55,20 @@ const GameLobby = () => {
     console.log("selectedThemes has been updated", selectedThemes);
   }, [selectedThemes]);
 
-//   useEffect(() => {
-//   const fetchThemes = async () => {
-//     try {
-//       const response = await api.get('/themes');
-//       const themes = response.data;
-//       setAvailableThemes(themes);
-//       //setSelectedThemes(themes);
-//       console.log("What is fetched",themes);
-//     } catch (error) {
-//       console.error(`Failed to fetch themes: ${handleError(error)}`);
-//     }
-//   };
-//   fetchThemes();
-// },[]);
+  //   useEffect(() => {
+  //   const fetchThemes = async () => {
+  //     try {
+  //       const response = await api.get('/themes');
+  //       const themes = response.data;
+  //       setAvailableThemes(themes);
+  //       //setSelectedThemes(themes);
+  //       console.log("What is fetched",themes);
+  //     } catch (error) {
+  //       console.error(`Failed to fetch themes: ${handleError(error)}`);
+  //     }
+  //   };
+  //   fetchThemes();
+  // },[]);
 
   useEffect(() => {
     setIsAdmin(location.state?.isAdmin || false);
@@ -81,13 +81,13 @@ const GameLobby = () => {
   useEffect(() => {
     const fetchThemes = async () => {
       try {
-        const themesResponse = await api.get('/themes');
+        const themesResponse = await api.get("/themes");
         const themes = themesResponse.data;
 
         setAvailableThemes(themes);
         setSelectedThemes(themes);
       } catch (error) {
-        console.error('Error fetching themes:', error);
+        console.error("Error fetching themes:", error);
       }
     };
 
@@ -103,20 +103,20 @@ const GameLobby = () => {
       // setAvailableThemes(themes);
       // setSelectedThemes(themes);
       // console.log(availableThemes);
-  
+
       const requestBody = {
         lobbyAdmin: userId,
         name,
         password,
         playerLimit,
-        "themes" : selectedThemes,
+        "themes": selectedThemes,
         rounds,
         roundTimer,
         clueTimer,
         discussionTimer,
         isPrivate,
       };
-  
+
       const lobbyResponse = await api.post("/lobbies", requestBody);
       const newLobby = lobbyResponse.data;
       setLobby(newLobby);
@@ -127,7 +127,7 @@ const GameLobby = () => {
       alert(`Something went wrong: \n${handleError(error)}`);
     }
   };
-  
+
 
   // const createLobby = async () => {
   //   const requestBody = {
@@ -155,21 +155,21 @@ const GameLobby = () => {
   //   }
   // };
 
-    // const fetchStandardLobby = async () => {
-    //   try {
-    //     const response = await api.get('/lobby/' + lobbyId); // Replace with your actual endpoint
-    //     const lobby = response.data;
-    //     setAvailableThemes(lobby.themes);
-    //     setRounds(lobby.rounds);
-    //     setRoundTimer(lobby.roundTimer);
-    //     setClueTimer(lobby.clueTimer);
-    //     setDiscussionTimer(lobby.discussionTimer);
-    //     setPlayerLimit(lobby.playerLimit);
-    //     // we need a vote timer?
-    //   } catch (error) {
-    //     console.error(`Failed to fetch standard lobby: ${handleError(error)}`);
-    //   }
-    // };
+  // const fetchStandardLobby = async () => {
+  //   try {
+  //     const response = await api.get('/lobby/' + lobbyId); // Replace with your actual endpoint
+  //     const lobby = response.data;
+  //     setAvailableThemes(lobby.themes);
+  //     setRounds(lobby.rounds);
+  //     setRoundTimer(lobby.roundTimer);
+  //     setClueTimer(lobby.clueTimer);
+  //     setDiscussionTimer(lobby.discussionTimer);
+  //     setPlayerLimit(lobby.playerLimit);
+  //     // we need a vote timer?
+  //   } catch (error) {
+  //     console.error(`Failed to fetch standard lobby: ${handleError(error)}`);
+  //   }
+  // };
 
   //   // if (!isPublished) {
   //   //   fetchStandardLobby();
@@ -253,7 +253,7 @@ const GameLobby = () => {
       clueTimer,
       discussionTimer,
       isPrivate,
-      "themes" :  selectedThemes
+      "themes": selectedThemes
     };
     console.log("Update method log", selectedThemes);
 
@@ -294,7 +294,7 @@ const GameLobby = () => {
   const startGame = () => {
     if (client && connected) {
       client.publish({
-        destination: `/app/startGame`,
+        destination: "/app/startGame",
         body: JSON.stringify({ lobbyId, userId }),
       })
     }
