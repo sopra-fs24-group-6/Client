@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Client } from "@stomp/stompjs";
 import { getBrokerURL } from "helpers/getBrokerURL"
+import { useNavigate } from "react-router-dom";
 
 const GameDemo = () => {
   const [client, setClient] = useState(null);
@@ -20,6 +21,7 @@ const GameDemo = () => {
   const [gameResult, setGameResult] = useState(null);
   const lobbyId = localStorage.getItem("lobbyId");
   const userId = localStorage.getItem("userId");
+  const navigate = useNavigate();
 
   // these settings are for demo. userId and lobbyId should be set appropriately.
   // const [userId, setUserId] = useState("");
@@ -66,8 +68,7 @@ const GameDemo = () => {
           const event = JSON.parse(message.body);
           setPhase(event.eventType);
           if (event.eventType === "endGame") {
-            // TODO: navigate appropriate routing
-            alert("end game");
+            navigate("/menu");
           }
         });
 
