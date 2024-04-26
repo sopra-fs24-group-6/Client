@@ -1,0 +1,107 @@
+.game-view {
+  position: relative;
+  height: 500px;
+  width: 500px;
+  overflow: hidden;
+
+  .timer {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 24px;
+  }
+
+  .players {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .player {
+      position: absolute;
+      width: 80px; // Adjust as needed
+      height: 80px; // Adjust as needed
+      text-align: center;
+      line-height: 80px; // Adjust for vertical centering
+    }
+  }
+  .player-word {
+    margin-left: 10px;
+    font-weight: bold;
+    // Add any other styles you need here
+  }
+
+  .clue-input-container {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+
+    .clue-input-form {
+      display: flex;
+      align-items: center;
+
+      .clue-input {
+        margin-right: 5px;
+        line-height: 1.5;
+        padding: 5px;
+      }
+
+      .submit-clue-button {
+        padding: 5px 10px;
+      }
+    }
+  }
+}
+
+.game-view.disabled {
+  pointer-events: none; // Prevents all interactions
+  opacity: 0.5; // Dim the game view to indicate it's disabled
+}
+
+// Using SCSS loop for dynamic number of players
+.game-view .players {
+  .player {
+    $total-players: 4; // Default to 4, should be overridden by JS
+    $angle-step: 360deg / $total-players;
+
+    @for $i from 1 through $total-players {
+      &:nth-child(#{$i}) {
+        transform: rotate($angle-step * ($i - 1))
+          translate(200px)
+          rotate(-$angle-step * ($i - 1));
+      }
+    }
+  }
+}
+
+// styles/ui/GameView.scss
+
+.voting-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .voting-container {
+    text-align: center;
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+
+    .vote-button {
+      display: block;
+      margin: 10px auto;
+      padding: 10px 20px;
+      cursor: pointer;
+    }
+  }
+}
+

@@ -7,6 +7,7 @@ import "styles/views/Game.scss";
 import CustomButton from "../ui/CustomButton";
 import NavBar from "../ui/NavBar";
 import initialPlayers from "components/placeholders/playerlist";
+import languages from 'helpers/languages.json';
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -16,6 +17,7 @@ const Profile = () => {
   const [isLoggedInUser, setIsLoggedInUser] = useState(false);
 
   const [isEditable, setIsEditable] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState('en');
 
   const usernameInputRef = useRef(null);
   const birthDateInputRef = useRef(null);
@@ -27,6 +29,7 @@ const Profile = () => {
       setIsLoading(true);
       try {
         const response = await api.get(`/users/${userId}`);
+        console.log(response.data)
         setUser(response.data);
 
         setIsLoggedInUser(
@@ -48,12 +51,17 @@ const Profile = () => {
     const newUsername = usernameInputRef?.current?.value;
     const newName = nameInputRef?.current?.value;
     const newBirthDate = birthDateInputRef?.current?.value;
+    // const newLanguage = languageInputRef?.current?.value;
+    const newLanguage = selectedLanguage;
+
+    console.log(newLanguage)
 
     try {
-      const response = await api.put(`/users/${userId}`, {
+      await api.put(`/users/${userId}`, {
         username: newUsername,
         name: newName,
         birthDate: new Date(newBirthDate),
+        language: newLanguage,
       });
 
       navigate(0);
@@ -124,6 +132,28 @@ const Profile = () => {
               </div>
             ) : (
               <p className="info-text">{user.birthDate || "Not provided"}</p>
+            )}
+          </div>
+          <div>
+            <span className="info-title">Language:</span>
+
+            {isEditable ? (
+              <div className="editable-input">
+                <select
+                  defaultValue={`${user.language}`}
+                  value={selectedLanguage}
+                  onChange={(e) => setSelectedLanguage(e.target.value)}>
+                  {languages.map((lang) => (
+                    <option key={lang.code} value={lang.code}>
+                      {lang.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ) : (
+              <p className="info-text">
+                {languages.find(lang => lang.code === user.language)?.name || "Unknown Language"}
+              </p>
             )}
           </div>
           <div>
