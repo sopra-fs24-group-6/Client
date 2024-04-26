@@ -2,8 +2,8 @@ import React from "react";
 
 interface CustomButtonProps {
   text: string;
-  className: string;
-  onClick: () => void;
+  className?: string;
+  onClick?: () => void;
   disabled?: boolean;
 }
 
