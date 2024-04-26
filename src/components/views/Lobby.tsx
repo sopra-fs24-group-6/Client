@@ -78,22 +78,38 @@ const GameLobby = () => {
     }
   }, [location.state?.isAdmin, urlLobbyId]);
 
+  useEffect(() => {
+    const fetchThemes = async () => {
+      try {
+        const themesResponse = await api.get('/themes');
+        const themes = themesResponse.data;
+
+        setAvailableThemes(themes);
+        setSelectedThemes(themes);
+      } catch (error) {
+        console.error('Error fetching themes:', error);
+      }
+    };
+
+    fetchThemes();
+  }, []);
+
 
   const createLobby = async () => {
     try {
       // Fetch themes first
-      const themesResponse = await api.get('/themes');
-      const themes = themesResponse.data;
-      setAvailableThemes(themes);
-      setSelectedThemes(themes);
+      // const themesResponse = await api.get('/themes');
+      // const themes = themesResponse.data;
+      // setAvailableThemes(themes);
+      // setSelectedThemes(themes);
+      // console.log(availableThemes);
   
       const requestBody = {
         lobbyAdmin: userId,
         name,
         password,
         playerLimit,
-        //availableThemes,
-        selectedThemes,
+        "themes" : selectedThemes,
         rounds,
         roundTimer,
         clueTimer,
@@ -236,7 +252,7 @@ const GameLobby = () => {
       clueTimer,
       discussionTimer,
       isPrivate,
-      selectedThemes
+      "themes" :  selectedThemes
     };
     console.log("Update method log", selectedThemes);
 
