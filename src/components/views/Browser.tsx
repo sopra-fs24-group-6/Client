@@ -11,7 +11,6 @@ import NesContainer from "../ui/NESContainer";
 import "styles/views/Lobby.scss";
 import NESContainerW from "../ui/NESContainerW";
 
-
 const Browser = () => {
   const navigate = useNavigate();
   const [lobbies, setLobbies] = useState(lobbyList);

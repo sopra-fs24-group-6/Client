@@ -205,6 +205,7 @@ const GameLobby = () => {
   const startGameCallback = useCallback(() => {
     //const gameId = localStorage.getItem("lobbyId");
     setLobbyId(lobbyId);
+    localStorage.setItem("lobbyId", lobbyId);
     //console.log("check", lobbyId)
     navigate("/game/" + lobbyId);
   }, [lobbyId]);
@@ -282,7 +283,7 @@ const GameLobby = () => {
       const requestBody = {
         userId: requesterId,
       };
-      await api.delete("/lobbies/" + lobby.id + "/players/" + player.id, {
+      await api.delete("/lobbies/" + lobbyId + "/players/" + player.id, {
         data: requestBody,
       });
     } catch (error) {
@@ -377,7 +378,8 @@ const GameLobby = () => {
               <div className="Space Flex">
                 <label>Round Timer:</label>
                 <Slider
-                  min={60}
+                  //min={60}
+                  min={5} // for developing phase
                   max={120}
                   step={10}
                   value={roundTimer}
@@ -388,7 +390,8 @@ const GameLobby = () => {
               <div className="Space Flex">
                 <label>Clue Timer:</label>
                 <Slider
-                  min={10}
+                  // min={10}
+                  min={3} // for developing phase
                   max={120}
                   step={10}
                   value={clueTimer}
@@ -399,7 +402,8 @@ const GameLobby = () => {
               <div className="Space Flex">
                 <label>Discussion Timer:</label>
                 <Slider
-                  min={60}
+                  // min={60}
+                  min={5} // for developing phase
                   max={120}
                   step={10}
                   value={discussionTimer}
