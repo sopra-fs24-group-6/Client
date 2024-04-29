@@ -94,7 +94,6 @@ const GameLobby = () => {
     fetchThemes();
   }, []);
 
-
   const createLobby = async () => {
     try {
       // Fetch themes first
@@ -109,7 +108,7 @@ const GameLobby = () => {
         name,
         password,
         playerLimit,
-        "themes": selectedThemes,
+        themes: selectedThemes,
         rounds,
         roundTimer,
         clueTimer,
@@ -127,7 +126,6 @@ const GameLobby = () => {
       alert(`Something went wrong: \n${handleError(error)}`);
     }
   };
-
 
   // const createLobby = async () => {
   //   const requestBody = {
@@ -180,23 +178,26 @@ const GameLobby = () => {
   //   // };
   //   //if(!isAdmin)
 
-  const lobbyCallback = useCallback((newLobby) => {
-    setLobby(newLobby);
-    // setLobbyId(newLobby.id);
-    setName(newLobby.name);
-    setPassword(newLobby.password);
-    setPlayers(newLobby.players);
-    setPlayerLimit(newLobby.playerLimit);
-    setPlayerCount(newLobby.playerCount);
-    //setAvailableThemes(availableThemes);
-    setSelectedThemes(newLobby.themes);
-    setRounds(newLobby.rounds);
-    setRoundTimer(newLobby.roundTimer);
-    setClueTimer(newLobby.clueTimer);
-    setDiscussionTimer(newLobby.discussionTimer);
-    setIsPrivate(newLobby.isPrivate);
-    console.log("Themes on update", newLobby.themes)
-  }, [selectedThemes]);
+  const lobbyCallback = useCallback(
+    (newLobby) => {
+      setLobby(newLobby);
+      // setLobbyId(newLobby.id);
+      setName(newLobby.name);
+      setPassword(newLobby.password);
+      setPlayers(newLobby.players);
+      setPlayerLimit(newLobby.playerLimit);
+      setPlayerCount(newLobby.playerCount);
+      //setAvailableThemes(availableThemes);
+      setSelectedThemes(newLobby.themes);
+      setRounds(newLobby.rounds);
+      setRoundTimer(newLobby.roundTimer);
+      setClueTimer(newLobby.clueTimer);
+      setDiscussionTimer(newLobby.discussionTimer);
+      setIsPrivate(newLobby.isPrivate);
+      console.log("Themes on update", newLobby.themes);
+    },
+    [selectedThemes]
+  );
 
   const playerCallback = useCallback((newPlayers) => {
     setPlayers(newPlayers);
@@ -219,7 +220,7 @@ const GameLobby = () => {
     startGameCallback,
     lobbyCallback,
     playerCallback,
-    userId,
+    userId
   );
 
   // useEffect(() => {
@@ -253,14 +254,16 @@ const GameLobby = () => {
       clueTimer,
       discussionTimer,
       isPrivate,
-      "themes": selectedThemes
+      themes: selectedThemes,
     };
     console.log("Update method log", selectedThemes);
 
     try {
       await api.put(`/lobbies/${lobbyId}`, requestBody);
     } catch (error) {
-      alert(`Something went wrong while updating the lobby: \n${handleError(error)}`);
+      alert(
+        `Something went wrong while updating the lobby: \n${handleError(error)}`
+      );
     }
   };
 
@@ -291,14 +294,30 @@ const GameLobby = () => {
     }
   };
 
+  const leaveGame = async (lobbyId, userId) => {
+    try {
+      await api.delete("/lobbies/" + lobbyId + "/players/" + userId);
+    } catch (error) {
+      alert(`Could not leave game: \n${handleError(error)}`);
+    }
+  };
+
+  window.addEventListener("beforeunload", function (event) {
+    // Display confirmation message
+    const confirmationMessage = "Are you sure you want to leave the lobby?";
+    event.returnValue = confirmationMessage;
+
+    // Call leaveGame function with appropriate userId and lobbyId
+    // Make sure to replace 'userId' and 'lobbyId' with actual values
+    leaveGame(lobbyId, userId);
+  });
   const startGame = () => {
     if (client && connected) {
       client.publish({
         destination: "/app/startGame",
         body: JSON.stringify({ lobbyId, userId }),
-      })
-    }
-    else {
+      });
+    } else {
       console.log("Lobby ID is null, cannot start game.");
     }
   };
@@ -368,7 +387,8 @@ const GameLobby = () => {
                 />
               </div>
               <div className="Space Flex">
-                <label htmlFor="roundLimit">Round Limit:</label> {/* Accessible label association */}
+                <label htmlFor="roundLimit">Round Limit:</label>{" "}
+                {/* Accessible label association */}
                 <RoundLimiter
                   value={rounds}
                   onRoundLimitChange={handleRoundLimitChange}
