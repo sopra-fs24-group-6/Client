@@ -336,14 +336,6 @@ const GameLobby = () => {
     leaveGame(lobbyId, userId);
   }); */
 
-  const leaveGame = async (lobbyId, userId) => {
-    try {
-      await api.delete("/lobbies/" + lobbyId + "/players/" + userId);
-    } catch (error) {
-      alert(`Could not leave game: \n${handleError(error)}`);
-    }
-  };
-
   window.addEventListener("beforeunload", function (event) {
     // Display confirmation message
     const confirmationMessage = "Are you sure you want to leave the lobby?";
