@@ -50,7 +50,7 @@ const Menu = () => {
             <CustomButton
               text="Sign out"
               className="w25 hover-red"
-              onClick={() => logout}
+              onClick={() => logout()}
             />
           </div>
         </NESContainerW>

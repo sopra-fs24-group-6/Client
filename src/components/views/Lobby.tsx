@@ -26,13 +26,11 @@ const GameLobby = () => {
   const [isPublished, setIsPublished] = useState(false);
   const [isAdmin, setIsAdmin] = useState(location.state?.isAdmin || false);
   const [lobby, setLobby] = useState("test");
-
   const { lobbyId: urlLobbyId } = useParams();
-
   const [lobbyId, setLobbyId] = useState(null);
-
   const [isPrivate, setIsPrivate] = useState(false);
   const [name, setName] = useState("");
+  const [lobbyAdmin, setLobbyAdmin] = useState("");
   const [password, setPassword] = useState("");
   const [players, setPlayers] = useState([]);
   const [playerLimit, setPlayerLimit] = useState(3);
@@ -55,21 +53,6 @@ const GameLobby = () => {
     console.log("selectedThemes has been updated", selectedThemes);
   }, [selectedThemes]);
 
-  //   useEffect(() => {
-  //   const fetchThemes = async () => {
-  //     try {
-  //       const response = await api.get('/themes');
-  //       const themes = response.data;
-  //       setAvailableThemes(themes);
-  //       //setSelectedThemes(themes);
-  //       console.log("What is fetched",themes);
-  //     } catch (error) {
-  //       console.error(`Failed to fetch themes: ${handleError(error)}`);
-  //     }
-  //   };
-  //   fetchThemes();
-  // },[]);
-
   useEffect(() => {
     setIsAdmin(location.state?.isAdmin || false);
     // Set the lobbyId state with the value from useParams if available
@@ -77,6 +60,33 @@ const GameLobby = () => {
       setLobbyId(urlLobbyId);
     }
   }, [location.state?.isAdmin, urlLobbyId]);
+
+  // if not admin, then retrieve lobby data when load page
+  useEffect(() => {
+    if (!isAdmin) {
+      const fetchLobbyData = async () => {
+        try {
+          const response = await api.get(`/lobbies/${lobbyId}`);
+          const lobbyData = response.data;
+          setLobby(lobbyData);
+          setPlayers(lobbyData.players);
+          setName(lobbyData.name);
+          setLobbyAdmin(lobbyData.lobbyAdmin);
+          setPlayerLimit(lobbyData.playerLimit);
+          setPlayerCount(lobbyData.playerCount);
+          setRounds(lobbyData.rounds);
+          setRoundTimer(lobbyData.roundTimer);
+          setClueTimer(lobbyData.clueTimer);
+          setDiscussionTimer(lobbyData.discussionTimer);
+          setIsPrivate(lobbyData.isPrivate);
+          setSelectedThemes(lobbyData.themes);
+        } catch (error) {
+          console.error(`Failed to fetch lobby: ${handleError(error)}`);
+        }
+      };
+      fetchLobbyData();
+    }
+  }, [isAdmin, lobbyId]);
 
   useEffect(() => {
     const fetchThemes = async () => {
@@ -96,13 +106,6 @@ const GameLobby = () => {
 
   const createLobby = async () => {
     try {
-      // Fetch themes first
-      // const themesResponse = await api.get('/themes');
-      // const themes = themesResponse.data;
-      // setAvailableThemes(themes);
-      // setSelectedThemes(themes);
-      // console.log(availableThemes);
-
       const requestBody = {
         lobbyAdmin: userId,
         name,
@@ -119,6 +122,8 @@ const GameLobby = () => {
       const lobbyResponse = await api.post("/lobbies", requestBody);
       const newLobby = lobbyResponse.data;
       setLobby(newLobby);
+      setPlayers(newLobby.players);
+      setLobbyAdmin(newLobby.lobbyAdmin);
       console.log("themes on creation", newLobby.themes);
       setLobbyId(newLobby.id);
       setIsPublished(true);
@@ -127,67 +132,15 @@ const GameLobby = () => {
     }
   };
 
-  // const createLobby = async () => {
-  //   const requestBody = {
-  //     lobbyAdmin: userId,
-  //     name,
-  //     password,
-  //     playerLimit,
-  //     selectedThemes,
-  //     rounds,
-  //     roundTimer,
-  //     clueTimer,
-  //     discussionTimer,
-  //     isPrivate,
-  //   };
-
-  //   try {
-  //     const response = await api.post("/lobbies", requestBody);
-  //     const newLobby = response.data;
-  //     setLobby(newLobby);
-  //     console.log("themes on creation", newLobby.themes);
-  //     setLobbyId(newLobby.id);
-  //     setIsPublished(true);
-  //   } catch (error) {
-  //     alert(`Something went wrong while creating the lobby: \n${handleError(error)}`);
-  //   }
-  // };
-
-  // const fetchStandardLobby = async () => {
-  //   try {
-  //     const response = await api.get('/lobby/' + lobbyId); // Replace with your actual endpoint
-  //     const lobby = response.data;
-  //     setAvailableThemes(lobby.themes);
-  //     setRounds(lobby.rounds);
-  //     setRoundTimer(lobby.roundTimer);
-  //     setClueTimer(lobby.clueTimer);
-  //     setDiscussionTimer(lobby.discussionTimer);
-  //     setPlayerLimit(lobby.playerLimit);
-  //     // we need a vote timer?
-  //   } catch (error) {
-  //     console.error(`Failed to fetch standard lobby: ${handleError(error)}`);
-  //   }
-  // };
-
-  //   // if (!isPublished) {
-  //   //   fetchStandardLobby();
-  //   // }
-
-  //   // const handleChat = (chat) => {
-  //   //   setChat(chat);
-  //   // };
-  //   //if(!isAdmin)
-
   const lobbyCallback = useCallback(
     (newLobby) => {
       setLobby(newLobby);
-      // setLobbyId(newLobby.id);
       setName(newLobby.name);
+      setLobbyAdmin(newLobby.lobbyAdmin);
       setPassword(newLobby.password);
       setPlayers(newLobby.players);
       setPlayerLimit(newLobby.playerLimit);
       setPlayerCount(newLobby.playerCount);
-      //setAvailableThemes(availableThemes);
       setSelectedThemes(newLobby.themes);
       setRounds(newLobby.rounds);
       setRoundTimer(newLobby.roundTimer);
@@ -222,24 +175,6 @@ const GameLobby = () => {
     playerCallback,
     userId
   );
-
-  // useEffect(() => {
-  //   if (isPublished && isAdmin) {
-  //     updateLobby();
-  //   }
-  // }, [
-  //   name,
-  //   password,
-  //   players,
-  //   playerLimit,
-  //   playerCount,
-  //   selectedThemes,
-  //   rounds,
-  //   roundTimer,
-  //   clueTimer,
-  //   discussionTimer,
-  //   isPrivate,
-  // ]);
 
   const updateLobby = async () => {
     if (!lobbyId) return;
@@ -278,7 +213,7 @@ const GameLobby = () => {
     setRounds(value);
   };
 
-  const kickPlayer = async (player) => {
+  const kickPlayer = async (targetUserId) => {
     try {
       const requesterId = localStorage.getItem("userId");
       if (!requesterId) {
@@ -289,7 +224,7 @@ const GameLobby = () => {
       const requestBody = {
         userId: requesterId,
       };
-      await api.delete("/lobbies/" + lobbyId + "/players/" + player.id, {
+      await api.delete("/lobbies/" + lobbyId + "/players/" + targetUserId, {
         data: requestBody,
       });
     } catch (error) {
@@ -305,13 +240,6 @@ const GameLobby = () => {
     }
   };
 
-  //Listenser to remove Player from Lobby when unexpectetly leaving the lobby view
-  /*  window.addEventListener("beforeunload", function (event) {
-    const confirmationMessage = "Are you sure you want to leave the lobby?";
-    event.returnValue = confirmationMessage;
-
-    leaveGame(lobbyId, userId);
-  }); */
   const startGame = () => {
     if (client && connected) {
       client.publish({
@@ -388,8 +316,6 @@ const GameLobby = () => {
                 />
               </div>
               <div className="Space Flex">
-                <label htmlFor="roundLimit">Round Limit:</label>{" "}
-                {/* Accessible label association */}
                 <label htmlFor="roundLimit">Round Limit:</label>{" "}
                 {/* Accessible label association */}
                 <RoundLimiter
@@ -488,12 +414,16 @@ const GameLobby = () => {
                 return (
                   <li className="Aligner" key={player.userId || index}>
                     {player.username}
-                    {isAdmin && (
-                      <CustomButton
-                        text="Kick"
-                        className="small-kick margin-kick hover-red"
-                        onClick={() => kickPlayer(player.userId)}
-                      />
+                    {String(player.userId) === String(lobbyAdmin) ? (
+                      <span>&nbsp;(Host)</span>
+                    ) : (
+                      isAdmin && (
+                        <CustomButton
+                          text="Kick"
+                          className="small-kick margin-kick hover-red"
+                          onClick={() => kickPlayer(player.userId)}
+                        />
+                      )
                     )}
                   </li>
                 );
