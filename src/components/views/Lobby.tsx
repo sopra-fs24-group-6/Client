@@ -335,16 +335,6 @@ const GameLobby = () => {
 
     leaveGame(lobbyId, userId);
   }); */
-
-  window.addEventListener("beforeunload", function (event) {
-    // Display confirmation message
-    const confirmationMessage = "Are you sure you want to leave the lobby?";
-    event.returnValue = confirmationMessage;
-
-    // Call leaveGame function with appropriate userId and lobbyId
-    // Make sure to replace 'userId' and 'lobbyId' with actual values
-    leaveGame(lobbyId, userId);
-  });
   const startGame = () => {
     if (client && connected) {
       client.publish({
