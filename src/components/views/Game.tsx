@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 //import { subscribeToGameWebSocket } from "../../helpers/GameWebSocketManager.js";
 import { useGameWebSocket } from "helpers/GameWebSocketManager";
+import { useNavigate } from "react-router-dom";
 import { User } from "types";
 import { api, handleError } from "helpers/api";
 import ClueOverlay from "../ui/ClueOverlay";
@@ -20,6 +21,7 @@ const Game = () => {
   const [clue, setClue] = useState("");
   const [draftMessage, setDraftMessage] = useState("");
   const [players, setPlayers] = useState([]);
+  const navigate = useNavigate();
   //const [sendMessage, setSendMessage] = useState(null);
   const player = localStorage.getItem("userId");
   const lobbyId = localStorage.getItem("lobbyId");
@@ -28,12 +30,17 @@ const Game = () => {
   const playersCallback = useCallback((players) => {
     console.log("playerCallback", players);
     setPlayers(players);
-  }, [])
+  }, []);
 
   const phaseCallback = useCallback((phase) => {
     console.log("phaseCallback", phase);
     setPhase(phase);
-  }, [])
+  }, []);
+
+  const endGameCallback = useCallback(() => {
+    console.log("endGameCallback", phase);
+    navigate("/menu");
+  }, []);
 
   const wordCallback = useCallback((word) => {
     console.log("WordCallback", word);
@@ -63,28 +70,25 @@ const Game = () => {
 
   const discussionTimerCallback = useCallback((timer) => {
     console.log("discussionTimer", timer);
-    setDiscussionTimer(timer)
+    setDiscussionTimer(timer);
   }, []);
 
   // const roleAssignedCallback = useCallback(() => {
   //   ()
   // }, []);
 
-  const {
-    sendMessage,
-    connected,
-    chatMessages
-  } = useGameWebSocket(
+  const { sendMessage, connected, chatMessages } = useGameWebSocket(
     userId,
     lobbyId,
     playersCallback,
     phaseCallback,
+    endGameCallback,
     //chatCallback,
     wordCallback,
     turnCallback,
     roundTimerCallback,
     clueTimerCallback,
-    discussionTimerCallback,
+    discussionTimerCallback
     //voteTimerCallback
     //roleAssignedCallback,
   );

@@ -7,6 +7,7 @@ export const useGameWebSocket = (
   lobbyId,
   playersCallback,
   phaseCallback,
+  endGameCallback,
   //chatCallback,
   wordCallback,
   turnCallback,
@@ -67,6 +68,8 @@ export const useGameWebSocket = (
             phaseCallback("vote");
           } else if (event.eventType === "EndRound") {
             phaseCallback("endRound");
+          } else if (event.eventType === "EndGame") {
+            endGameCallback;
           }
         } catch (error) {
           console.error("Error processing message:", error);
