@@ -109,7 +109,6 @@ const GameLobby = () => {
         password,
         playerLimit,
         themes: selectedThemes,
-        themes: selectedThemes,
         rounds,
         roundTimer,
         clueTimer,
@@ -199,26 +198,6 @@ const GameLobby = () => {
     },
     [selectedThemes]
   );
-  const lobbyCallback = useCallback(
-    (newLobby) => {
-      setLobby(newLobby);
-      // setLobbyId(newLobby.id);
-      setName(newLobby.name);
-      setPassword(newLobby.password);
-      setPlayers(newLobby.players);
-      setPlayerLimit(newLobby.playerLimit);
-      setPlayerCount(newLobby.playerCount);
-      //setAvailableThemes(availableThemes);
-      setSelectedThemes(newLobby.themes);
-      setRounds(newLobby.rounds);
-      setRoundTimer(newLobby.roundTimer);
-      setClueTimer(newLobby.clueTimer);
-      setDiscussionTimer(newLobby.discussionTimer);
-      setIsPrivate(newLobby.isPrivate);
-      console.log("Themes on update", newLobby.themes);
-    },
-    [selectedThemes]
-  );
 
   const playerCallback = useCallback((newPlayers) => {
     setPlayers(newPlayers);
@@ -241,7 +220,6 @@ const GameLobby = () => {
     startGameCallback,
     lobbyCallback,
     playerCallback,
-    userId
     userId
   );
 
@@ -276,7 +254,6 @@ const GameLobby = () => {
       clueTimer,
       discussionTimer,
       isPrivate,
-      themes: selectedThemes,
       themes: selectedThemes,
     };
     console.log("Update method log", selectedThemes);
@@ -539,4 +516,3 @@ const GameLobby = () => {
 };
 
 export default GameLobby;
-
