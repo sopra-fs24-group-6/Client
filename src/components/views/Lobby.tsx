@@ -169,6 +169,7 @@ const GameLobby = () => {
   //     //subscribeToLobbyWebSocket(handleChat,handleLobbyUpdate, handleGameStart, handlePlayer)
   //   );
   const { sendMessage, connected, client } = useLobbyWebSocket(
+    isAdmin,
     lobbyId,
     startGameCallback,
     lobbyCallback,
@@ -176,8 +177,23 @@ const GameLobby = () => {
     userId
   );
 
-  const updateLobby = async () => {
+  useEffect(() => {
     if (!lobbyId) return;
+    updateLobby();
+  }, [
+    name,
+    password,
+    playerLimit,
+    playerCount,
+    selectedThemes,
+    rounds,
+    roundTimer,
+    clueTimer,
+    discussionTimer,
+    isPrivate,
+  ]);
+
+  const updateLobby = async () => {
     const requestBody = {
       name,
       password,
@@ -191,17 +207,18 @@ const GameLobby = () => {
       isPrivate,
       themes: selectedThemes,
     };
-    console.log("Update method log", selectedThemes);
+    if (isAdmin) {
+      console.log("Update method log", selectedThemes);
 
-    try {
-      await api.put(`/lobbies/${lobbyId}`, requestBody);
-    } catch (error) {
-      alert(
-        `Something went wrong while updating the lobby: \n${handleError(error)}`
-      );
-      alert(
-        `Something went wrong while updating the lobby: \n${handleError(error)}`
-      );
+      try {
+        await api.put(`/lobbies/${lobbyId}`, requestBody);
+      } catch (error) {
+        alert(
+          `Something went wrong while updating the lobby: \n${handleError(
+            error
+          )}`
+        );
+      }
     }
   };
 
@@ -433,14 +450,14 @@ const GameLobby = () => {
         </div>
       </div>
 
-      <div className="Space">
+      {/* <div className="Space">
         <CustomButton
           text="Update Lobby"
           className="50 hover-green"
           onClick={updateLobby}
           disabled={!isPublished || !isAdmin}
         />
-      </div>
+      </div> */}
     </>
   );
 };

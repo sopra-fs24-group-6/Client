@@ -3,6 +3,7 @@ import { Client } from "@stomp/stompjs";
 import { getBrokerURL } from "helpers/getBrokerURL";
 
 export const useLobbyWebSocket = (
+  isAdmin,
   lobbyId,
   startGameCallback,
   lobbyCallback,
@@ -69,14 +70,16 @@ export const useLobbyWebSocket = (
       }
     );
 
-    const lobbyInfoSub = clientInstance.subscribe(
-      `/lobbies/${lobbyId}/lobby_info`,
-      (message) => {
-        const response = JSON.parse(message.body);
-        console.log("Received lobby info:", response);
-        lobbyCallback(response);
-      }
-    );
+    if(!isAdmin){
+      const lobbyInfoSub = clientInstance.subscribe(
+        `/lobbies/${lobbyId}/lobby_info`,
+        (message) => {
+          const response = JSON.parse(message.body);
+          console.log("Received lobby info:", response);
+          lobbyCallback(response);
+        }
+      );
+    }
 
     const playerInfoSub = clientInstance.subscribe(
       `/lobbies/${lobbyId}/players`,
@@ -88,7 +91,11 @@ export const useLobbyWebSocket = (
     );
 
     // Push subscriptions to ref array for cleanup
-    subscriptions.current.push(gameEventsSub, lobbyInfoSub, playerInfoSub);
+    if(!isAdmin){
+      subscriptions.current.push(gameEventsSub, lobbyInfoSub, playerInfoSub);
+    } else {
+      subscriptions.current.push(gameEventsSub, playerInfoSub);
+    }
   };
 
   const sendMessage = (destination, message) => {
