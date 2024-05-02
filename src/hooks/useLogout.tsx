@@ -8,7 +8,7 @@ export default function useLogout() {
   const logout = useCallback(async () => {
     const userId = localStorage.getItem("userId");
     try {
-      await api.put(`/logout`, { userId });
+      await api.put("/logout", { userId });
 
       //clearing local storage
       localStorage.removeItem("userId");
