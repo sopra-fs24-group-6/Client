@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 //import { subscribeToGameWebSocket } from "../../helpers/GameWebSocketManager.js";
 import { useParams } from "react-router-dom";
 import { useGameWebSocket } from "helpers/GameWebSocketManager";
+import { useNavigate } from "react-router-dom";
 import { User } from "types";
 import { api, handleError } from "helpers/api";
 import ClueOverlay from "../ui/ClueOverlay";
@@ -21,8 +22,12 @@ const Game = () => {
   const [clue, setClue] = useState("");
   const [draftMessage, setDraftMessage] = useState("");
   const [players, setPlayers] = useState([]);
+<<<<<<< HEAD
   const [hasVoted, setHasVoted] = useState(false);
   const [gameResult, setGameResult] = useState(null);
+=======
+  const navigate = useNavigate();
+>>>>>>> 1b9185998f7fecc1cb20bcb8136d5812a4ec67dc
   //const [sendMessage, setSendMessage] = useState(null);
   const lobbyId = localStorage.getItem("lobbyId");
 
@@ -34,7 +39,7 @@ const Game = () => {
   const playersCallback = useCallback((players) => {
     console.log("playerCallback", players);
     setPlayers(players);
-  }, [])
+  }, []);
 
   useEffect (()=> {
     console.log(gameResult);
@@ -42,6 +47,7 @@ const Game = () => {
 
   const phaseCallback = useCallback((phase) => {
     console.log("phaseCallback", phase);
+<<<<<<< HEAD
     if (phase === "clue") {
       setPhase("Clue");
     } else if (phase === "discussion") {
@@ -58,6 +64,15 @@ const Game = () => {
   const chatCallback = useCallback((chat) => {
     setChat(chat);
   }, [])
+=======
+    setPhase(phase);
+  }, []);
+
+  const endGameCallback = useCallback(() => {
+    console.log("endGameCallback", phase);
+    navigate("/menu");
+  }, []);
+>>>>>>> 1b9185998f7fecc1cb20bcb8136d5812a4ec67dc
 
   const wordCallback = useCallback((word) => {
     console.log("WordCallback", word);
@@ -68,7 +83,11 @@ const Game = () => {
       setWord(word);
       setIsWolf(false);
     }
+<<<<<<< HEAD
   }, [round]);
+=======
+  }, []);
+>>>>>>> 1b9185998f7fecc1cb20bcb8136d5812a4ec67dc
 
   const turnCallback = useCallback((turn) => {
     setIsCurrentPlayerTurn(parseInt(turn) === parseInt(userId))
@@ -88,7 +107,7 @@ const Game = () => {
 
   const discussionTimerCallback = useCallback((timer) => {
     console.log("discussionTimer", timer);
-    setDiscussionTimer(timer)
+    setDiscussionTimer(timer);
   }, []);
 
   const resultCallback = useCallback((result) => {
@@ -99,23 +118,36 @@ const Game = () => {
   //   ()
   // }, []);
 
+<<<<<<< HEAD
   const {
     sendMessage,
     sendVote,
     connected,
     chatMessages
   } = useGameWebSocket(
+=======
+  const { sendMessage, connected, chatMessages } = useGameWebSocket(
+>>>>>>> 1b9185998f7fecc1cb20bcb8136d5812a4ec67dc
     userId,
     urlLobbyId,
     playersCallback,
     phaseCallback,
+<<<<<<< HEAD
     chatCallback,
+=======
+    endGameCallback,
+    //chatCallback,
+>>>>>>> 1b9185998f7fecc1cb20bcb8136d5812a4ec67dc
     wordCallback,
     turnCallback,
     roundTimerCallback,
     clueTimerCallback,
+<<<<<<< HEAD
     discussionTimerCallback,
     resultCallback,
+=======
+    discussionTimerCallback
+>>>>>>> 1b9185998f7fecc1cb20bcb8136d5812a4ec67dc
     //voteTimerCallback
     //roleAssignedCallback,
   );
@@ -212,4 +244,5 @@ const Game = () => {
     </div>
   );
 };
+
 export default Game;

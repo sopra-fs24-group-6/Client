@@ -64,7 +64,7 @@ export const useLobbyWebSocket = (
             startGameCallback();
           }
         } catch (error) {
-          console.error('Error processing message:', error);
+          console.error("Error processing message:", error);
         }
       }
     );

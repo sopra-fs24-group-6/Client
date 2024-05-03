@@ -11,7 +11,6 @@ import NesContainer from "../ui/NESContainer";
 import "styles/views/Lobby.scss";
 import NESContainerW from "../ui/NESContainerW";
 
-
 const Browser = () => {
   const navigate = useNavigate();
   const [lobbies, setLobbies] = useState(lobbyList);
@@ -31,7 +30,7 @@ const Browser = () => {
         alert(`Something went wrong when trying to fetch available lobbies: \n${handleError(error)}`);
       }
     })();
-  }, []); 
+  }, []);
 
   const getLobbies = async () => {
     try {
@@ -49,7 +48,7 @@ const Browser = () => {
     setSelectedLobby(selectedLobby);
     // const userId = localStorage.getItem("id");
     // const userId = "2"; // ***This is for test***
-    const userId = localStorage.getItem('userId') // ***For Testing purposes***
+    const userId = localStorage.getItem("userId") // ***For Testing purposes***
     if (!selectedLobby.password) {
       await api.post("/lobbies/" + selectedLobby.id + "/players", { userId });
       // navigate("/lobbies/" + selectedLobby.id);
@@ -119,7 +118,7 @@ const Browser = () => {
                         text="Join"
                         className="small hover-green"
                         onClick={() => joinLobby(lobby)}
-                      ></CustomButton>
+                      />
                     </td>
                   </tr>
                 ))}
@@ -138,12 +137,12 @@ const Browser = () => {
                     text="Submit"
                     className="small hover-green"
                     onClick={passwordSubmit}
-                  ></CustomButton>
+                  />
                   <CustomButton
                     text="Cancel"
                     className="small hover-red"
                     onClick={() => setPasswordPrompt(false)}
-                  ></CustomButton>
+                  />
                 </div>
               </div>
             )}

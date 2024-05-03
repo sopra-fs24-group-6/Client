@@ -7,13 +7,22 @@ export const useGameWebSocket = (
   lobbyId,
   playersCallback,
   phaseCallback,
+<<<<<<< HEAD
   chatCallback,
+=======
+  endGameCallback,
+  //chatCallback,
+>>>>>>> 1b9185998f7fecc1cb20bcb8136d5812a4ec67dc
   wordCallback,
   turnCallback,
   roundTimerCallback,
   clueTimerCallback,
+<<<<<<< HEAD
   discussionTimerCallback,
   resultCallback,
+=======
+  discussionTimerCallback
+>>>>>>> 1b9185998f7fecc1cb20bcb8136d5812a4ec67dc
   //voteTimerCallback
 ) => {
   const [client, setClient] = useState(null);
@@ -55,13 +64,17 @@ export const useGameWebSocket = (
   }, [userId, lobbyId]);
 
   const subscribeToChannels = (clientInstance) => {
+<<<<<<< HEAD
     console.log(`Subscribing to /topic/${lobbyId}/gameEvents`);
+=======
+>>>>>>> 1b9185998f7fecc1cb20bcb8136d5812a4ec67dc
     const gameEventsSub = clientInstance.subscribe(
       `/topic/${lobbyId}/gameEvents`,
       (message) => {
         try {
           const event = JSON.parse(message.body);
           console.log(`Received game event: ${event.eventType}`, event);
+<<<<<<< HEAD
           //if (event.eventType === "startRound") {
           //phaseCallback("clue");
           phaseCallback(event.eventType);
@@ -72,6 +85,19 @@ export const useGameWebSocket = (
           // } else if (event.eventType === "EndRound") {
           //   phaseCallback("endRound");
           // }
+=======
+          if (event.eventType === "startRound") {
+            phaseCallback("clue");
+          } else if (event.eventType === "startDiscussion") {
+            phaseCallback("discussion");
+          } else if (event.eventType === "startVoting") {
+            phaseCallback("vote");
+          } else if (event.eventType === "EndRound") {
+            phaseCallback("endRound");
+          } else if (event.eventType === "EndGame") {
+            endGameCallback;
+          }
+>>>>>>> 1b9185998f7fecc1cb20bcb8136d5812a4ec67dc
         } catch (error) {
           console.error("Error processing message:", error);
         }
@@ -121,7 +147,10 @@ export const useGameWebSocket = (
     const turnSub = clientInstance.subscribe(
       `/topic/${lobbyId}/clueTurn`,
       (message) => {
+<<<<<<< HEAD
         //console.log("check5", message)
+=======
+>>>>>>> 1b9185998f7fecc1cb20bcb8136d5812a4ec67dc
         const event = JSON.parse(message.body);
         //const newLog = `Clue phase: Player ${event.userId}'s turn.`;
         turnCallback(event.userId);

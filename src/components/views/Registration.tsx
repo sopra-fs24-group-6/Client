@@ -6,7 +6,9 @@ import "styles/views/Login.scss";
 import NesContainer from "../ui/NESContainer";
 import NESContainerW from "../ui/NESContainerW";
 import CustomButton from "../ui/CustomButton";
+import languages from "helpers/languages.json";
 import "../../styles/ui/AppBody.scss";
+import Button from "../ui/Button";
 
 const Registration = () => {
   const navigate = useNavigate();
@@ -14,19 +16,21 @@ const Registration = () => {
   const [name, setName] = useState(null);
   const [password, setPassword] = useState(null);
   const [username, setUsername] = useState(null);
+  const [language, setLanguage] = useState("en");
 
   const doRegistration = async () => {
     try {
-      await api.post("/users/register", {
+      await api.post("/users", {
         username,
         password,
-        name,
+        language,
       });
 
       // Perform automatic login after registration
-      const loginResponse = await api.post("/users/login", {
+      const loginResponse = await api.post("/login", {
         username,
         password,
+        language,
       });
 
       const loggedInUser = new User(loginResponse.data);
@@ -75,12 +79,23 @@ const Registration = () => {
               onClick={() => setIsSecure(!isSecure)}
             />
           </div>
+          <div className="field-aligner">
+            <select
+              value={language}
+              onChange={(e) => setLanguage(e.target.value)}>
+              {languages.map((lang) => (
+                <option key={lang.code} value={lang.code}>
+                  {lang.name}
+                </option>
+              ))}
+            </select>
+          </div>
           <CustomButton
             text="Register"
-            disabled={!username || !password}
             className="w55 hover-green"
-            onClick={() => doRegistration()}>
-          </CustomButton>
+            disabled={!username || !password}
+            onClick={() => doRegistration()}
+          />
         </NESContainerW>
       </div>
     </>
@@ -126,7 +141,7 @@ onClick={() => setIsSecure((prev) => !prev)}
   disabled={!username || !name || !password}
   className="50 hover-green"
   onClick={() => doRegistration()}
-></CustomButton>
+/>
 </div>
 </div>
 </NESContainerW> */}

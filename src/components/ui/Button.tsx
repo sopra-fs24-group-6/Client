@@ -1,20 +1,29 @@
-import React from "react";
-import PropTypes from "prop-types";
-import "../../styles/ui/Button.scss";
+import React from 'react';
 
-export const Button = props => (
-  <button
-    {...props}
-    style={{width: props.width, ...props.style}}
-    className={`primary-button ${props.className}`}>
-    {props.children}
-  </button>
-);
+interface ButtonProps {
+  label: string; 
+  onClick: () => void;
+  disabled?: boolean;
+}
 
-
-Button.propTypes = {
-  width: PropTypes.number,
-  style: PropTypes.string,
-  className: PropTypes.string,
-  children: PropTypes.node,
+const SimpleButton: React.FC<ButtonProps> = ({ label, onClick, disabled = false }) => {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      style={{
+        padding: '8px 16px',
+        fontSize: '16px',
+        color: 'white',
+        backgroundColor: disabled ? 'grey' : 'blue',
+        border: 'none',
+        borderRadius: '5px',
+        cursor: disabled ? 'not-allowed' : 'pointer',
+      }}
+    >
+      {label}
+    </button>
+  );
 };
+
+export default SimpleButton;
