@@ -7,6 +7,7 @@ import NesContainer from "../ui/NESContainer";
 import NESContainerW from "../ui/NESContainerW";
 import CustomButton from "../ui/CustomButton";
 import "../../styles/ui/AppBody.scss";
+import Button from "../ui/Button";
 
 
 /*
@@ -80,10 +81,10 @@ const Login = () => {
           </div>
           <CustomButton
             text="Login"
-            disabled={!username || !password}
             className="w55 hover-green"
-            onClick={() => doLogin()}>
-          </CustomButton>
+            disabled={!username || !password}
+            onClick={() => doLogin()}
+          />
           <div className="Space">
             <div className="register-text2">
               Don&apos;t have an account yet?
@@ -103,45 +104,3 @@ const Login = () => {
  * You can get access to the history object's properties via the useLocation, useNavigate, useParams, ... hooks.
  */
 export default Login;
-
-
-// <NESContainerW title="">
-//   <div className="login container">
-//     <label>Username:</label>
-//     <input
-//       className="username-field"
-//       type="text"
-//       value={username}
-//       onChange={(e) => setUsername(e.target.value)}
-//     />
-//     <label>Password:</label>
-//     <input
-//       className="password-field"
-//       type={isSecure ? "password" : "text"}
-//       value={password}
-//       onChange={(e) => setPassword(e.target.value)}
-//     />
-//     <CustomButton
-//       text={isSecure ? "Show" : "Hide"}
-//       className={
-//         isSecure ? "small 50 hover-green" : "small 50 hover-orange"
-//       }
-//       onClick={() => setIsSecure((prev) => !prev)}
-//     />
-
-//     <div className="login button-container">
-//       <CustomButton
-//         text="Login"
-//         disabled={!username || !password}
-//         className="50 hover-green"
-//         onClick={() => doLogin()}
-//       ></CustomButton>
-//     </div>
-//     <span className="register-text">
-//       `Don&apos;t have an account yet?`
-//       <span className="register-cta" onClick={() => navigate("/register")}>
-//         Register a new account
-//       </span>
-//     </span>
-//   </div>
-// </NESContainerW>

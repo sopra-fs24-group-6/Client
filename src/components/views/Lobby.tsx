@@ -55,20 +55,20 @@ const GameLobby = () => {
     console.log("selectedThemes has been updated", selectedThemes);
   }, [selectedThemes]);
 
-//   useEffect(() => {
-//   const fetchThemes = async () => {
-//     try {
-//       const response = await api.get('/themes');
-//       const themes = response.data;
-//       setAvailableThemes(themes);
-//       //setSelectedThemes(themes);
-//       console.log("What is fetched",themes);
-//     } catch (error) {
-//       console.error(`Failed to fetch themes: ${handleError(error)}`);
-//     }
-//   };
-//   fetchThemes();
-// },[]);
+  //   useEffect(() => {
+  //   const fetchThemes = async () => {
+  //     try {
+  //       const response = await api.get('/themes');
+  //       const themes = response.data;
+  //       setAvailableThemes(themes);
+  //       //setSelectedThemes(themes);
+  //       console.log("What is fetched",themes);
+  //     } catch (error) {
+  //       console.error(`Failed to fetch themes: ${handleError(error)}`);
+  //     }
+  //   };
+  //   fetchThemes();
+  // },[]);
 
   useEffect(() => {
     setIsAdmin(location.state?.isAdmin || false);
@@ -81,19 +81,18 @@ const GameLobby = () => {
   useEffect(() => {
     const fetchThemes = async () => {
       try {
-        const themesResponse = await api.get('/themes');
+        const themesResponse = await api.get("/themes");
         const themes = themesResponse.data;
 
         setAvailableThemes(themes);
         setSelectedThemes(themes);
       } catch (error) {
-        console.error('Error fetching themes:', error);
+        console.error("Error fetching themes:", error);
       }
     };
 
     fetchThemes();
   }, []);
-
 
   const createLobby = async () => {
     try {
@@ -103,20 +102,20 @@ const GameLobby = () => {
       // setAvailableThemes(themes);
       // setSelectedThemes(themes);
       // console.log(availableThemes);
-  
+
       const requestBody = {
         lobbyAdmin: userId,
         name,
         password,
         playerLimit,
-        "themes" : selectedThemes,
+        themes: selectedThemes,
         rounds,
         roundTimer,
         clueTimer,
         discussionTimer,
         isPrivate,
       };
-  
+
       const lobbyResponse = await api.post("/lobbies", requestBody);
       const newLobby = lobbyResponse.data;
       setLobby(newLobby);
@@ -127,7 +126,6 @@ const GameLobby = () => {
       alert(`Something went wrong: \n${handleError(error)}`);
     }
   };
-  
 
   // const createLobby = async () => {
   //   const requestBody = {
@@ -155,21 +153,21 @@ const GameLobby = () => {
   //   }
   // };
 
-    // const fetchStandardLobby = async () => {
-    //   try {
-    //     const response = await api.get('/lobby/' + lobbyId); // Replace with your actual endpoint
-    //     const lobby = response.data;
-    //     setAvailableThemes(lobby.themes);
-    //     setRounds(lobby.rounds);
-    //     setRoundTimer(lobby.roundTimer);
-    //     setClueTimer(lobby.clueTimer);
-    //     setDiscussionTimer(lobby.discussionTimer);
-    //     setPlayerLimit(lobby.playerLimit);
-    //     // we need a vote timer?
-    //   } catch (error) {
-    //     console.error(`Failed to fetch standard lobby: ${handleError(error)}`);
-    //   }
-    // };
+  // const fetchStandardLobby = async () => {
+  //   try {
+  //     const response = await api.get('/lobby/' + lobbyId); // Replace with your actual endpoint
+  //     const lobby = response.data;
+  //     setAvailableThemes(lobby.themes);
+  //     setRounds(lobby.rounds);
+  //     setRoundTimer(lobby.roundTimer);
+  //     setClueTimer(lobby.clueTimer);
+  //     setDiscussionTimer(lobby.discussionTimer);
+  //     setPlayerLimit(lobby.playerLimit);
+  //     // we need a vote timer?
+  //   } catch (error) {
+  //     console.error(`Failed to fetch standard lobby: ${handleError(error)}`);
+  //   }
+  // };
 
   //   // if (!isPublished) {
   //   //   fetchStandardLobby();
@@ -180,23 +178,26 @@ const GameLobby = () => {
   //   // };
   //   //if(!isAdmin)
 
-  const lobbyCallback = useCallback((newLobby) => {
-    setLobby(newLobby);
-    // setLobbyId(newLobby.id);
-    setName(newLobby.name);
-    setPassword(newLobby.password);
-    setPlayers(newLobby.players);
-    setPlayerLimit(newLobby.playerLimit);
-    setPlayerCount(newLobby.playerCount);
-    //setAvailableThemes(availableThemes);
-    setSelectedThemes(newLobby.themes);
-    setRounds(newLobby.rounds);
-    setRoundTimer(newLobby.roundTimer);
-    setClueTimer(newLobby.clueTimer);
-    setDiscussionTimer(newLobby.discussionTimer);
-    setIsPrivate(newLobby.isPrivate);
-    console.log("Themes on update", newLobby.themes)
-  }, [selectedThemes]);
+  const lobbyCallback = useCallback(
+    (newLobby) => {
+      setLobby(newLobby);
+      // setLobbyId(newLobby.id);
+      setName(newLobby.name);
+      setPassword(newLobby.password);
+      setPlayers(newLobby.players);
+      setPlayerLimit(newLobby.playerLimit);
+      setPlayerCount(newLobby.playerCount);
+      //setAvailableThemes(availableThemes);
+      setSelectedThemes(newLobby.themes);
+      setRounds(newLobby.rounds);
+      setRoundTimer(newLobby.roundTimer);
+      setClueTimer(newLobby.clueTimer);
+      setDiscussionTimer(newLobby.discussionTimer);
+      setIsPrivate(newLobby.isPrivate);
+      console.log("Themes on update", newLobby.themes);
+    },
+    [selectedThemes]
+  );
 
   const playerCallback = useCallback((newPlayers) => {
     setPlayers(newPlayers);
@@ -219,7 +220,7 @@ const GameLobby = () => {
     startGameCallback,
     lobbyCallback,
     playerCallback,
-    userId,
+    userId
   );
 
   // useEffect(() => {
@@ -253,14 +254,19 @@ const GameLobby = () => {
       clueTimer,
       discussionTimer,
       isPrivate,
-      "themes" :  selectedThemes
+      themes: selectedThemes,
     };
     console.log("Update method log", selectedThemes);
 
     try {
       await api.put(`/lobbies/${lobbyId}`, requestBody);
     } catch (error) {
-      alert(`Something went wrong while updating the lobby: \n${handleError(error)}`);
+      alert(
+        `Something went wrong while updating the lobby: \n${handleError(error)}`
+      );
+      alert(
+        `Something went wrong while updating the lobby: \n${handleError(error)}`
+      );
     }
   };
 
@@ -291,14 +297,28 @@ const GameLobby = () => {
     }
   };
 
+  const leaveGame = async (lobbyId, userId) => {
+    try {
+      await api.delete("/lobbies/" + lobbyId + "/players/" + userId);
+    } catch (error) {
+      alert(`Could not leave game: \n${handleError(error)}`);
+    }
+  };
+
+  //Listenser to remove Player from Lobby when unexpectetly leaving the lobby view
+  /*  window.addEventListener("beforeunload", function (event) {
+    const confirmationMessage = "Are you sure you want to leave the lobby?";
+    event.returnValue = confirmationMessage;
+
+    leaveGame(lobbyId, userId);
+  }); */
   const startGame = () => {
     if (client && connected) {
       client.publish({
-        destination: `/app/startGame`,
+        destination: "/app/startGame",
         body: JSON.stringify({ lobbyId, userId }),
-      })
-    }
-    else {
+      });
+    } else {
       console.log("Lobby ID is null, cannot start game.");
     }
   };
@@ -368,7 +388,10 @@ const GameLobby = () => {
                 />
               </div>
               <div className="Space Flex">
-                <label htmlFor="roundLimit">Round Limit:</label> {/* Accessible label association */}
+                <label htmlFor="roundLimit">Round Limit:</label>{" "}
+                {/* Accessible label association */}
+                <label htmlFor="roundLimit">Round Limit:</label>{" "}
+                {/* Accessible label association */}
                 <RoundLimiter
                   value={rounds}
                   onRoundLimitChange={handleRoundLimitChange}

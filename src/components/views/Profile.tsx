@@ -7,7 +7,7 @@ import "styles/views/Game.scss";
 import CustomButton from "../ui/CustomButton";
 import NavBar from "../ui/NavBar";
 import initialPlayers from "components/placeholders/playerlist";
-import languages from 'helpers/languages.json';
+import languages from "helpers/languages.json";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -17,7 +17,7 @@ const Profile = () => {
   const [isLoggedInUser, setIsLoggedInUser] = useState(false);
 
   const [isEditable, setIsEditable] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState('en');
+  const [selectedLanguage, setSelectedLanguage] = useState("en");
 
   const usernameInputRef = useRef(null);
   const birthDateInputRef = useRef(null);
@@ -29,7 +29,7 @@ const Profile = () => {
       setIsLoading(true);
       try {
         const response = await api.get(`/users/${userId}`);
-        console.log(response.data)
+        console.log(response.data);
         setUser(response.data);
 
         setIsLoggedInUser(
@@ -54,7 +54,7 @@ const Profile = () => {
     // const newLanguage = languageInputRef?.current?.value;
     const newLanguage = selectedLanguage;
 
-    console.log(newLanguage)
+    console.log(newLanguage);
 
     try {
       await api.put(`/users/${userId}`, {
@@ -142,7 +142,8 @@ const Profile = () => {
                 <select
                   defaultValue={`${user.language}`}
                   value={selectedLanguage}
-                  onChange={(e) => setSelectedLanguage(e.target.value)}>
+                  onChange={(e) => setSelectedLanguage(e.target.value)}
+                >
                   {languages.map((lang) => (
                     <option key={lang.code} value={lang.code}>
                       {lang.name}
@@ -152,7 +153,8 @@ const Profile = () => {
               </div>
             ) : (
               <p className="info-text">
-                {languages.find(lang => lang.code === user.language)?.name || "Unknown Language"}
+                {languages.find((lang) => lang.code === user.language)?.name ||
+                  "Unknown Language"}
               </p>
             )}
           </div>
@@ -189,7 +191,7 @@ const Profile = () => {
               text="Go Back"
               className="hover-orange"
               onClick={() => navigate("/users")}
-            ></CustomButton>
+            />
           </div>
         </NESContainerW>
         <NESContainerW title="Friends">
@@ -201,7 +203,7 @@ const Profile = () => {
                 <CustomButton
                   text="Invite"
                   className="small-kick margin-kick hover-red"
-                ></CustomButton>
+                />
               </li>
             ))}
           </ul>

@@ -6,8 +6,9 @@ import "styles/views/Login.scss";
 import NesContainer from "../ui/NESContainer";
 import NESContainerW from "../ui/NESContainerW";
 import CustomButton from "../ui/CustomButton";
-import languages from 'helpers/languages.json';
+import languages from "helpers/languages.json";
 import "../../styles/ui/AppBody.scss";
+import Button from "../ui/Button";
 
 const Registration = () => {
   const navigate = useNavigate();
@@ -15,7 +16,7 @@ const Registration = () => {
   const [name, setName] = useState(null);
   const [password, setPassword] = useState(null);
   const [username, setUsername] = useState(null);
-  const [language, setLanguage] = useState('en');
+  const [language, setLanguage] = useState("en");
 
   const doRegistration = async () => {
     try {
@@ -91,8 +92,8 @@ const Registration = () => {
           </div>
           <CustomButton
             text="Register"
-            disabled={!username || !password}
             className="w55 hover-green"
+            disabled={!username || !password}
             onClick={() => doRegistration()}
           />
         </NESContainerW>
@@ -140,7 +141,7 @@ onClick={() => setIsSecure((prev) => !prev)}
   disabled={!username || !name || !password}
   className="50 hover-green"
   onClick={() => doRegistration()}
-></CustomButton>
+/>
 </div>
 </div>
 </NESContainerW> */}
