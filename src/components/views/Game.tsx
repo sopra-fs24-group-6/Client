@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 //import { subscribeToGameWebSocket } from "../../helpers/GameWebSocketManager.js";
+import { useParams } from "react-router-dom";
 import { useGameWebSocket } from "helpers/GameWebSocketManager";
 import { useNavigate } from "react-router-dom";
 import { User } from "types";
@@ -14,26 +15,56 @@ const Game = () => {
   const [round, setRound] = useState(1); // needed with every roundstart hook
   const [isCurrentPlayerTurn, setIsCurrentPlayerTurn] = useState(false);
   const [chat, setChat] = useState([]);
-  const [roundTimer, setRoundTimer] = useState(null);
+  const [roundTimer, setRoundTimer] = useState<number | null>(null);
   const [clueTimer, setClueTimer] = useState(null);
   const [discussionTimer, setDiscussionTimer] = useState(null);
   const [voteTimer, setVoteTimer] = useState(null);
   const [clue, setClue] = useState("");
   const [draftMessage, setDraftMessage] = useState("");
   const [players, setPlayers] = useState([]);
+<<<<<<< HEAD
+  const [hasVoted, setHasVoted] = useState(false);
+  const [gameResult, setGameResult] = useState(null);
+=======
   const navigate = useNavigate();
+>>>>>>> 1b9185998f7fecc1cb20bcb8136d5812a4ec67dc
   //const [sendMessage, setSendMessage] = useState(null);
-  const player = localStorage.getItem("userId");
   const lobbyId = localStorage.getItem("lobbyId");
+
   const userId = localStorage.getItem("userId");
+
+  const { lobbyId: urlLobbyId } = useParams();
+  //console.log("lobby id", urlLobbyId);
 
   const playersCallback = useCallback((players) => {
     console.log("playerCallback", players);
     setPlayers(players);
   }, []);
 
+  useEffect (()=> {
+    console.log(gameResult);
+  }, [gameResult]);
+
   const phaseCallback = useCallback((phase) => {
     console.log("phaseCallback", phase);
+<<<<<<< HEAD
+    if (phase === "clue") {
+      setPhase("Clue");
+    } else if (phase === "discussion") {
+      setPhase("Discussion");
+    } else if (phase === "vote") {
+      setPhase("Voting");
+    } else if (phase === "gameResult") {
+      setPhase("Results");
+    } else if (phase === "endGame") {
+      setPhase("End");
+    }
+  }, [])
+
+  const chatCallback = useCallback((chat) => {
+    setChat(chat);
+  }, [])
+=======
     setPhase(phase);
   }, []);
 
@@ -41,6 +72,7 @@ const Game = () => {
     console.log("endGameCallback", phase);
     navigate("/menu");
   }, []);
+>>>>>>> 1b9185998f7fecc1cb20bcb8136d5812a4ec67dc
 
   const wordCallback = useCallback((word) => {
     console.log("WordCallback", word);
@@ -51,11 +83,16 @@ const Game = () => {
       setWord(word);
       setIsWolf(false);
     }
+<<<<<<< HEAD
+  }, [round]);
+=======
   }, []);
+>>>>>>> 1b9185998f7fecc1cb20bcb8136d5812a4ec67dc
 
   const turnCallback = useCallback((turn) => {
-    console.log("turnCallback", turn);
-    setIsCurrentPlayerTurn(turn === player);
+    setIsCurrentPlayerTurn(parseInt(turn) === parseInt(userId))
+    console.log("turnCallback", turn, userId);
+    console.log("bool", isCurrentPlayerTurn);
   }, []);
 
   const roundTimerCallback = useCallback((roundTimer) => {
@@ -73,28 +110,51 @@ const Game = () => {
     setDiscussionTimer(timer);
   }, []);
 
+  const resultCallback = useCallback((result) => {
+    setGameResult(result);
+  }, []);
+
   // const roleAssignedCallback = useCallback(() => {
   //   ()
   // }, []);
 
+<<<<<<< HEAD
+  const {
+    sendMessage,
+    sendVote,
+    connected,
+    chatMessages
+  } = useGameWebSocket(
+=======
   const { sendMessage, connected, chatMessages } = useGameWebSocket(
+>>>>>>> 1b9185998f7fecc1cb20bcb8136d5812a4ec67dc
     userId,
-    lobbyId,
+    urlLobbyId,
     playersCallback,
     phaseCallback,
+<<<<<<< HEAD
+    chatCallback,
+=======
     endGameCallback,
     //chatCallback,
+>>>>>>> 1b9185998f7fecc1cb20bcb8136d5812a4ec67dc
     wordCallback,
     turnCallback,
     roundTimerCallback,
     clueTimerCallback,
+<<<<<<< HEAD
+    discussionTimerCallback,
+    resultCallback,
+=======
     discussionTimerCallback
+>>>>>>> 1b9185998f7fecc1cb20bcb8136d5812a4ec67dc
     //voteTimerCallback
     //roleAssignedCallback,
   );
 
   return (
     <div>
+      <h1>{phase}</h1>
       {/* <h2>Phase: {phase}</h2>
       {phase === "clue" && (
         <ClueOverlay isWolf={isWolf(player)} word={word} round={round} />
@@ -107,21 +167,12 @@ const Game = () => {
         )}
       </div>
       <div>
-        {phase === "clue" && <p>Time remaining:{roundTimer} seconds</p>}
-      </div>
-      <div>
-        {phase === "clue" && isCurrentPlayerTurn && (
-          <>
-            <p>Time remaining: {clueTimer} seconds</p>
-            {/* <input
-              type="text"
-              placeholder="Enter your clue"
-              onChange={(e) => sendMessage(e.target.value)}
-            /> */}
-          </>
+        {phase === "Clue" && (
+          <p>Phase: {phase} - Time remaining: {roundTimer} seconds</p>
         )}
       </div>
       <div
+        //clue display
         id="messageList"
         style={{
           height: "200px",
@@ -132,13 +183,15 @@ const Game = () => {
         }}
       >
         {chat.map((msg, index) => (
-          <div key={index}>
+          <div key={index}>  {/* If msg has a unique id, use key={msg.id} */}
             {msg.userId}: {msg.content}
           </div>
         ))}
       </div>
-      {phase === "clue" && (
-        <>
+      {phase === "Clue" && (
+        <>{isCurrentPlayerTurn &&
+          <p>Time remaining: {clueTimer} seconds</p>
+        }
           <input
             type="text"
             value={draftMessage}
@@ -148,13 +201,14 @@ const Game = () => {
             placeholder="Type a clue..."
             style={{ width: "80%", marginRight: "10px" }}
           />
-          <button onClick={sendMessage} disabled={!isCurrentPlayerTurn}>
+          <button onClick={sendMessage(`/app/clue/${urlLobbyId}/sendMessage`, draftMessage, userId, urlLobbyId,)} disabled={!isCurrentPlayerTurn}>
             Send
           </button>
         </>
       )}
-      {phase === "discussion" && (
+      {phase === "Discussion" && (
         <>
+          <p>Phase: {phase} - Time remaining: {discussionTimer} seconds</p>
           <input
             type="text"
             value={draftMessage}
@@ -163,20 +217,30 @@ const Game = () => {
             placeholder="Type a message..."
             style={{ width: "80%", marginRight: "10px" }}
           />
-          <button onClick={sendMessage}>Send</button>
+          <button onClick={sendMessage(`/app/chat/${urlLobbyId}/sendMessage`, draftMessage, userId, urlLobbyId,)}>Send</button>
         </>
       )}
 
-      {/* {phase === "vote" && (
+      {phase === "Voting" && !hasVoted && (
         <div>
           {players.map((player) => (
-            <div key={player.id}>
-              <p>{player.name}</p>
-              <button onClick={() => handleVote(player.id)}>Vote</button>
+            <div key={player.userId}>
+              <p>{player.username}</p>
+              <button onClick={() => { sendVote(player.userId, userId); setDraftMessage(""); setHasVoted(true); }}>Vote</button>
             </div>
           ))}
         </div>
-      )} */}
+      )}
+      {phase === "Voting" && hasVoted && (
+        <h2>waiting for other players to vote</h2>
+      )}
+      {phase === "Results" && gameResult && (
+        <div>
+          <p>Winner role: {gameResult.winnerRole}</p>
+          <p>Winners: {gameResult.winners.map(w => `${w.username}`).join(", ")}</p>
+          <p>Losers: {gameResult.losers.map(l => `${l.username}`).join(", ")}</p>
+        </div>
+      )}
     </div>
   );
 };
