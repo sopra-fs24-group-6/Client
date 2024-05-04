@@ -44,6 +44,7 @@ const GameLobby = () => {
   const [availableThemes, setAvailableThemes] = useState([]);
   const [selectedThemes, setSelectedThemes] = useState([]);
   const [showThemePopUp, setShowThemePopUp] = useState(false);
+  const [isFriendsPopupOpen, setIsFriendsPopupOpen] = useState(false);
   const userId = localStorage.getItem("userId");
 
   const lobbyTypeChanger = (value) => {
@@ -331,6 +332,10 @@ const GameLobby = () => {
     setShowThemePopUp(false);
   };
 
+  const toggleFriendsPopup = () => {
+    setIsFriendsPopupOpen(!isFriendsPopupOpen);
+  };
+
   return (
     <>
       <NavBar />
@@ -498,6 +503,15 @@ const GameLobby = () => {
                 );
               })}
             </ul>
+            {isPublished && (
+              <div className="Space">
+                <CustomButton
+                  text="Invite Friends"
+                  className="small 50 hover-green"
+                  onClick={() => toggleFriendsPopup()}
+                />
+              </div>
+            )}
           </NESContainerW>
         </div>
       </div>
