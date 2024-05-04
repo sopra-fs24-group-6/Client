@@ -3,11 +3,13 @@ import { Client } from "@stomp/stompjs";
 import { getBrokerURL } from "helpers/getBrokerURL";
 
 export const useLobbyWebSocket = (
+  isAdmin,
   lobbyId,
   startGameCallback,
   lobbyCallback,
   playerCallback,
   userId,
+  lobbyEventCallback,
 ) => {
   const [client, setClient] = useState(null);
   const [connected, setConnected] = useState(false);
@@ -69,15 +71,6 @@ export const useLobbyWebSocket = (
       }
     );
 
-    const lobbyInfoSub = clientInstance.subscribe(
-      `/lobbies/${lobbyId}/lobby_info`,
-      (message) => {
-        const response = JSON.parse(message.body);
-        console.log("Received lobby info:", response);
-        lobbyCallback(response);
-      }
-    );
-
     const playerInfoSub = clientInstance.subscribe(
       `/lobbies/${lobbyId}/players`,
       (message) => {
@@ -87,8 +80,38 @@ export const useLobbyWebSocket = (
       }
     );
 
+    const lobbyInfoSub = clientInstance.subscribe(
+      `/lobbies/${lobbyId}/lobby_info`,
+      (message) => {
+        const response = JSON.parse(message.body);
+        console.log("Received lobby info:", response);
+        lobbyCallback(response);
+      }
+    );
+
     // Push subscriptions to ref array for cleanup
-    subscriptions.current.push(gameEventsSub, lobbyInfoSub, playerInfoSub);
+    subscriptions.current.push(gameEventsSub, lobbyInfoSub);
+
+    if(!isAdmin){
+      const lobbyEventSub = clientInstance.subscribe(
+        `/lobbies/${lobbyId}/lobby_event`,
+        (message) => {
+          const response = JSON.parse(message.body);
+          lobbyEventCallback(response);
+        }
+      )
+
+      const lobbyEventEachPlayerSub = clientInstance.subscribe(
+        `/lobbies/${lobbyId}/lobby_event/${userId}`,
+        (message) => {
+          const response = JSON.parse(message.body);
+          lobbyEventCallback(response);
+        }
+      )
+
+      // Push subscriptions to ref array for cleanup
+      subscriptions.current.push(lobbyEventSub, lobbyEventEachPlayerSub);
+    }
   };
 
   const sendMessage = (destination, message) => {
