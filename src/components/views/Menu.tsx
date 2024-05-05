@@ -25,9 +25,9 @@ const Menu = () => {
       <div className="Extension">
         <NESContainerW title="Pick an option" className="center">
           <CustomButton
-            text="Play"
+            text="LeaderBoard"
             className="large w50 hover-green"
-            onClick={() => console.log("Play button clicked!")}
+            onClick={() => navigate("/leaderboard")}
           />
           <div className="button-container">
             <CustomButton

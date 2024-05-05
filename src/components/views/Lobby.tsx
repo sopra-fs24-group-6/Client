@@ -272,9 +272,12 @@ const GameLobby = () => {
     setRounds(value);
   };
 
-  const kickPlayer = async (player) => {
+  const kickPlayer = async (playerId) => {
     try {
       const requesterId = localStorage.getItem("userId");
+      console.log('requesterId:' + requesterId);
+      console.log('playerId:' + playerId)
+      console.log('lobbyId:' + lobbyId);
       if (!requesterId) {
         alert("No requesterId found in local storage.");
 
@@ -283,7 +286,7 @@ const GameLobby = () => {
       const requestBody = {
         userId: requesterId,
       };
-      await api.delete("/lobbies/" + lobbyId + "/players/" + player.id, {
+      await api.delete("/lobbies/" + lobbyId + "/players/" + playerId, {
         data: requestBody,
       });
     } catch (error) {
