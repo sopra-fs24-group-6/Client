@@ -22,6 +22,8 @@ const GameDemo = () => {
   const lobbyId = localStorage.getItem("lobbyId");
   const userId = localStorage.getItem("userId");
   const navigate = useNavigate();
+  const [currentRound, setCurrentRound] = useState(null);
+  const [maxRound, setMaxRound] = useState(null);
 
   // these settings are for demo. userId and lobbyId should be set appropriately.
   // const [userId, setUserId] = useState("");
@@ -65,6 +67,11 @@ const GameDemo = () => {
         stompClient.subscribe(`/topic/${lobbyId}/gameEvents`, (message) => {
           const event = JSON.parse(message.body);
           setPhase(event.eventType);
+          if (event.eventType === "startRound") {
+            setHasAlreadyVoted(false);
+            setCurrentRound(event.currentRound);
+            setMaxRound(event.maxRound);
+          }
           if (event.eventType === "endGame") {
             navigate("/menu");
           }
@@ -258,6 +265,7 @@ const GameDemo = () => {
 
       {/* Display phase */}
       <h2>Phase: {phase}</h2>
+      <h2>Round: {currentRound}/{maxRound}</h2>
 
       {/* Assigned word and role  */}
       <div>
@@ -328,7 +336,7 @@ const GameDemo = () => {
       )}
 
       {/* Result */}
-      {phase === "gameResult" && gameResult && (
+      {phase === "roundResult" && gameResult && (
         <div>
           <p>Winner role: {gameResult.winnerRole}</p>
           <p>Winners: {gameResult.winners.map(w => `${w.username}`).join(", ")}</p>
