@@ -44,6 +44,7 @@ const GameLobby = () => {
   const [availableThemes, setAvailableThemes] = useState([]);
   const [selectedThemes, setSelectedThemes] = useState([]);
   const [showThemePopUp, setShowThemePopUp] = useState(false);
+  const [isFriendsPopupOpen, setIsFriendsPopupOpen] = useState(false);
   const userId = localStorage.getItem("userId");
 
   const lobbyTypeChanger = (value) => {
@@ -94,7 +95,6 @@ const GameLobby = () => {
     fetchThemes();
   }, []);
 
-
   const createLobby = async () => {
     try {
       // Fetch themes first
@@ -109,7 +109,7 @@ const GameLobby = () => {
         name,
         password,
         playerLimit,
-        "themes": selectedThemes,
+        themes: selectedThemes,
         rounds,
         roundTimer,
         clueTimer,
@@ -127,7 +127,6 @@ const GameLobby = () => {
       alert(`Something went wrong: \n${handleError(error)}`);
     }
   };
-
 
   // const createLobby = async () => {
   //   const requestBody = {
@@ -180,23 +179,26 @@ const GameLobby = () => {
   //   // };
   //   //if(!isAdmin)
 
-  const lobbyCallback = useCallback((newLobby) => {
-    setLobby(newLobby);
-    // setLobbyId(newLobby.id);
-    setName(newLobby.name);
-    setPassword(newLobby.password);
-    setPlayers(newLobby.players);
-    setPlayerLimit(newLobby.playerLimit);
-    setPlayerCount(newLobby.playerCount);
-    //setAvailableThemes(availableThemes);
-    setSelectedThemes(newLobby.themes);
-    setRounds(newLobby.rounds);
-    setRoundTimer(newLobby.roundTimer);
-    setClueTimer(newLobby.clueTimer);
-    setDiscussionTimer(newLobby.discussionTimer);
-    setIsPrivate(newLobby.isPrivate);
-    console.log("Themes on update", newLobby.themes)
-  }, [selectedThemes]);
+  const lobbyCallback = useCallback(
+    (newLobby) => {
+      setLobby(newLobby);
+      // setLobbyId(newLobby.id);
+      setName(newLobby.name);
+      setPassword(newLobby.password);
+      setPlayers(newLobby.players);
+      setPlayerLimit(newLobby.playerLimit);
+      setPlayerCount(newLobby.playerCount);
+      //setAvailableThemes(availableThemes);
+      setSelectedThemes(newLobby.themes);
+      setRounds(newLobby.rounds);
+      setRoundTimer(newLobby.roundTimer);
+      setClueTimer(newLobby.clueTimer);
+      setDiscussionTimer(newLobby.discussionTimer);
+      setIsPrivate(newLobby.isPrivate);
+      console.log("Themes on update", newLobby.themes);
+    },
+    [selectedThemes]
+  );
 
   const playerCallback = useCallback((newPlayers) => {
     setPlayers(newPlayers);
@@ -215,33 +217,31 @@ const GameLobby = () => {
   //     //subscribeToLobbyWebSocket(handleChat,handleLobbyUpdate, handleGameStart, handlePlayer)
   //   );
   const { sendMessage, connected, client } = useLobbyWebSocket(
+    isAdmin,
     lobbyId,
     startGameCallback,
     lobbyCallback,
     playerCallback,
-    userId,
+    userId
   );
 
-  // useEffect(() => {
-  //   if (isPublished && isAdmin) {
-  //     updateLobby();
-  //   }
-  // }, [
-  //   name,
-  //   password,
-  //   players,
-  //   playerLimit,
-  //   playerCount,
-  //   selectedThemes,
-  //   rounds,
-  //   roundTimer,
-  //   clueTimer,
-  //   discussionTimer,
-  //   isPrivate,
-  // ]);
+  useEffect(() => {
+    if (!lobbyId) return;
+    updateLobby();
+  }, [
+    name,
+    password,
+    playerLimit,
+    playerCount,
+    selectedThemes,
+    rounds,
+    roundTimer,
+    clueTimer,
+    discussionTimer,
+    isPrivate,
+  ]);
 
   const updateLobby = async () => {
-    if (!lobbyId) return;
     const requestBody = {
       name,
       password,
@@ -253,14 +253,20 @@ const GameLobby = () => {
       clueTimer,
       discussionTimer,
       isPrivate,
-      "themes": selectedThemes
+      themes: selectedThemes,
     };
-    console.log("Update method log", selectedThemes);
+    if (isAdmin) {
+      console.log("Update method log", selectedThemes);
 
-    try {
-      await api.put(`/lobbies/${lobbyId}`, requestBody);
-    } catch (error) {
-      alert(`Something went wrong while updating the lobby: \n${handleError(error)}`);
+      try {
+        await api.put(`/lobbies/${lobbyId}`, requestBody);
+      } catch (error) {
+        alert(
+          `Something went wrong while updating the lobby: \n${handleError(
+            error
+          )}`
+        );
+      }
     }
   };
 
@@ -294,14 +300,28 @@ const GameLobby = () => {
     }
   };
 
+  const leaveGame = async (lobbyId, userId) => {
+    try {
+      await api.delete("/lobbies/" + lobbyId + "/players/" + userId);
+    } catch (error) {
+      alert(`Could not leave game: \n${handleError(error)}`);
+    }
+  };
+
+  //Listenser to remove Player from Lobby when unexpectetly leaving the lobby view
+  /*  window.addEventListener("beforeunload", function (event) {
+    const confirmationMessage = "Are you sure you want to leave the lobby?";
+    event.returnValue = confirmationMessage;
+
+    leaveGame(lobbyId, userId);
+  }); */
   const startGame = () => {
     if (client && connected) {
       client.publish({
         destination: "/app/startGame",
         body: JSON.stringify({ lobbyId, userId }),
-      })
-    }
-    else {
+      });
+    } else {
       console.log("Lobby ID is null, cannot start game.");
     }
   };
@@ -313,6 +333,10 @@ const GameLobby = () => {
 
   const handleThemePopUpClose = () => {
     setShowThemePopUp(false);
+  };
+
+  const toggleFriendsPopup = () => {
+    setIsFriendsPopupOpen(!isFriendsPopupOpen);
   };
 
   return (
@@ -371,7 +395,10 @@ const GameLobby = () => {
                 />
               </div>
               <div className="Space Flex">
-                <label htmlFor="roundLimit">Round Limit:</label> {/* Accessible label association */}
+                <label htmlFor="roundLimit">Round Limit:</label>{" "}
+                {/* Accessible label association */}
+                <label htmlFor="roundLimit">Round Limit:</label>{" "}
+                {/* Accessible label association */}
                 <RoundLimiter
                   value={rounds}
                   onRoundLimitChange={handleRoundLimitChange}
@@ -479,18 +506,27 @@ const GameLobby = () => {
                 );
               })}
             </ul>
+            {isPublished && (
+              <div className="Space">
+                <CustomButton
+                  text="Invite Friends"
+                  className="small 50 hover-green"
+                  onClick={() => toggleFriendsPopup()}
+                />
+              </div>
+            )}
           </NESContainerW>
         </div>
       </div>
 
-      <div className="Space">
+      {/* <div className="Space">
         <CustomButton
           text="Update Lobby"
           className="50 hover-green"
           onClick={updateLobby}
           disabled={!isPublished || !isAdmin}
         />
-      </div>
+      </div> */}
     </>
   );
 };

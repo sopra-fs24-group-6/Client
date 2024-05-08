@@ -10,6 +10,7 @@ import Registration from "../../views/Registration";
 import Lobby from "../../views/Lobby";
 import Browser from "../../views/Browser";
 import LeaderBoard from "../../views/LeaderBoard";
+import HowToPlay from "../../views/HowToPlay";
 
 import Game from "../../views/Game";
 import GameDemo from "../../views/GameDemo";
@@ -39,6 +40,8 @@ const AppRouter = () => {
         <Route path="/register" element={<Registration />} />
           
         <Route path="/menu" element={<Menu />} />
+
+        <Route path="/howtoplay" element={<HowToPlay />} />
           
         <Route path="/lobby" element={<Lobby />} />
         <Route path="/lobby/:lobbyId" element={<Lobby />} />

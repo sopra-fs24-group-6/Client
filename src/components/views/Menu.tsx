@@ -25,9 +25,9 @@ const Menu = () => {
       <div className="Extension">
         <NESContainerW title="Pick an option" className="center">
           <CustomButton
-            text="LeaderBoard"
+            text="How To Play"
             className="large w50 hover-green"
-            onClick={() => navigate("/leaderboard")}
+            onClick={() => navigate("/howtoplay")}
           />
           <div className="button-container">
             <CustomButton
@@ -45,7 +45,7 @@ const Menu = () => {
             <CustomButton
               text="Leaderboard"
               className="w25 hover-orange"
-              onClick={() => console.log("Create Lobby button clicked!")}
+              onClick={() => navigate("/leaderboard")}
             />
             <CustomButton
               text="Sign out"
@@ -57,6 +57,6 @@ const Menu = () => {
       </div>
     </>
   );
-}
+};
 
 export default Menu;
