@@ -7,6 +7,7 @@ import CustomButton from "../ui/CustomButton";
 import NavBar from "../ui/NavBar";
 //import initialPlayers from "components/placeholders/playerlist";
 import languages from "helpers/languages.json";
+import { getDomain } from "helpers/getDomain";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -25,6 +26,8 @@ const Profile = () => {
 
   const [friends, setFriends] = useState([]);
   const [friendRequests, setFriendRequests] = useState([]);
+  const [avatar, setAvatar] = useState(null);
+  const [isHovered, setIsHovered] = useState(false);
 
   const usernameInputRef = useRef(null);
   const birthDateInputRef = useRef(null);
@@ -38,6 +41,9 @@ const Profile = () => {
         const response = await api.get(`/users/${userId}`);
         console.log(response.data);
         setUser(response.data);
+        const avatarSrc = getDomain() + response.data.avatarUrl;
+        console.log(avatarSrc)
+        setAvatar(avatarSrc);
 
         setIsLoggedInUser(
           localStorage.getItem("userId") === String(response.data.id)
@@ -59,8 +65,23 @@ const Profile = () => {
       }
     };
 
+    // const fetchAvatar = async () => {
+    //   try {
+    //     // Replace with the actual backend endpoint
+    //     const response = await api.get(`/${userId}/avatar`)
+    //     const avatarSrc = getDomain() + response.data.avatarUrl;
+    //     console.log(avatarSrc)
+    //     setAvatar(avatarSrc);
+    //   } catch (error) {
+    //     console.error(`Failed to fetch avatar: ${handleError(error)}`);
+    //     // Fallback to a default image if fetching fails
+    //     setAvatar("/path/to/default/avatar.png");
+    //   }
+    // };
+
     fetchUserDetails();
-  }, [userId, navigate]);
+    // fetchAvatar();
+  }, [userId, navigate, avatar]);
 
   //retrieve all users from server
   const fetchUsers = async () => {
@@ -134,6 +155,27 @@ const Profile = () => {
     return date.toLocaleDateString("en-US", options);
   };
 
+  const handleFileChange = async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      // Prepare the form data
+      const formData = new FormData();
+      formData.append("avatar", file);
+  
+      // Send the new avatar to the server (via WebSocket or an API)
+      try {
+        const response = await api.post(`/${userId}/avatar`, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        
+        // Update the local avatar display
+        setAvatar(response.data.avatarUrl);
+      } catch (error) {
+        console.error("Failed to upload avatar:", handleError(error));
+      }
+    }
+  };
+
   const updateUserData = async () => {
     const newUsername = usernameInputRef?.current?.value;
     const newName = nameInputRef?.current?.value;
@@ -169,7 +211,49 @@ const Profile = () => {
       <div className="Extension Flex">
         <NESContainerW title="" className="left">
           <NESContainerW title="User Information">
-            <div>
+          <div
+            style={{ position: "relative", display: "inline-block" }}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+          >
+            {/* Avatar */}
+            <img
+              src={avatar || "/path/to/default/avatar.png"}
+              alt="User Avatar"
+              style={{ width: "100px", height: "100px", borderRadius: "50%" }}
+            />
+            
+            {/* Plus Button Overlay */}
+            {isHovered && (
+              <button
+                onClick={() => document.getElementById("fileInput").click()}
+                style={{
+                  position: "absolute",
+                  top: "35px",
+                  left: "35px",
+                  width: "30px",
+                  height: "30px",
+                  borderRadius: "50%",
+                  backgroundColor: "green",
+                  color: "white",
+                  border: "none",
+                  cursor: "pointer",
+                }}
+              >
+                +
+              </button>
+            )}
+
+            {/* Hidden File Input */}
+            <input
+              type="file"
+              id="fileInput"
+              accept="image/*"
+              style={{ display: "none" }}
+              onChange={handleFileChange}
+            />
+          </div>
+            {/* <div>
               <span className="info-title">Name:</span>
               {isEditable ? (
                 <div className="editable-input">
@@ -182,7 +266,7 @@ const Profile = () => {
               ) : (
                 <p className="info-text">{user.name}</p>
               )}
-            </div>
+            </div> */}
             <div>
               <span className="info-title">Status:</span>
               <p className="info-text">

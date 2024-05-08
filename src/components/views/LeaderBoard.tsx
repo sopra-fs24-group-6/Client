@@ -10,6 +10,7 @@ import NavBar from "../ui/NavBar";
 import NesContainer from "../ui/NESContainer";
 import "styles/views/Lobby.scss";
 import NESContainerW from "../ui/NESContainerW";
+import { getDomain } from "helpers/getDomain";
 
 const LeaderBoard = () => {
   const navigate = useNavigate();
@@ -67,6 +68,11 @@ const LeaderBoard = () => {
                 {players.map((player, index) => (
                   <tr key={player.id}>
                     <td className="browser-items">
+                    <img
+                      src={getDomain() + "/" +  player.avatarUrl || "/path/to/default/avatar.png"} // Replace with the actual default image path
+                      alt={`${player.username}'s avatar`}
+                      style={{ width: "32px", height: "32px", borderRadius: "50%", marginRight: "8px" }}
+                    />
                       {player.username}
                     </td>
                     <td className="browser-items">
