@@ -32,6 +32,8 @@ const Profile = () => {
   const usernameInputRef = useRef(null);
   const birthDateInputRef = useRef(null);
   const nameInputRef = useRef(null);
+  // Initialize timestamp only once
+  const [timestamp] = useState(new Date().getTime());
 
   //retrieve userdata from server
   useEffect(() => {
@@ -41,7 +43,7 @@ const Profile = () => {
         const response = await api.get(`/users/${userId}`);
         console.log(response.data);
         setUser(response.data);
-        const avatarSrc = getDomain() + response.data.avatarUrl;
+        const avatarSrc = getDomain() + '/' + response.data.avatarUrl + `?v=${timestamp}`;
         console.log(avatarSrc)
         setAvatar(avatarSrc);
 
@@ -169,7 +171,7 @@ const Profile = () => {
         });
         
         // Update the local avatar display
-        setAvatar(response.data.avatarUrl);
+        setAvatar(getDomain() + '/' + response.data.avatarUrl + `?v=${timestamp}`);
       } catch (error) {
         console.error("Failed to upload avatar:", handleError(error));
       }

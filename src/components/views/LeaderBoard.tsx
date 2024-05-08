@@ -15,6 +15,8 @@ import { getDomain } from "helpers/getDomain";
 const LeaderBoard = () => {
   const navigate = useNavigate();
   const [players, setPlayers] = useState(leaderList);
+  // Initialize timestamp only once
+  const [timestamp] = useState(new Date().getTime());
 
   //*** For Testing Purposes***
   useEffect(() => {
@@ -69,7 +71,7 @@ const LeaderBoard = () => {
                   <tr key={player.id}>
                     <td className="browser-items">
                     <img
-                      src={getDomain() + "/" +  player.avatarUrl || "/path/to/default/avatar.png"} // Replace with the actual default image path
+                      src={getDomain() + "/" +  player.avatarUrl + `?v=${timestamp}` || "/path/to/default/avatar.png"} // Replace with the actual default image path
                       alt={`${player.username}'s avatar`}
                       style={{ width: "32px", height: "32px", borderRadius: "50%", marginRight: "8px" }}
                     />
