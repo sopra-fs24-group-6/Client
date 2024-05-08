@@ -17,6 +17,7 @@ const Browser = () => {
   const [passwordPrompt, setPasswordPrompt] = useState(false);
   const [password, setPassword] = useState(null);
   const [selectedLobby, setSelectedLobby] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   //*** For Testing Purposes***
   useEffect(() => {
@@ -25,9 +26,13 @@ const Browser = () => {
       try {
         const response = await api.get("/lobbies");
         setLobbies(response.data);
-        console.log(response.data)
+        console.log(response.data);
       } catch (error) {
-        alert(`Something went wrong when trying to fetch available lobbies: \n${handleError(error)}`);
+        alert(
+          `Something went wrong when trying to fetch available lobbies: \n${handleError(
+            error
+          )}`
+        );
       }
     })();
   }, []);
@@ -48,12 +53,12 @@ const Browser = () => {
     setSelectedLobby(selectedLobby);
     // const userId = localStorage.getItem("id");
     // const userId = "2"; // ***This is for test***
-    const userId = localStorage.getItem("userId") // ***For Testing purposes***
+    const userId = localStorage.getItem("userId"); // ***For Testing purposes***
     if (!selectedLobby.password) {
       await api.post("/lobbies/" + selectedLobby.id + "/players", { userId });
       // navigate("/lobbies/" + selectedLobby.id);
       //For testing purposes
-      navigate(`/lobby/${selectedLobby.id}`, { state: { isAdmin: false } })
+      navigate(`/lobby/${selectedLobby.id}`, { state: { isAdmin: false } });
     } else {
       setPasswordPrompt(true);
     }
@@ -61,7 +66,9 @@ const Browser = () => {
 
   const passwordSubmit = async () => {
     try {
-      await api.post("/lobbies/" + selectedLobby.id + "/authentication", { password });
+      await api.post("/lobbies/" + selectedLobby.id + "/authentication", {
+        password,
+      });
       // const userId = localStorage.getItem("id");
       const userId = "3"; // ***This is for test***
       await api.post("/lobbies/" + selectedLobby.id + "/players", { userId });
@@ -74,6 +81,9 @@ const Browser = () => {
       );
     }
   };
+  const filteredLobbies = lobbies.filter((lobby) =>
+    lobby.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <>
@@ -84,6 +94,12 @@ const Browser = () => {
         </NesContainer>
         <div className="Space">
           <NESContainerW title="Join a lobby" className="center">
+            <input
+              type="text"
+              placeholder="Search by lobby name"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
             <table style={{ margin: "0 auto", textAlign: "center" }}>
               <thead>
                 <tr>
@@ -96,23 +112,15 @@ const Browser = () => {
                 </tr>
               </thead>
               <tbody>
-                {lobbies.map((lobby) => (
+                {filteredLobbies.map((lobby) => (
                   <tr key={lobby.id}>
-                    <td className="browser-items">
-                      {lobby.name}
-                    </td>
+                    <td className="browser-items">{lobby.name}</td>
                     <td className="browser-items">
                       {lobby.password ? "Private" : "Public"}
                     </td>
-                    <td className="browser-items">
-                      {lobby.players.length}
-                    </td>
-                    <td className="browser-items">
-                      {lobby.playerLimit}
-                    </td>
-                    <td className="browser-items">
-                      {lobby.themes.join(", ")}
-                    </td>
+                    <td className="browser-items">{lobby.players.length}</td>
+                    <td className="browser-items">{lobby.playerLimit}</td>
+                    <td className="browser-items">{lobby.themes.join(", ")}</td>
                     <td className="browser-items">
                       <CustomButton
                         text="Join"
@@ -146,6 +154,11 @@ const Browser = () => {
                 </div>
               </div>
             )}
+            <CustomButton
+              text="Refresh"
+              className="small hover-green"
+              onClick={() => getLobbies()}
+            />
           </NESContainerW>
         </div>
       </div>
