@@ -220,7 +220,7 @@ const Profile = () => {
           >
             {/* Avatar */}
             <img
-              src={avatar || getDomain() + "/images/avatar/genshin_start.png"}
+              src={avatar}
               alt="User Avatar"
               style={{ width: "100px", height: "100px", borderRadius: "50%" }}
             />
