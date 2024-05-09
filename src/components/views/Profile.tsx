@@ -30,6 +30,74 @@ const Profile = () => {
   const birthDateInputRef = useRef(null);
   const nameInputRef = useRef(null);
 
+  const updateFriendRequests = async () => {
+    const friendRequestsResponse = await api.get(
+      `/friends/friendRequests?userId=${userId}`
+    );
+
+    if (!friendRequestsResponse.data.length) return;
+
+    const usersRequests = friendRequestsResponse.data.map((friendRequest) =>
+      api.get(`/users/${friendRequest.senderUserId}`)
+    );
+
+    // TODO: if needed, `any` has to be replaced with correct type definition
+    const users: any = (await Promise.all(usersRequests)).map(
+      (res: any) => res.data
+    );
+
+    const updatedFriendRequest = friendRequestsResponse.data.map(
+      (friendRequest: any) => {
+        return {
+          ...friendRequest,
+          username:
+            users?.find((users: any) => users.id === friendRequest.senderUserId)
+              ?.username || "unknown",
+        };
+      }
+    );
+
+    setFriendRequests(updatedFriendRequest);
+  };
+
+  const updateFriendList = async () => {
+    const friendRequestsResponse = await api.get(`/friends?userId=${userId}`);
+
+    if (!friendRequestsResponse.data.length) return;
+
+    const usersRequests = friendRequestsResponse.data.map((friendRequest) => {
+      const requestId =
+        friendRequest.senderUserId === Number(userId)
+          ? friendRequest.receiverUserId
+          : friendRequest.senderUserId;
+
+      return api.get(`/users/${requestId}`);
+    });
+
+    // TODO: if needed, `any` has to be replaced with correct type definition
+    const users: any = (await Promise.all(usersRequests)).map(
+      (res: any) => res.data
+    );
+
+    const updatedFriends = friendRequestsResponse.data.map(
+      (friendRequest: any) => {
+        const friendId =
+          friendRequest.senderUserId === Number(userId)
+            ? friendRequest.receiverUserId
+            : friendRequest.senderUserId;
+
+        return {
+          ...friendRequest,
+          username:
+            users?.find((users: any) => users.id === friendId)?.username ||
+            "unknown",
+        };
+      }
+    );
+
+    setFriends(updatedFriends);
+  };
+
   //retrieve userdata from server
   useEffect(() => {
     const fetchUserDetails = async () => {
@@ -50,6 +118,9 @@ const Profile = () => {
           `/users/${userId}/friendRequests`
         );
         setFriendRequests(friendRequestsResponse.data); */
+
+        await updateFriendRequests();
+        await updateFriendList();
 
         setIsLoading(false);
       } catch (error) {
@@ -89,10 +160,13 @@ const Profile = () => {
     }
   }, [isUserListOpen]);
 
-  const sendFriendRequest = async (requestedUserId) => {
+  const sendFriendRequest = async (receiverUserId) => {
     try {
-      const requestBody = { user };
-      await api.post(`users/${requestedUserId}/friendRequests`, requestBody);
+      const requestBody = {
+        senderUserId: user.id,
+        receiverUserId,
+      };
+      await api.post(`/friends/friendRequests`, requestBody);
     } catch (error) {
       console.error("Failed to send friend request:", handleError(error));
     }
@@ -100,14 +174,13 @@ const Profile = () => {
 
   const acceptFriendRequest = async (requester) => {
     try {
-      const requestBody1 = { requester };
-      const requestBody2 = { user };
+      await api.put(`/friends/friendRequests/${requester}`);
 
-      await api.post(`/users/${userId}/friends`, requestBody1);
+      // await api.post(`/friends/${requester.id}/friends`, requestBody2);
 
-      await api.post(`/users/${requester.id}/friends`, requestBody2);
+      await updateFriendRequests();
+      await updateFriendList();
 
-      await api.delete(`/users/${userId}/friendRequests/${requester.id}`);
     } catch (error) {
       console.error("Failed to accept friend request:", handleError(error));
     }
@@ -115,7 +188,7 @@ const Profile = () => {
 
   const denyFriendRequest = async (requester) => {
     try {
-      await api.delete(`/users/${userId}/friendRequests/${requester}`);
+      await api.delete(`/friends/friendRequests/${requester}`);
     } catch (error) {
       console.error("Failed to deny friend request:", handleError(error));
     }
@@ -347,12 +420,12 @@ const Profile = () => {
                   <CustomButton
                     text="Accept"
                     className="small-kick margin-kick hover-green"
-                    onClick={() => acceptFriendRequest(requester)}
+                    onClick={() => acceptFriendRequest(requester.id)}
                   />
                   <CustomButton
                     text="Deny"
                     className="small-kick margin-kick hover-red"
-                    onClick={() => denyFriendRequest(requester)}
+                    onClick={() => denyFriendRequest(requester.id)}
                   />
                 </li>
               ))}
