@@ -357,19 +357,22 @@ const Profile = () => {
                   <span style={{ marginRight: 8 }}>
                     {`${user.status === "OFFLINE" ? "🔴" : "🟢"}`}
                   </span>
-                  {player.username}{" "}
-                  <CustomButton
-                    text="Invite"
-                    className="small-kick margin-kick hover-red"
-                  />
+                  <a
+                    href={`/users/${player.id}`}
+                    style={{ color: "black", textDecoration: "none" }}
+                  >
+                    {player.username}
+                  </a>
                 </li>
               ))}
             </ul>
-            <CustomButton
-              text="Add Friends"
-              className="small-kick margin-kick hover-red"
-              onClick={() => setIsUserListOpen(!isUserListOpen)}
-            />
+            {isLoggedInUser && (
+              <CustomButton
+                text="Add Friends"
+                className="small-kick margin-kick hover-red"
+                onClick={() => setIsUserListOpen(!isUserListOpen)}
+              />
+            )}
             {isUserListOpen && (
               <div className="modal-background">
                 <div className="modal-content">
@@ -401,7 +404,12 @@ const Profile = () => {
                     >
                       {filteredUsers.map((user) => (
                         <li key={user.id}>
-                          {user.username}{" "}
+                          <a
+                            href={`/users/${user.id}`}
+                            style={{ color: "black", textDecoration: "none" }}
+                          >
+                            {user.username}
+                          </a>
                           {friendRequestsSent.includes(user.id) ? (
                             "Added"
                           ) : (
@@ -419,25 +427,32 @@ const Profile = () => {
               </div>
             )}
           </NESContainerW>
-          <NESContainerW title="Friend Requests">
-            <ul className="list-style">
-              {friendRequests.map((requester) => (
-                <li className="Aligner" key={requester.id}>
-                  {requester.username}
-                  <CustomButton
-                    text="Accept"
-                    className="small-kick margin-kick hover-green"
-                    onClick={() => acceptFriendRequest(requester.id)}
-                  />
-                  <CustomButton
-                    text="Deny"
-                    className="small-kick margin-kick hover-red"
-                    onClick={() => denyFriendRequest(requester.id)}
-                  />
-                </li>
-              ))}
-            </ul>
-          </NESContainerW>
+          {isLoggedInUser && (
+            <NESContainerW title="Friend Requests">
+              <ul className="list-style">
+                {friendRequests.map((requester) => (
+                  <li className="Aligner" key={requester.id}>
+                    <a
+                      href={`/users/${requester.id}`}
+                      style={{ color: "black", textDecoration: "none" }}
+                    >
+                      {requester.username}
+                    </a>
+                    <CustomButton
+                      text="Accept"
+                      className="small-kick margin-kick hover-green"
+                      onClick={() => acceptFriendRequest(requester.id)}
+                    />
+                    <CustomButton
+                      text="Deny"
+                      className="small-kick margin-kick hover-red"
+                      onClick={() => denyFriendRequest(requester.id)}
+                    />
+                  </li>
+                ))}
+              </ul>
+            </NESContainerW>
+          )}
         </NESContainerW>
         <NESContainerW title="" className="right">
           <NESContainerW title="User Stats">
