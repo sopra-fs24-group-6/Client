@@ -25,6 +25,7 @@ const Profile = () => {
 
   const [friends, setFriends] = useState([]);
   const [friendRequests, setFriendRequests] = useState([]);
+  const [friendRequestsSent, setFriendRequestsSent] = useState([]);
 
   const usernameInputRef = useRef(null);
   const birthDateInputRef = useRef(null);
@@ -138,7 +139,7 @@ const Profile = () => {
     try {
       const response = await api.get("/users");
       setUsers(response.data);
-      setFilteredUsers(response.data);
+      setFilteredUsers(response.data.filter((u) => u.id !== user.id));
     } catch (error) {
       console.error("Failed to fetch users:", handleError(error));
     }
@@ -167,6 +168,7 @@ const Profile = () => {
         receiverUserId,
       };
       await api.post(`/friends/friendRequests`, requestBody);
+      setFriendRequestsSent([...friendRequestsSent, receiverUserId]);
     } catch (error) {
       console.error("Failed to send friend request:", handleError(error));
     }
@@ -180,7 +182,6 @@ const Profile = () => {
 
       await updateFriendRequests();
       await updateFriendList();
-
     } catch (error) {
       console.error("Failed to accept friend request:", handleError(error));
     }
@@ -353,8 +354,10 @@ const Profile = () => {
             <ul className="list-style">
               {friends.map((player, index) => (
                 <li className="Aligner" key={index}>
-                  {player.username}
-
+                  <span style={{ marginRight: 8 }}>
+                    {`${user.status === "OFFLINE" ? "🔴" : "🟢"}`}
+                  </span>
+                  {player.username}{" "}
                   <CustomButton
                     text="Invite"
                     className="small-kick margin-kick hover-red"
@@ -399,11 +402,15 @@ const Profile = () => {
                       {filteredUsers.map((user) => (
                         <li key={user.id}>
                           {user.username}{" "}
-                          <CustomButton
-                            text="Add Friend"
-                            className="small-kick margin-kick hover-green"
-                            onClick={() => sendFriendRequest(user.id)}
-                          ></CustomButton>
+                          {friendRequestsSent.includes(user.id) ? (
+                            "Added"
+                          ) : (
+                            <CustomButton
+                              text="Add Friend"
+                              className="small-kick margin-kick hover-green"
+                              onClick={() => sendFriendRequest(user.id)}
+                            ></CustomButton>
+                          )}
                         </li>
                       ))}
                     </ul>
