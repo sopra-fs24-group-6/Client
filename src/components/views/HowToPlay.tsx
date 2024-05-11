@@ -6,6 +6,7 @@ import NavBar from "../ui/NavBar";
 
 const HowToPlay = () => {
   const navigate = useNavigate();
+
   return (
     <>
       <NavBar />

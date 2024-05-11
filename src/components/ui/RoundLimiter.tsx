@@ -24,8 +24,8 @@ const RoundLimiter: React.FC<LimiterProps> = ({
       onChange={handleRoundLimitChange}
     >
       {[...Array(6)].map((_, index) => (
-        <option key={index} value={index + 3}>
-          {index + 3}
+        <option key={index} value={index + 1}>
+          {index + 1}
         </option>
       ))}
     </select>
