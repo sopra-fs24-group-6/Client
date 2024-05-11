@@ -1,6 +1,6 @@
 // styles/CustomButton.scss
 .custom-button {
-  padding: 10px 15px;
+  padding: 10px 10px;
   border: none;
   border-radius: 5px;
   transition: background-color 0.3s ease;
@@ -47,7 +47,7 @@
   }
 
   &.w25 {
-    width: calc(25% - 0.25rem);
+    width: calc(25% - 0.75rem);
     // margin-left: auto;
     // margin-right: auto;
     // display: block;

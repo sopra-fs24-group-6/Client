@@ -342,7 +342,6 @@ const GameLobby = () => {
               <div className="Space Flex">
                 <label>Round Timer:</label>
                 <Slider
-                  min={5}
                   //min={60}
                   min={5} // for developing phase
                   max={120}
