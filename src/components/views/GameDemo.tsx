@@ -32,6 +32,8 @@ const GameDemo = () => {
   const lobbyId = localStorage.getItem("lobbyId");
   const userId = localStorage.getItem("userId");
   const navigate = useNavigate();
+  const [currentRound, setCurrentRound] = useState(null);
+  const [maxRound, setMaxRound] = useState(null);
 
   const chatLogRef = useRef(null);
   const clueLogRef = useRef(null);
@@ -198,6 +200,11 @@ const GameDemo = () => {
         stompClient.subscribe(`/topic/${lobbyId}/gameEvents`, (message) => {
           const event = JSON.parse(message.body);
           setPhase(event.eventType);
+          if (event.eventType === "startRound") {
+            setHasAlreadyVoted(false);
+            setCurrentRound(event.currentRound);
+            setMaxRound(event.maxRound);
+          }
           // if (event.eventType === "vote") {
           //   setVoteOverlay(true);
           // }
@@ -363,11 +370,48 @@ const GameDemo = () => {
   };
 
   return (
+    <div>
+      {/* This is for demo to set userId manually */}
+      {/*<div>*/}
+      {/*  <button onClick={startGame}>StartGame</button>*/}
+      {/*</div>*/}
+      {/*{!isUserIdSet && (*/}
+      {/*  <>*/}
+      {/*    <input*/}
+      {/*      type="number"*/}
+      {/*      value={userIdInput}*/}
+      {/*      onChange={(e) => setUserIdInput(e.target.value)}*/}
+      {/*      placeholder="Enter your userId..."*/}
+      {/*    />*/}
+      {/*    <button onClick={setUserIdAndHide}>Set UserId</button>*/}
+      {/*  </>*/}
+      {/*)}*/}
+      {/*{isUserIdSet && (*/}
+      {/*  <div>Your userId is {userId}</div>*/}
+      {/*)}*/}
+      {/*<hr/>*/}
+
+      {/* Display phase */}
+      <h2>Phase: {phase}</h2>
+      <h2>Round: {currentRound}/{maxRound}</h2>
+
+      {/* Assigned word and role  */}
+      <div>
+        {isWolf === null ? (
+          <></>
+        ) : isWolf ? (
+          <p>You are the wolf! Try to blend in.</p>
+        ) : (
+          <p>This round&apos;s word is: {word}</p>
+        )}
+    // Check from here how to use multiple rounds on the display end
+        //
     <>
       <div className="Center">
         <NESContainer title="Play">
           <h1 className="press-start-font">Word Wolf</h1>
         </NESContainer>
+//
       </div>
       <div className="main-container">
         <RoleWordOverlay isVisible={roleOverlay} word={word} isWolf={isWolf} />
@@ -453,6 +497,28 @@ const GameDemo = () => {
             <button onClick={sendMessage} disabled={phase !== "discussion"}>Send</button>
           </div>
         </div>
+        //check
+      )}
+      {phase === "vote" && hasAlreadyVoted && (
+        <p>You have voted. Please wait for voting of other players.</p>
+      )}
+
+      {/* Result */}
+      {phase === "roundResult" && gameResult && (
+        <div>
+          <p>Winner role: {gameResult.winnerRole}</p>
+          <p>Winners: {gameResult.winners.map(w => `${w.username}`).join(", ")}</p>
+          <p>Losers: {gameResult.losers.map(l => `${l.username}`).join(", ")}</p>
+        </div>
+      )}
+
+      {/* Clue and Chat log */}
+      <p>Clue log</p>
+      <div id="messageList" style={{ height: "200px", overflowY: "scroll", marginBottom: "20px", border: "1px solid #ccc", padding: "10px" }}>
+        {clueMessages.map((msg, index) => (
+          <div key={index}>{msg.username}: {msg.content}</div>
+        ))}
+// check how to display multiple rounds
         <InfoBar currentPlayer={playerTurn} role={role} word={word} clueTimer={clueTimer} />
       </div>
     </>
