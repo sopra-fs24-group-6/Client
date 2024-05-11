@@ -46,6 +46,7 @@ const GameLobby = () => {
   const [isKicked, setIsKicked] = useState(false);
   const [isLobbyDeleted, setIsLobbyDeleted] = useState(false);
   const [showThemePopUp, setShowThemePopUp] = useState(false);
+  const [isFriendsPopupOpen, setIsFriendsPopupOpen] = useState(false);
   const [showCreated, setShowCreated] = useState(false);
   const [showStartGamePopUp, setShowStartGamePopUp] = useState(false);
   const [showDeleteLobbyPopUp, setShowDeleteLobbyPopUp] = useState(false);
@@ -236,9 +237,14 @@ const GameLobby = () => {
     setRounds(value);
   };
 
-  const kickPlayer = async (targetUserId) => {
+  const kickPlayer = async (playerId) => {
+
+  //const kickPlayer = async (targetUserId) => {
     try {
       const requesterId = localStorage.getItem("userId");
+      console.log('requesterId:' + requesterId);
+      console.log('playerId:' + playerId)
+      console.log('lobbyId:' + lobbyId);
       if (!requesterId) {
         alert("No requesterId found in local storage.");
 
@@ -247,7 +253,8 @@ const GameLobby = () => {
       const requestBody = {
         userId: requesterId,
       };
-      await api.delete("/lobbies/" + lobbyId + "/players/" + targetUserId, {
+      await api.delete("/lobbies/" + lobbyId + "/players/" + playerId, {
+      //await api.delete("/lobbies/" + lobbyId + "/players/" + targetUserId, {
         data: requestBody,
       });
     } catch (error) {
@@ -273,6 +280,10 @@ const GameLobby = () => {
 
   const handleThemePopUpClose = () => {
     setShowThemePopUp(false);
+  };
+
+  const toggleFriendsPopup = () => {
+    setIsFriendsPopupOpen(!isFriendsPopupOpen);
   };
 
   return (
@@ -366,8 +377,8 @@ const GameLobby = () => {
               <div className="Space Flex">
                 <label>Discussion Timer:</label>
                 <Slider
+                  min={5}
                   // min={60}
-                  min={5} // for developing phase
                   max={120}
                   step={10}
                   value={discussionTimer}
@@ -460,6 +471,15 @@ const GameLobby = () => {
                 );
               })}
             </ul>
+            {isPublished && (
+              <div className="Space">
+                <CustomButton
+                  text="Invite Friends"
+                  className="small 50 hover-green"
+                  onClick={() => toggleFriendsPopup()}
+                />
+              </div>
+            )}
           </NESContainerW>
         </div>
 

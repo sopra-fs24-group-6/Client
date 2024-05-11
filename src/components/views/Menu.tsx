@@ -45,7 +45,7 @@ const Menu = () => {
             <CustomButton
               text="Leaderboard"
               className="w25 hover-orange"
-              onClick={() => console.log("Create Lobby button clicked!")}
+              onClick={() => navigate("/leaderboard")}
             />
             <CustomButton
               text="Sign out"
