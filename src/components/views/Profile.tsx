@@ -28,12 +28,81 @@ const Profile = () => {
   const [friendRequests, setFriendRequests] = useState([]);
   const [avatar, setAvatar] = useState(null);
   const [isHovered, setIsHovered] = useState(false);
+  const [friendRequestsSent, setFriendRequestsSent] = useState([]);
 
   const usernameInputRef = useRef(null);
   const birthDateInputRef = useRef(null);
   const nameInputRef = useRef(null);
   // Initialize timestamp only once
   const [timestamp] = useState(new Date().getTime());
+
+  const updateFriendRequests = async () => {
+    const friendRequestsResponse = await api.get(
+      `/friends/friendRequests?userId=${userId}`
+    );
+
+    if (!friendRequestsResponse.data.length) return;
+
+    const usersRequests = friendRequestsResponse.data.map((friendRequest) =>
+      api.get(`/users/${friendRequest.senderUserId}`)
+    );
+
+    // TODO: if needed, `any` has to be replaced with correct type definition
+    const users: any = (await Promise.all(usersRequests)).map(
+      (res: any) => res.data
+    );
+
+    const updatedFriendRequest = friendRequestsResponse.data.map(
+      (friendRequest: any) => {
+        return {
+          ...friendRequest,
+          username:
+            users?.find((users: any) => users.id === friendRequest.senderUserId)
+              ?.username || "unknown",
+        };
+      }
+    );
+
+    setFriendRequests(updatedFriendRequest);
+  };
+
+  const updateFriendList = async () => {
+    const friendRequestsResponse = await api.get(`/friends?userId=${userId}`);
+
+    if (!friendRequestsResponse.data.length) return;
+
+    const usersRequests = friendRequestsResponse.data.map((friendRequest) => {
+      const requestId =
+        friendRequest.senderUserId === Number(userId)
+          ? friendRequest.receiverUserId
+          : friendRequest.senderUserId;
+
+      return api.get(`/users/${requestId}`);
+    });
+
+    // TODO: if needed, `any` has to be replaced with correct type definition
+    const users: any = (await Promise.all(usersRequests)).map(
+      (res: any) => res.data
+    );
+
+    const updatedFriends = friendRequestsResponse.data.map(
+      (friendRequest: any) => {
+        const friendId =
+          friendRequest.senderUserId === Number(userId)
+            ? friendRequest.receiverUserId
+            : friendRequest.senderUserId;
+
+        return {
+          ...friendRequest,
+          username:
+            users?.find((users: any) => users.id === friendId)?.username ||
+            "unknown",
+        };
+      }
+    );
+
+    setFriends(updatedFriends);
+  };
 
   //retrieve userdata from server
   useEffect(() => {
@@ -57,6 +126,9 @@ const Profile = () => {
           `/users/${userId}/friendRequests`
         );
         setFriendRequests(friendRequestsResponse.data); */
+
+        await updateFriendRequests();
+        await updateFriendList();
 
         setIsLoading(false);
       } catch (error) {
@@ -89,7 +161,7 @@ const Profile = () => {
     try {
       const response = await api.get("/users");
       setUsers(response.data);
-      setFilteredUsers(response.data);
+      setFilteredUsers(response.data.filter((u) => u.id !== user.id));
     } catch (error) {
       console.error("Failed to fetch users:", handleError(error));
     }
@@ -111,10 +183,14 @@ const Profile = () => {
     }
   }, [isUserListOpen]);
 
-  const sendFriendRequest = async (requestedUserId) => {
+  const sendFriendRequest = async (receiverUserId) => {
     try {
-      const requestBody = { user };
-      await api.post(`users/${requestedUserId}/friendRequests`, requestBody);
+      const requestBody = {
+        senderUserId: user.id,
+        receiverUserId,
+      };
+      await api.post(`/friends/friendRequests`, requestBody);
+      setFriendRequestsSent([...friendRequestsSent, receiverUserId]);
     } catch (error) {
       console.error("Failed to send friend request:", handleError(error));
     }
@@ -122,14 +198,12 @@ const Profile = () => {
 
   const acceptFriendRequest = async (requester) => {
     try {
-      const requestBody1 = { requester };
-      const requestBody2 = { user };
+      await api.put(`/friends/friendRequests/${requester}`);
 
-      await api.post(`/users/${userId}/friends`, requestBody1);
+      // await api.post(`/friends/${requester.id}/friends`, requestBody2);
 
-      await api.post(`/users/${requester.id}/friends`, requestBody2);
-
-      await api.delete(`/users/${userId}/friendRequests/${requester.id}`);
+      await updateFriendRequests();
+      await updateFriendList();
     } catch (error) {
       console.error("Failed to accept friend request:", handleError(error));
     }
@@ -137,7 +211,7 @@ const Profile = () => {
 
   const denyFriendRequest = async (requester) => {
     try {
-      await api.delete(`/users/${userId}/friendRequests/${requester}`);
+      await api.delete(`/friends/friendRequests/${requester}`);
     } catch (error) {
       console.error("Failed to deny friend request:", handleError(error));
     }
@@ -365,20 +439,25 @@ const Profile = () => {
             <ul className="list-style">
               {friends.map((player, index) => (
                 <li className="Aligner" key={index}>
-                  {player.username}
-
-                  <CustomButton
-                    text="Invite"
-                    className="small-kick margin-kick hover-red"
-                  />
+                  <span style={{ marginRight: 8 }}>
+                    {`${user.status === "OFFLINE" ? "🔴" : "🟢"}`}
+                  </span>
+                  <a
+                    href={`/users/${player.id}`}
+                    style={{ color: "black", textDecoration: "none" }}
+                  >
+                    {player.username}
+                  </a>
                 </li>
               ))}
             </ul>
-            <CustomButton
-              text="Add Friends"
-              className="small-kick margin-kick hover-red"
-              onClick={() => setIsUserListOpen(!isUserListOpen)}
-            />
+            {isLoggedInUser && (
+              <CustomButton
+                text="Add Friends"
+                className="small-kick margin-kick hover-red"
+                onClick={() => setIsUserListOpen(!isUserListOpen)}
+              />
+            )}
             {isUserListOpen && (
               <div className="modal-background">
                 <div className="modal-content">
@@ -410,12 +489,21 @@ const Profile = () => {
                     >
                       {filteredUsers.map((user) => (
                         <li key={user.id}>
-                          {user.username}{" "}
-                          <CustomButton
-                            text="Add Friend"
-                            className="small-kick margin-kick hover-green"
-                            onClick={() => sendFriendRequest(user.id)}
-                          ></CustomButton>
+                          <a
+                            href={`/users/${user.id}`}
+                            style={{ color: "black", textDecoration: "none" }}
+                          >
+                            {user.username}
+                          </a>
+                          {friendRequestsSent.includes(user.id) ? (
+                            "Added"
+                          ) : (
+                            <CustomButton
+                              text="Add Friend"
+                              className="small-kick margin-kick hover-green"
+                              onClick={() => sendFriendRequest(user.id)}
+                            ></CustomButton>
+                          )}
                         </li>
                       ))}
                     </ul>
@@ -424,25 +512,32 @@ const Profile = () => {
               </div>
             )}
           </NESContainerW>
-          <NESContainerW title="Friend Requests">
-            <ul className="list-style">
-              {friendRequests.map((requester) => (
-                <li className="Aligner" key={requester.id}>
-                  {requester.username}
-                  <CustomButton
-                    text="Accept"
-                    className="small-kick margin-kick hover-green"
-                    onClick={() => acceptFriendRequest(requester)}
-                  />
-                  <CustomButton
-                    text="Deny"
-                    className="small-kick margin-kick hover-red"
-                    onClick={() => denyFriendRequest(requester)}
-                  />
-                </li>
-              ))}
-            </ul>
-          </NESContainerW>
+          {isLoggedInUser && (
+            <NESContainerW title="Friend Requests">
+              <ul className="list-style">
+                {friendRequests.map((requester) => (
+                  <li className="Aligner" key={requester.id}>
+                    <a
+                      href={`/users/${requester.id}`}
+                      style={{ color: "black", textDecoration: "none" }}
+                    >
+                      {requester.username}
+                    </a>
+                    <CustomButton
+                      text="Accept"
+                      className="small-kick margin-kick hover-green"
+                      onClick={() => acceptFriendRequest(requester.id)}
+                    />
+                    <CustomButton
+                      text="Deny"
+                      className="small-kick margin-kick hover-red"
+                      onClick={() => denyFriendRequest(requester.id)}
+                    />
+                  </li>
+                ))}
+              </ul>
+            </NESContainerW>
+          )}
         </NESContainerW>
         <NESContainerW title="" className="right">
           <NESContainerW title="User Stats">

@@ -17,34 +17,27 @@ const LeaderBoard = () => {
   const [players, setPlayers] = useState(leaderList);
   // Initialize timestamp only once
   const [timestamp] = useState(new Date().getTime());
+  const [currentPage, setCurrentPage] = useState(1);
+  const [playersPerPage] = useState(10); // e.g., 10 players per page
+  const [hoveredUserId, setHoveredUserId] = useState(null);
 
   //*** For Testing Purposes***
   useEffect(() => {
     // Immediately-invoked function expression (IIFE) with an async function
     (async () => {
       try {
-        const response = await api.get("/leaderboard");
+        const response = await api.get(`/leaderboard/page=${currentPage}`);
         setPlayers(response.data);
         console.log(response.data)
       } catch (error) {
         alert(`Something went wrong when trying to fetch available lobbies: \n${handleError(error)}`);
       }
     })();
-  }, []);
+  }, [currentPage]);
 
-  const getTopPlayers = async () => {
-    try {
-      const response = await api.get("/leaderboard");
-      setPlayers(response.data);
-    } catch (error) {
-      alert(
-        `Something went wrong when trying to fetch available lobbies: \n${handleError(
-          error
-        )}`
-      );
-    }
+  const handleUsernameClick = (playerId) => {
+    navigate(`/users/${playerId}`);
   };
-  
 
   return (
     <>
@@ -69,7 +62,16 @@ const LeaderBoard = () => {
               <tbody>
                 {players.map((player, index) => (
                   <tr key={player.id}>
-                    <td className="browser-items">
+                    <td className="browser-items"
+                    onClick={() => handleUsernameClick(player.id)}
+                    onMouseEnter={() => setHoveredUserId(player.id)}
+                      onMouseLeave={() => setHoveredUserId(null)}
+                    style={{
+                      color: hoveredUserId === player.id ? "green" : "black",
+                      transform: hoveredUserId === player.id ? "scale(1.1)" : "scale(1)",
+                      transition: "color 0.3s, transform 0.3s",
+                    }}
+                    >
                     <img
                       src={getDomain() + "/" +  player.avatarUrl + `?v=${timestamp}`} // Replace with the actual default image path
                       alt={`${player.username}'s avatar`}
@@ -87,7 +89,7 @@ const LeaderBoard = () => {
                       {player.winlossratio.toFixed(2)}
                     </td>
                     <td className="browser-items">
-                      {index + 1}
+                      {index + 1 + (currentPage - 1) * 10}
                     </td>
                     {/* 
                     we could change this to friend invitation function
@@ -102,6 +104,18 @@ const LeaderBoard = () => {
                 ))}
               </tbody>
             </table>
+            <CustomButton
+              text="Prev"
+              className="small hover-green"
+              onClick={() => setCurrentPage(currentPage - 1)}
+              disabled={currentPage === 1}
+            />
+            <CustomButton
+              text="Next"
+              className="small hover-green"
+              onClick={() => setCurrentPage(currentPage + 1)}
+              disabled={players.length < playersPerPage}
+            />
             <CustomButton
                     text="Back"
                     className="small hover-green"
