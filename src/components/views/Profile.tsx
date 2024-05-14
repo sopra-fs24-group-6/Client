@@ -46,7 +46,6 @@ const Profile = () => {
         const avatarSrc = getDomain() + '/' + response.data.avatarUrl + `?v=${timestamp}`;
         console.log(avatarSrc)
         setAvatar(avatarSrc);
-
         setIsLoggedInUser(
           localStorage.getItem("userId") === String(response.data.id)
         );
