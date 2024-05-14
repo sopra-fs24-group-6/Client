@@ -7,17 +7,27 @@ export const useGameWebSocket = (
   lobbyId,
   playersCallback,
   phaseCallback,
+<<<<<<< HEAD
+  chatCallback,
+=======
   endGameCallback,
   //chatCallback,
+>>>>>>> 1b9185998f7fecc1cb20bcb8136d5812a4ec67dc
   wordCallback,
   turnCallback,
   roundTimerCallback,
   clueTimerCallback,
+<<<<<<< HEAD
+  discussionTimerCallback,
+  resultCallback,
+=======
   discussionTimerCallback
+>>>>>>> 1b9185998f7fecc1cb20bcb8136d5812a4ec67dc
   //voteTimerCallback
 ) => {
   const [client, setClient] = useState(null);
   const [connected, setConnected] = useState(false);
+  const [prevChat, setPrevChat] = useState(null);
   const subscriptions = useRef([]);
 
   useEffect(() => {
@@ -54,12 +64,28 @@ export const useGameWebSocket = (
   }, [userId, lobbyId]);
 
   const subscribeToChannels = (clientInstance) => {
+<<<<<<< HEAD
+    console.log(`Subscribing to /topic/${lobbyId}/gameEvents`);
+=======
+>>>>>>> 1b9185998f7fecc1cb20bcb8136d5812a4ec67dc
     const gameEventsSub = clientInstance.subscribe(
       `/topic/${lobbyId}/gameEvents`,
       (message) => {
         try {
           const event = JSON.parse(message.body);
           console.log(`Received game event: ${event.eventType}`, event);
+<<<<<<< HEAD
+          //if (event.eventType === "startRound") {
+          //phaseCallback("clue");
+          phaseCallback(event.eventType);
+          //} else if (event.eventType === "startDiscussion") {
+          //phaseCallback("discussion");
+          // } else if (event.eventType === "startVoting") {
+          //   phaseCallback("vote");
+          // } else if (event.eventType === "EndRound") {
+          //   phaseCallback("endRound");
+          // }
+=======
           if (event.eventType === "startRound") {
             phaseCallback("clue");
           } else if (event.eventType === "startDiscussion") {
@@ -71,50 +97,62 @@ export const useGameWebSocket = (
           } else if (event.eventType === "EndGame") {
             endGameCallback;
           }
+>>>>>>> 1b9185998f7fecc1cb20bcb8136d5812a4ec67dc
         } catch (error) {
           console.error("Error processing message:", error);
         }
       }
     );
+    //console.log(`Subscribed to /topic/${lobbyId}/gameEvents`);
     const playersSub = clientInstance.subscribe(
       `/topic/${lobbyId}/players`,
       (message) => {
+        console.log("check1", message)
         const players = JSON.parse(message.body);
         playersCallback(players);
       }
     );
-    //const chatSub = clientInstance.subscribe(`/queue/${userId}/chat`, /* ... */);
+    const chatSub = clientInstance.subscribe(
+      `/queue/${userId}/chat`,
+      (message) => {
+        const newChatMessage = JSON.parse(message.body);
+        setPrevChat(prevChat => [...prevChat, newChatMessage])
+        chatCallback(prevChat);
+      }
+    );
     const roundTimerSub = clientInstance.subscribe(
       `/topic/${lobbyId}/roundTimer`,
       (message) => {
+        //console.log("check2", message)
         const newRoundTime = JSON.parse(message.body);
-        setRoundTimer(newRoundTime);
         roundTimerCallback(newRoundTime);
-        roundCallback;
       }
     );
     const clueTimerSub = clientInstance.subscribe(
       `/topic/${lobbyId}/clueTimer`,
       (message) => {
+        //console.log("check3", message)
         const newClueTime = JSON.parse(message.body);
-        setClueTimer(newClueTime);
         clueTimerCallback(newClueTime);
       }
     );
     const discussionTimerSub = clientInstance.subscribe(
       `/topic/${lobbyId}/discussionTimer`,
       (message) => {
+        //console.log("check4", message)
         const newDiscussionTime = JSON.parse(message.body);
-        setDiscussionTimer(newDiscussionTime);
         discussionTimerCallback(newDiscussionTime);
       }
     );
     const turnSub = clientInstance.subscribe(
       `/topic/${lobbyId}/clueTurn`,
       (message) => {
+<<<<<<< HEAD
+        //console.log("check5", message)
+=======
+>>>>>>> 1b9185998f7fecc1cb20bcb8136d5812a4ec67dc
         const event = JSON.parse(message.body);
-        const newLog = `Clue phase: Player ${event.userId}'s turn.`;
-        setGameLog((prevGameLog) => [...prevGameLog, newLog]);
+        //const newLog = `Clue phase: Player ${event.userId}'s turn.`;
         turnCallback(event.userId);
       }
     );
@@ -125,8 +163,9 @@ export const useGameWebSocket = (
       `/topic/${lobbyId}/result`,
       (message) => {
         const event = JSON.parse(message.body);
-        const newLog = `Winner role: ${event.winnerRole}. Winner players: ${event.winners}. Loser players: ${event.losers}`;
-        setGameLog((prevGameLog) => [...prevGameLog, newLog]);
+        console.log(event.winnerRole, event.winners, event.losers);
+        // resultCallback(event.winnerRole, event.winners, event.losers);
+        resultCallback(event);
       }
     );
 
@@ -139,12 +178,13 @@ export const useGameWebSocket = (
         // : "You're wolf.";
         //setGameLog((prevGameLog) => [...prevGameLog, newLog]);
         wordCallback(event.word);
-        console.log("Is this being called", event);
+        //console.log("Is this being called", event);
       }
     );
 
     subscriptions.current.push(
       gameEventsSub,
+      chatSub,
       playersSub,
       roundTimerSub,
       clueTimerSub,
@@ -156,10 +196,14 @@ export const useGameWebSocket = (
     );
   };
 
-  // Other code for sending messages...
-  const sendMessage = (destination, message) => {
+  const sendMessage = (destination, draftMessage, userId, lobbyId) => {
     if (client && connected) {
-      client.publish({ destination, body: JSON.stringify(message) });
+      const chatMessage = {
+        content: draftMessage,
+        userId: userId,
+        lobbyId: lobbyId,
+      };
+      client.publish({ destination: destination, body: JSON.stringify(chatMessage)});
     } else {
       console.log(
         "Cannot send message, client not connected or not available."
@@ -167,8 +211,29 @@ export const useGameWebSocket = (
     }
   };
 
+  const sendVote = (votedUserId, userId) => {
+    if (client && connected) {
+      const voteMessage = {
+        voterUserId: userId,
+        votedUserId: votedUserId,
+      };
+      console.log(userId)
+      console.log(votedUserId)
+
+      client.publish({
+        destination: `/app/vote/${lobbyId}/sendVote`,
+        body: JSON.stringify(voteMessage),
+      });
+      // setDraftMessage("");
+      // setHasAlreadyVoted(true);
+    } else {
+      console.log("STOMP connection is not established.");
+    }
+  };
+
   return {
     sendMessage,
+    sendVote,
     connected,
     chatMessages: subscriptions.current.chatMessages,
   };
