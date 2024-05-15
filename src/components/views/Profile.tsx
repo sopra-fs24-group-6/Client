@@ -314,32 +314,36 @@ const Profile = () => {
               />
 
               {/* Plus Button Overlay */}
-              {isHovered && localStorage.getItem("userId") === userId && (
-                <div
-                  className="nes-badge"
-                  style={{
-                    position: "absolute",
-                    top: "50%",
-                    left: "45%",
-                    transform: "translate(-50%, -50%)",
-                    backgroundColor: "green",
-                    borderRadius: "50%",
-                    width: "30px",
-                    height: "30px",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    cursor: "pointer",
-                  }}
-                >
-                  <span
-                    className="is-primary"
-                    onClick={() => document.getElementById("fileInput").click()}
+              {isHovered &&
+                localStorage.getItem("userId") === userId &&
+                isEditable && (
+                  <div
+                    className="nes-badge"
+                    style={{
+                      position: "absolute",
+                      top: "50%",
+                      left: "45%",
+                      transform: "translate(-50%, -50%)",
+                      backgroundColor: "green",
+                      borderRadius: "50%",
+                      width: "30px",
+                      height: "30px",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      cursor: "pointer",
+                    }}
                   >
-                    +
-                  </span>
-                </div>
-              )}
+                    <span
+                      className="is-primary"
+                      onClick={() =>
+                        document.getElementById("fileInput").click()
+                      }
+                    >
+                      +
+                    </span>
+                  </div>
+                )}
 
               {/* Hidden File Input */}
               <input
