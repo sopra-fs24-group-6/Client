@@ -195,14 +195,24 @@ const Profile = () => {
     }
   };
 
-  const formatDate = (dateString) => {
-    const options = {
+  const formatCreationDate = (dateString) => {
+    const options: Intl.DateTimeFormatOptions = {
       day: "numeric",
       month: "long",
       year: "numeric",
       hour: "numeric",
       minute: "numeric",
       hour12: false,
+    };
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", options);
+  };
+
+  const formatBirthdate = (dateString) => {
+    const options: Intl.DateTimeFormatOptions = {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
     };
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", options);
@@ -294,7 +304,9 @@ const Profile = () => {
                   ></input>
                 </div>
               ) : (
-                <p className="info-text">{user.birthDate || "Not provided"}</p>
+                <p className="info-text">
+                  {formatBirthdate(user.birthDate) || "Not provided"}
+                </p>
               )}
             </div>
             <div>
@@ -323,7 +335,9 @@ const Profile = () => {
             </div>
             <div>
               <span className="info-title">Creation Date:</span>
-              <p className="info-text">{formatDate(user.creationDate)}</p>
+              <p className="info-text">
+                {formatCreationDate(user.creationDate)}
+              </p>
             </div>
 
             <div className="user-details button-container">
@@ -456,7 +470,24 @@ const Profile = () => {
         </NESContainerW>
         <NESContainerW title="" className="right">
           <NESContainerW title="User Stats">
-            <p>Coming Soon</p>
+            <table style={{ margin: "0 auto", textAlign: "center" }}>
+              <thead>
+                <tr>
+                  <th style={{ paddingRight: "20px" }}>Games Played</th>
+                  <th style={{ paddingRight: "20px" }}>Wins</th>
+                  <th style={{ paddingRight: "20px" }}>Losses</th>
+                  <th style={{ paddingRight: "20px" }}>W/L Ratio</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>{user.wins + user.losses}</td>
+                  <td>{user.wins}</td>
+                  <td>{user.losses}</td>
+                  <td>{(user.wins / user.losses).toFixed(2)}</td>
+                </tr>
+              </tbody>
+            </table>
           </NESContainerW>
           <NESContainerW title="Recent Games">
             <p>Coming Soon</p>
