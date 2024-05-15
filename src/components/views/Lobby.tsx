@@ -143,19 +143,21 @@ const GameLobby = () => {
 
   const lobbyCallback = useCallback(
     (newLobby) => {
-      setLobby(newLobby);
-      setName(newLobby.name);
+      if (!isAdmin) {
+        setName(newLobby.name);
+        setPassword(newLobby.password);
+        setPlayerLimit(newLobby.playerLimit);
+        setSelectedThemes(newLobby.themes);
+        setRounds(newLobby.rounds);
+        setRoundTimer(newLobby.roundTimer);
+        setClueTimer(newLobby.clueTimer);
+        setDiscussionTimer(newLobby.discussionTimer);
+        setIsPrivate(newLobby.isPrivate);
+      }
       setLobbyAdmin(newLobby.lobbyAdmin);
-      setPassword(newLobby.password);
-      setPlayers(newLobby.players);
-      setPlayerLimit(newLobby.playerLimit);
+      setLobby(newLobby);
       setPlayerCount(newLobby.playerCount);
-      setSelectedThemes(newLobby.themes);
-      setRounds(newLobby.rounds);
-      setRoundTimer(newLobby.roundTimer);
-      setClueTimer(newLobby.clueTimer);
-      setDiscussionTimer(newLobby.discussionTimer);
-      setIsPrivate(newLobby.isPrivate);
+      setPlayers(newLobby.players);
     },
     [selectedThemes]
   );
@@ -202,6 +204,21 @@ const GameLobby = () => {
       }, 3000);
     }
   }, [isKicked, isLobbyDeleted]);
+
+  useEffect(() => {
+    if (!lobbyId) return;
+    updateLobby();
+  }, [
+    name,
+    password,
+    playerLimit,
+    selectedThemes,
+    rounds,
+    roundTimer,
+    clueTimer,
+    discussionTimer,
+    isPrivate,
+  ]);
 
   const updateLobby = async () => {
     const requestBody = {
@@ -433,11 +450,6 @@ const GameLobby = () => {
                       onClick={() => setShowStartGamePopUp(true)}
                     />
                     <CustomButton
-                      text="Update Lobby"
-                      className="50 hover-orange margin-right margin-top"
-                      onClick={() => updateLobby()}
-                    />
-                    <CustomButton
                       text="Delete Lobby"
                       className="50 hover-red margin-top"
                       onClick={() => setShowDeleteLobbyPopUp(true)}
@@ -479,15 +491,6 @@ const GameLobby = () => {
                   );
                 })}
               </ul>
-              {isPublished && (
-                <div className="Space">
-                  <CustomButton
-                    text="Invite Friends"
-                    className="small 50 hover-green"
-                    onClick={() => toggleFriendsPopup()}
-                  />
-                </div>
-              )}
             </NESContainerW>
           </div>
 
@@ -520,7 +523,7 @@ const GameLobby = () => {
               </div>
             </div>
           )}
-          {showUpdateLobbyPopUp && (
+          {/* {showUpdateLobbyPopUp && (
             <div className="popup-container">
               <div className="popup">
                 <p>Lobby has been successfully updated!</p>
@@ -531,7 +534,7 @@ const GameLobby = () => {
                 />
               </div>
             </div>
-          )}
+          )} */}
           {showJoinLobbyPopUp && !isAdmin && (
             <div className="popup-container">
               <div className="popup">
