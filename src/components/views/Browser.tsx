@@ -93,51 +93,54 @@ const Browser = () => {
   );
 
   return (
-    <div
+
+         <div
       className="background"
       style={{ backgroundImage: `url(${background2})` }}
     >
-      <>
-        <NavBar />
-        <div className="Center">
-          <NesContainer title="">
-            <h1 className="press-start-font">Lobby Browser</h1>
-          </NesContainer>
-          <div className="Space">
-            <NESContainerW title="Join a lobby" className="center style">
-              <table style={{ margin: "0 auto", textAlign: "center" }}>
-                <thead>
-                  <tr>
-                    <th className="table-header"> Lobby Name</th>
-                    <th className="table-header">Lobby Type</th>
-                    <th className="table-header">Players</th>
-                    <th className="table-header">Player Limit</th>
-                    <th className="table-header">Themes</th>
-                    <th className="table-header">Status</th>
-                    <th className="table-header"></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredLobbies.map((lobby) => (
-                    <tr key={lobby.id}>
-                      <td className="browser-items">{lobby.name}</td>
-                      <td className="browser-items">
-                        {lobby.isPrivate ? "Private" : "Public"}
-                      </td>
-                      <td className="browser-items">{lobby.players.length}</td>
-                      <td className="browser-items">{lobby.playerLimit}</td>
-                      <td className="browser-items">{lobby.themes.join(", ")}</td>
-                      <td className="browser-items">
-                        {lobby.status}
-                      </td>
-                      <td className="browser-items">
-                        <CustomButton
-                          text="Join"
-                          className="small hover-green"
-                          onClick={() => joinLobby(lobby)}
-                          disabled={lobby.status !== "OPEN"}
-                        />
-                      </td>
+    <>
+      <NavBar />
+      <div className="Center">
+        <NesContainer title="">
+          <h1 className="press-start-font">Lobby Browser</h1>
+        </NesContainer>
+        <div className="Space">
+          <NESContainerW title="Join a lobby" className="center">
+            <input
+              type="text"
+              placeholder="Search by lobby name"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <table style={{ margin: "0 auto", textAlign: "center" }}>
+              <thead>
+                <tr>
+                  <th className="table-header"> Lobby Name</th>
+                  <th className="table-header">Lobby Type</th>
+                  <th className="table-header">Players</th>
+                  <th className="table-header">Player Limit</th>
+                  <th className="table-header">Themes</th>
+                  <th className="table-header"></th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredLobbies.map((lobby) => (
+                  <tr key={lobby.id}>
+                    <td className="browser-items">{lobby.name}</td>
+                    <td className="browser-items">
+                      {lobby.password ? "Private" : "Public"}
+                    </td>
+                    <td className="browser-items">{lobby.players.length}</td>
+                    <td className="browser-items">{lobby.playerLimit}</td>
+                    <td className="browser-items">{lobby.themes.join(", ")}</td>
+                    <td className="browser-items">
+                      <CustomButton
+                        text="Join"
+                        className="small hover-green"
+                        disabled={lobby.players.length >= lobby.playerLimit}
+                        onClick={() => joinLobby(lobby)}
+                      />
+                    </td>
                     </tr>
                   ))}
                 </tbody>
