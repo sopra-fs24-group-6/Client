@@ -69,6 +69,7 @@ const Browser = () => {
       setPasswordPrompt(true);
     }
   };
+};
 
   const passwordSubmit = async () => {
     try {
@@ -177,5 +178,6 @@ const Browser = () => {
     </>
   );
 };
+
 
 export default Browser;
