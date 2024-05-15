@@ -29,12 +29,81 @@ const Profile = () => {
   const [friendRequests, setFriendRequests] = useState([]);
   const [avatar, setAvatar] = useState(null);
   const [isHovered, setIsHovered] = useState(false);
+  const [friendRequestsSent, setFriendRequestsSent] = useState([]);
 
   const usernameInputRef = useRef(null);
   const birthDateInputRef = useRef(null);
   const nameInputRef = useRef(null);
   // Initialize timestamp only once
   const [timestamp] = useState(new Date().getTime());
+
+  const updateFriendRequests = async () => {
+    const friendRequestsResponse = await api.get(
+      `/friends/friendRequests?userId=${userId}`
+    );
+
+    if (!friendRequestsResponse.data.length) return;
+
+    const usersRequests = friendRequestsResponse.data.map((friendRequest) =>
+      api.get(`/users/${friendRequest.senderUserId}`)
+    );
+
+    // TODO: if needed, `any` has to be replaced with correct type definition
+    const users: any = (await Promise.all(usersRequests)).map(
+      (res: any) => res.data
+    );
+
+    const updatedFriendRequest = friendRequestsResponse.data.map(
+      (friendRequest: any) => {
+        return {
+          ...friendRequest,
+          username:
+            users?.find((users: any) => users.id === friendRequest.senderUserId)
+              ?.username || "unknown",
+        };
+      }
+    );
+
+    setFriendRequests(updatedFriendRequest);
+  };
+
+  const updateFriendList = async () => {
+    const friendRequestsResponse = await api.get(`/friends?userId=${userId}`);
+
+    if (!friendRequestsResponse.data.length) return;
+
+    const usersRequests = friendRequestsResponse.data.map((friendRequest) => {
+      const requestId =
+        friendRequest.senderUserId === Number(userId)
+          ? friendRequest.receiverUserId
+          : friendRequest.senderUserId;
+
+      return api.get(`/users/${requestId}`);
+    });
+
+    // TODO: if needed, `any` has to be replaced with correct type definition
+    const users: any = (await Promise.all(usersRequests)).map(
+      (res: any) => res.data
+    );
+
+    const updatedFriends = friendRequestsResponse.data.map(
+      (friendRequest: any) => {
+        const friendId =
+          friendRequest.senderUserId === Number(userId)
+            ? friendRequest.receiverUserId
+            : friendRequest.senderUserId;
+
+        return {
+          ...friendRequest,
+          username:
+            users?.find((users: any) => users.id === friendId)?.username ||
+            "unknown",
+        };
+      }
+    );
+
+    setFriends(updatedFriends);
+  };
 
   //retrieve userdata from server
   useEffect(() => {
@@ -47,7 +116,6 @@ const Profile = () => {
         const avatarSrc = getDomain() + "/" + response.data.avatarUrl + `?v=${timestamp}`;
         console.log(avatarSrc)
         setAvatar(avatarSrc);
-
         setIsLoggedInUser(
           localStorage.getItem("userId") === String(response.data.id)
         );
@@ -59,6 +127,9 @@ const Profile = () => {
           `/users/${userId}/friendRequests`
         );
         setFriendRequests(friendRequestsResponse.data); */
+
+        await updateFriendRequests();
+        await updateFriendList();
 
         setIsLoading(false);
       } catch (error) {
@@ -91,7 +162,7 @@ const Profile = () => {
     try {
       const response = await api.get("/users");
       setUsers(response.data);
-      setFilteredUsers(response.data);
+      setFilteredUsers(response.data.filter((u) => u.id !== user.id));
     } catch (error) {
       console.error("Failed to fetch users:", handleError(error));
     }
@@ -113,10 +184,14 @@ const Profile = () => {
     }
   }, [isUserListOpen]);
 
-  const sendFriendRequest = async (requestedUserId) => {
+  const sendFriendRequest = async (receiverUserId) => {
     try {
-      const requestBody = { user };
-      await api.post(`users/${requestedUserId}/friendRequests`, requestBody);
+      const requestBody = {
+        senderUserId: user.id,
+        receiverUserId,
+      };
+      await api.post(`/friends/friendRequests`, requestBody);
+      setFriendRequestsSent([...friendRequestsSent, receiverUserId]);
     } catch (error) {
       console.error("Failed to send friend request:", handleError(error));
     }
@@ -124,14 +199,12 @@ const Profile = () => {
 
   const acceptFriendRequest = async (requester) => {
     try {
-      const requestBody1 = { requester };
-      const requestBody2 = { user };
+      await api.put(`/friends/friendRequests/${requester}`);
 
-      await api.post(`/users/${userId}/friends`, requestBody1);
+      // await api.post(`/friends/${requester.id}/friends`, requestBody2);
 
-      await api.post(`/users/${requester.id}/friends`, requestBody2);
-
-      await api.delete(`/users/${userId}/friendRequests/${requester.id}`);
+      await updateFriendRequests();
+      await updateFriendList();
     } catch (error) {
       console.error("Failed to accept friend request:", handleError(error));
     }
@@ -139,7 +212,7 @@ const Profile = () => {
 
   const denyFriendRequest = async (requester) => {
     try {
-      await api.delete(`/users/${userId}/friendRequests/${requester}`);
+      await api.delete(`/friends/friendRequests/${requester}`);
     } catch (error) {
       console.error("Failed to deny friend request:", handleError(error));
     }
@@ -210,58 +283,60 @@ const Profile = () => {
   }
 
   return (
-    <div
-      className="background"
-      style={{ backgroundImage: `url(${background2})` }}
-    >
-      <>
-        <NavBar />
-        <div className="Extension Flex">
-          <NESContainerW title="" className="left style scrollable2" scrollable={true}>
-            <NESContainerW title="User Information">
-              <div
-                style={{ position: "relative", display: "inline-block" }}
-                onMouseEnter={() => setIsHovered(true)}
-                onMouseLeave={() => setIsHovered(false)}
-              >
-                {/* Avatar */}
-                <img
-                  src={avatar}
-                  alt="User Avatar"
-                  style={{ width: "100px", height: "100px", borderRadius: "50%" }}
-                />
-
-                {/* Plus Button Overlay */}
-                {isHovered && (
-                  <button
-                    onClick={() => document.getElementById("fileInput").click()}
-                    style={{
-                      position: "absolute",
-                      top: "35px",
-                      left: "35px",
-                      width: "30px",
-                      height: "30px",
-                      borderRadius: "50%",
-                      backgroundColor: "green",
-                      color: "white",
-                      border: "none",
-                      cursor: "pointer",
-                    }}
-                  >
+    <>
+      <NavBar />
+      <div className="Extension Flex">
+        <NESContainerW title="" className="left">
+          <NESContainerW title="User Information">
+          <div
+            style={{ position: "relative", display: "inline-block" }}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+          >
+            {/* Avatar */}
+            <img
+              src={avatar}
+              alt="User Avatar"
+              style={{ width: "100px", height: "100px", borderRadius: "50%" }}
+            />
+            
+            {/* Plus Button Overlay */}
+            {(isHovered && localStorage.getItem('userId') === userId) && (
+                <div
+                  className="nes-badge"
+                  style={{
+                    position: "absolute",
+                    top: "50%",
+                    left: "45%",
+                    transform: "translate(-50%, -50%)",
+                    backgroundColor: "green",
+                    borderRadius: "50%",
+                    width: "30px",
+                    height: "30px",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    cursor: "pointer",
+                  }}
+                >
+                  <span className="is-primary" onClick={() => document.getElementById("fileInput").click()}>
                     +
-                  </button>
-                )}
+                  </span>
+                </div>
+              )}
 
-                {/* Hidden File Input */}
-                <input
-                  type="file"
-                  id="fileInput"
-                  accept="image/*"
-                  style={{ display: "none" }}
-                  onChange={handleFileChange}
-                />
-              </div>
-              {/* <div>
+
+
+            {/* Hidden File Input */}
+            <input
+              type="file"
+              id="fileInput"
+              accept="image/*"
+              style={{ display: "none" }}
+              onChange={handleFileChange}
+            />
+          </div>
+            {/* <div>
               <span className="info-title">Name:</span>
               {isEditable ? (
                 <div className="editable-input">
@@ -282,174 +357,143 @@ const Profile = () => {
                     {`${user.status === "OFFLINE" ? "🔴" : "🟢"} ${user.status}`}
                   </span>
                 </p>
-              </div>
-              <div>
-                <span className="info-title">Username:</span>
+              )}
+            </div>
+            <div>
+              <span className="info-title">Creation Date:</span>
+              <p className="info-text">{formatDate(user.creationDate)}</p>
+            </div>
 
-                {isEditable ? (
-                  <div className="editable-input">
-                    <input
-                      ref={usernameInputRef}
-                      type="text"
-                      defaultValue={user.username}
-                    ></input>
-                  </div>
-                ) : (
-                  <p className="info-text">{user.username}</p>
-                )}
-              </div>
-              <div>
-                <span className="info-title">Birth Date:</span>
-                {isEditable ? (
-                  <div className="editable-input">
-                    <input
-                      ref={birthDateInputRef}
-                      type="date"
-                      defaultValue={
-                        new Date(user.birthDate)?.toISOString()?.slice(0, 10) ||
-                        ""
-                      }
-                    ></input>
-                  </div>
-                ) : (
-                  <p className="info-text">{user.birthDate || "Not provided"}</p>
-                )}
-              </div>
-              <div>
-                <span className="info-title">Language:</span>
-
-                {isEditable ? (
-                  <div className="editable-input">
-                    <select
-                      defaultValue={`${user.language}`}
-                      value={selectedLanguage}
-                      onChange={(e) => setSelectedLanguage(e.target.value)}
-                    >
-                      {languages.map((lang) => (
-                        <option key={lang.code} value={lang.code}>
-                          {lang.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                ) : (
-                  <p className="info-text">
-                    {languages.find((lang) => lang.code === user.language)
-                      ?.name || "Unknown Language"}
-                  </p>
-                )}
-              </div>
-              <div>
-                <span className="info-title">Creation Date:</span>
-                <p className="info-text">{formatDate(user.creationDate)}</p>
-              </div>
-
-              <div className="user-details button-container">
-                {isLoggedInUser && !isEditable && (
+            <div className="user-details button-container">
+              {isLoggedInUser && !isEditable && (
+                <CustomButton
+                  text="Edit"
+                  className="hover-orange"
+                  onClick={() => setIsEditable(true)}
+                />
+              )}
+              {isLoggedInUser && isEditable && (
+                <React.Fragment>
                   <CustomButton
-                    text="Edit"
-                    className="hover-orange"
-                    onClick={() => setIsEditable(true)}
+                    text="Cancel"
+                    className="hover-red"
+                    onClick={() => setIsEditable(false)}
                   />
-                )}
-                {isLoggedInUser && isEditable && (
-                  <React.Fragment>
-                    <CustomButton
-                      text="Cancel"
-                      className="hover-red"
-                      onClick={() => setIsEditable(false)}
-                    />
-                    <CustomButton
-                      text="Save"
-                      className="hover-green"
-                      onClick={updateUserData}
-                    />
-                  </React.Fragment>
-                )}
-              </div>
-            </NESContainerW>
-            <NESContainerW title="Friends">
-              <ul className="list-style">
-                {friends.map((player, index) => (
-                  <li className="Aligner" key={index}>
+                  <CustomButton
+                    text="Save"
+                    className="hover-green"
+                    onClick={updateUserData}
+                  />
+                </React.Fragment>
+              )}
+            </div>
+          </NESContainerW>
+          <NESContainerW title="Friends">
+            <ul className="list-style">
+              {friends.map((player, index) => (
+                <li className="Aligner" key={index}>
+                  <span style={{ marginRight: 8 }}>
+                    {`${user.status === "OFFLINE" ? "🔴" : "🟢"}`}
+                  </span>
+                  <a
+                    href={`/users/${player.id}`}
+                    style={{ color: "black", textDecoration: "none" }}
+                  >
                     {player.username}
-
-                    <CustomButton
-                      text="Invite"
-                      className="small-kick margin-kick hover-red"
-                    />
-                  </li>
-                ))}
-              </ul>
+                  </a>
+                </li>
+              ))}
+            </ul>
+            {isLoggedInUser && (
               <CustomButton
                 text="Add Friends"
                 className="small-kick margin-kick hover-red"
                 onClick={() => setIsUserListOpen(!isUserListOpen)}
               />
-              {isUserListOpen && (
-                <div className="modal-background">
-                  <div className="modal-content">
-                    <CustomButton
-                      text="Close"
-                      className="medium-kick margin-kick hover-red"
-                      onClick={() => setIsUserListOpen(!isUserListOpen)}
-                    ></CustomButton>
-                    <input
-                      type="text"
-                      value={searchInput}
-                      onChange={handleSearchInputChange}
-                      placeholder="Search by name..."
-                    />
-                    <div
-                      className="user-list-container"
+            )}
+            {isUserListOpen && (
+              <div className="modal-background">
+                <div className="modal-content">
+                  <CustomButton
+                    text="Close"
+                    className="medium-kick margin-kick hover-red"
+                    onClick={() => setIsUserListOpen(!isUserListOpen)}
+                  ></CustomButton>
+                  <input
+                    type="text"
+                    value={searchInput}
+                    onChange={handleSearchInputChange}
+                    placeholder="Search by name..."
+                  />
+                  <div
+                    className="user-list-container"
+                    style={{
+                      maxHeight: "100px",
+                      overflowY: "auto",
+                    }}
+                  >
+                    <ul
+                      className="user-list"
                       style={{
                         maxHeight: "100px",
                         overflowY: "auto",
                       }}
                     >
-                      <ul
-                        className="user-list"
-                        style={{
-                          listStyle: "none",
-                          padding: 0,
-                          margin: 0,
-                        }}
-                      >
-                        {filteredUsers.map((user) => (
-                          <li key={user.id}>
-                            {user.username}{" "}
+                      {filteredUsers.map((user) => (
+                        <li key={user.id}>
+                          <a
+                            href={`/users/${user.id}`}
+                            style={{ color: "black", textDecoration: "none" }}
+                          >
+                            {user.username}
+                          </a>
+                          {friendRequestsSent.includes(user.id) ? (
+                            "Added"
+                          ) : (
                             <CustomButton
                               text="Add Friend"
                               className="small-kick margin-kick hover-green"
                               onClick={() => sendFriendRequest(user.id)}
                             ></CustomButton>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 </div>
-              )}
-            </NESContainerW>
+              </div>
+            )}
+          </NESContainerW>
+          {isLoggedInUser && (
             <NESContainerW title="Friend Requests">
               <ul className="list-style">
                 {friendRequests.map((requester) => (
                   <li className="Aligner" key={requester.id}>
-                    {requester.username}
+                    <a
+                      href={`/users/${requester.id}`}
+                      style={{ color: "black", textDecoration: "none" }}
+                    >
+                      {requester.username}
+                    </a>
                     <CustomButton
                       text="Accept"
                       className="small-kick margin-kick hover-green"
-                      onClick={() => acceptFriendRequest(requester)}
+                      onClick={() => acceptFriendRequest(requester.id)}
                     />
                     <CustomButton
                       text="Deny"
                       className="small-kick margin-kick hover-red"
-                      onClick={() => denyFriendRequest(requester)}
+                      onClick={() => denyFriendRequest(requester.id)}
                     />
                   </li>
                 ))}
               </ul>
             </NESContainerW>
+          )}
+        </NESContainerW>
+        <NESContainerW title="" className="right">
+          <NESContainerW title="User Stats">
+            <p>Coming Soon</p>
           </NESContainerW>
           <NESContainerW title="" className="right style scrollable2" scrollable={true}>
             <NESContainerW title="User Stats">

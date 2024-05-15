@@ -19,10 +19,11 @@ const Browser = () => {
   const [password, setPassword] = useState(null);
   const [selectedLobby, setSelectedLobby] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const userId = localStorage.getItem("userId");
 
+  //*** For Testing Purposes***
   useEffect(() => {
-    const getLobbies = async () => {
+    // Immediately-invoked function expression (IIFE) with an async function
+    (async () => {
       try {
         const response = await api.get("/lobbies");
         setLobbies(response.data);
@@ -34,29 +35,28 @@ const Browser = () => {
           )}`
         );
       }
-    };
-    // get all available lobbies when mount
-    getLobbies();
-
-    // polling with interval
-    const intervalId = setInterval(getLobbies, 3000);
-
-    return () => clearInterval(intervalId);
+    })();
   }, []);
 
-
+  const getLobbies = async () => {
+    try {
+      const response = await api.get("/lobbies");
+      setLobbies(response.data);
+    } catch (error) {
+      alert(
+        `Something went wrong when trying to fetch available lobbies: \n${handleError(
+          error
+        )}`
+      );
+    }
+  };
   const joinLobby = async (selectedLobby) => {
     setSelectedLobby(selectedLobby);
     // const userId = localStorage.getItem("id");
     // const userId = "2"; // ***This is for test***
-    const userId = localStorage.getItem("userId"); // ***For Testing purposes***
-    if (!selectedLobby.password) {
-      await api.post("/lobbies/" + selectedLobby.id + "/players", { userId });
-      // navigate("/lobbies/" + selectedLobby.id);
-      //For testing purposes
-      navigate(`/lobby/${selectedLobby.id}`, { state: { isAdmin: false } });
-      if (!selectedLobby.isPrivate) {
-        try {
+    const userId = localStorage.getItem("userId");
+    if (!selectedLobby.isPrivate) {
+      try {
           await api.post("/lobbies/" + selectedLobby.id + "/players", { userId });
           navigate(`/lobby/${selectedLobby.id}`, { state: { isAdmin: false } })
         } catch (error) {
@@ -79,12 +79,11 @@ const Browser = () => {
       });
       // const userId = localStorage.getItem("id");
       const userId = "3"; // ***This is for test***
-      await api.post("/lobbies/" + selectedLobby.id + "/authentication", { password });
-      //await api.post("/lobbies/" + selectedLobby.id + "/players", { userId });
+      await api.post("/lobbies/" + selectedLobby.id + "/players", { userId });
       navigate(`/lobby/${selectedLobby.id}`, { state: { isAdmin: false } });
     } catch (error) {
       alert(
-        `Something went wrong during the authentication: \n${handleError(
+        `Something went wrong during the authentifiation: \n${handleError(
           error
         )}`
       );
