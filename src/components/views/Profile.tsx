@@ -299,13 +299,14 @@ const Profile = () => {
             />
             
             {/* Plus Button Overlay */}
-            {isHovered && (
+            {(isHovered && localStorage.getItem('userId') === userId) && (
               <button
                 onClick={() => document.getElementById("fileInput").click()}
                 style={{
                   position: "absolute",
-                  top: "35px",
-                  left: "35px",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
                   width: "30px",
                   height: "30px",
                   borderRadius: "50%",
