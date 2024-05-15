@@ -57,19 +57,18 @@ const Browser = () => {
     const userId = localStorage.getItem("userId");
     if (!selectedLobby.isPrivate) {
       try {
-          await api.post("/lobbies/" + selectedLobby.id + "/players", { userId });
-          navigate(`/lobby/${selectedLobby.id}`, { state: { isAdmin: false } })
-        } catch (error) {
-          alert(
-            `Something went wrong during joining lobby: \n${handleError(
-              error
-            )}`
-          );
-        }
-      } else {
-        setPasswordPrompt(true);
+        await api.post("/lobbies/" + selectedLobby.id + "/players", { userId });
+        navigate(`/lobby/${selectedLobby.id}`, { state: { isAdmin: false } })
+      } catch (error) {
+        alert(
+          `Something went wrong during joining lobby: \n${handleError(
+            error
+          )}`
+        );
       }
-    };
+    } else {
+      setPasswordPrompt(true);
+    }
   };
 
   const passwordSubmit = async () => {

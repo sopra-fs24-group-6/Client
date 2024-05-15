@@ -190,7 +190,7 @@ const Profile = () => {
         senderUserId: user.id,
         receiverUserId,
       };
-      await api.post(`/friends/friendRequests`, requestBody);
+      await api.post("/friends/friendRequests", requestBody);
       setFriendRequestsSent([...friendRequestsSent, receiverUserId]);
     } catch (error) {
       console.error("Failed to send friend request:", handleError(error));
@@ -288,20 +288,20 @@ const Profile = () => {
       <div className="Extension Flex">
         <NESContainerW title="" className="left">
           <NESContainerW title="User Information">
-          <div
-            style={{ position: "relative", display: "inline-block" }}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-          >
-            {/* Avatar */}
-            <img
-              src={avatar}
-              alt="User Avatar"
-              style={{ width: "100px", height: "100px", borderRadius: "50%" }}
-            />
-            
-            {/* Plus Button Overlay */}
-            {(isHovered && localStorage.getItem('userId') === userId) && (
+            <div
+              style={{ position: "relative", display: "inline-block" }}
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}
+            >
+              {/* Avatar */}
+              <img
+                src={avatar}
+                alt="User Avatar"
+                style={{ width: "100px", height: "100px", borderRadius: "50%" }}
+              />
+
+              {/* Plus Button Overlay */}
+              {(isHovered && localStorage.getItem("userId") === userId) && (
                 <div
                   className="nes-badge"
                   style={{
@@ -325,17 +325,15 @@ const Profile = () => {
                 </div>
               )}
 
-
-
-            {/* Hidden File Input */}
-            <input
-              type="file"
-              id="fileInput"
-              accept="image/*"
-              style={{ display: "none" }}
-              onChange={handleFileChange}
-            />
-          </div>
+              {/* Hidden File Input */}
+              <input
+                type="file"
+                id="fileInput"
+                accept="image/*"
+                style={{ display: "none" }}
+                onChange={handleFileChange}
+              />
+            </div>
             {/* <div>
               <span className="info-title">Name:</span>
               {isEditable ? (
@@ -350,14 +348,13 @@ const Profile = () => {
                 <p className="info-text">{user.name}</p>
               )}
             </div> */}
-              <div>
-                <span className="info-title">Status:</span>
-                <p className="info-text">
-                  <span style={{ marginRight: 8 }}>
-                    {`${user.status === "OFFLINE" ? "🔴" : "🟢"} ${user.status}`}
-                  </span>
-                </p>
-              )}
+            <div>
+              <span className="info-title">Status:</span>
+              <p className="info-text">
+                <span style={{ marginRight: 8 }}>
+                  {`${user.status === "OFFLINE" ? "🔴" : "🟢"} ${user.status}`}
+                </span>
+              </p>
             </div>
             <div>
               <span className="info-title">Creation Date:</span>
@@ -503,9 +500,9 @@ const Profile = () => {
               <p>Coming Soon</p>
             </NESContainerW>
           </NESContainerW>
-        </div>
-      </>
-    </div>
+        </NESContainerW>
+      </div>
+    </>
   );
 };
 
