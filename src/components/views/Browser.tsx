@@ -10,6 +10,7 @@ import NavBar from "../ui/NavBar";
 import NesContainer from "../ui/NESContainer";
 import "styles/views/Lobby.scss";
 import NESContainerW from "../ui/NESContainerW";
+import background2 from "../../assets/Backgrounds/bg5.jpeg";
 
 const Browser = () => {
   const navigate = useNavigate();
@@ -53,12 +54,18 @@ const Browser = () => {
     setSelectedLobby(selectedLobby);
     // const userId = localStorage.getItem("id");
     // const userId = "2"; // ***This is for test***
-    const userId = localStorage.getItem("userId"); // ***For Testing purposes***
-    if (!selectedLobby.password) {
-      await api.post("/lobbies/" + selectedLobby.id + "/players", { userId });
-      // navigate("/lobbies/" + selectedLobby.id);
-      //For testing purposes
-      navigate(`/lobby/${selectedLobby.id}`, { state: { isAdmin: false } });
+    const userId = localStorage.getItem("userId");
+    if (!selectedLobby.isPrivate) {
+      try {
+        await api.post("/lobbies/" + selectedLobby.id + "/players", { userId });
+        navigate(`/lobby/${selectedLobby.id}`, { state: { isAdmin: false } })
+      } catch (error) {
+        alert(
+          `Something went wrong during joining lobby: \n${handleError(
+            error
+          )}`
+        );
+      }
     } else {
       setPasswordPrompt(true);
     }
@@ -86,6 +93,11 @@ const Browser = () => {
   );
 
   return (
+
+         <div
+      className="background"
+      style={{ backgroundImage: `url(${background2})` }}
+    >
     <>
       <NavBar />
       <div className="Center">
@@ -129,41 +141,50 @@ const Browser = () => {
                         onClick={() => joinLobby(lobby)}
                       />
                     </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            {passwordPrompt && (
-              <div className="popup-container">
-                <div className="popup">
-                  <input
-                    type="password"
-                    placeholder="Enter lobby password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                  <CustomButton
-                    text="Submit"
-                    className="small hover-green"
-                    onClick={passwordSubmit}
-                  />
-                  <CustomButton
-                    text="Cancel"
-                    className="small hover-red"
-                    onClick={() => setPasswordPrompt(false)}
-                  />
-                </div>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <div className="spacing">
+                <input
+                  type="text"
+                  placeholder="Search by lobby name"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
               </div>
-            )}
-            <CustomButton
+              {passwordPrompt && (
+                <div className="popup-container">
+                  <div className="popup">
+                    <input
+                      type="password"
+                      placeholder="Enter lobby password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                    />
+                    <CustomButton
+                      text="Submit"
+                      className="small hover-green"
+                      onClick={passwordSubmit}
+                    />
+                    <CustomButton
+                      text="Cancel"
+                      className="small hover-red"
+                      onClick={() => setPasswordPrompt(false)}
+                    />
+                  </div>
+                </div>
+              )}
+              {/* <CustomButton
               text="Refresh"
               className="small hover-green"
               onClick={() => getLobbies()}
-            />
-          </NESContainerW>
+            /> */}
+            </NESContainerW>
+          </div>
         </div>
-      </div>
-    </>
+      </>
+    </div>
   );
 };
 

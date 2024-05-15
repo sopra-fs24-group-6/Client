@@ -8,7 +8,7 @@ import NESContainerW from "../ui/NESContainerW";
 import CustomButton from "../ui/CustomButton";
 import languages from "helpers/languages.json";
 import "../../styles/ui/AppBody.scss";
-import Button from "../ui/Button";
+import background1 from "../../assets/Backgrounds/bg4.jpeg";
 
 const Registration = () => {
   const navigate = useNavigate();
@@ -46,59 +46,64 @@ const Registration = () => {
   };
 
   return (
-    <>
-      <div className="Center">
-        <NesContainer title="Word Wolf">
-          <h1 className="press-start-font">Register Here</h1>
-        </NesContainer>
-      </div>
-      <div className="Extension">
-        <NESContainerW title="Welcome" className="center">
-          <div className="field-aligner">
-            <label className="log-label">Username:</label>
-            <input
-              className="log-field"
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
-          </div>
-          <div className="field-aligner">
-            <label className="log-label">Password:</label>
-            <input
-              className="log-field"
-              type={isSecure ? "password" : "text"}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+    <div
+      className="background"
+      style={{ backgroundImage: `url(${background1})` }}
+    >
+      <>
+        <div className="Center-LR">
+          <NesContainer title="Word Wolf">
+            <h1 className="press-start-font">Register Here</h1>
+          </NesContainer>
+        </div>
+        <div className="Extension">
+          <NESContainerW title="Welcome" className="center">
+            <div className="field-aligner">
+              <label className="log-label">Username:</label>
+              <input
+                className="log-field"
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
+            </div>
+            <div className="field-aligner">
+              <label className="log-label">Password:</label>
+              <input
+                className="log-field"
+                type={isSecure ? "password" : "text"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <CustomButton
+                text={isSecure ? "Show" : "Hide"}
+                className={
+                  isSecure ? "small 50 hover-green" : "small 50 hover-orange"
+                }
+                onClick={() => setIsSecure(!isSecure)}
+              />
+            </div>
+            <div className="field-aligner">
+              <select
+                value={language}
+                onChange={(e) => setLanguage(e.target.value)}>
+                {languages.map((lang) => (
+                  <option key={lang.code} value={lang.code}>
+                    {lang.name}
+                  </option>
+                ))}
+              </select>
+            </div>
             <CustomButton
-              text={isSecure ? "Show" : "Hide"}
-              className={
-                isSecure ? "small 50 hover-green" : "small 50 hover-orange"
-              }
-              onClick={() => setIsSecure(!isSecure)}
+              text="Register"
+              className="w55 hover-green"
+              disabled={!username || !password}
+              onClick={() => doRegistration()}
             />
-          </div>
-          <div className="field-aligner">
-            <select
-              value={language}
-              onChange={(e) => setLanguage(e.target.value)}>
-              {languages.map((lang) => (
-                <option key={lang.code} value={lang.code}>
-                  {lang.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <CustomButton
-            text="Register"
-            className="w55 hover-green"
-            disabled={!username || !password}
-            onClick={() => doRegistration()}
-          />
-        </NESContainerW>
-      </div>
-    </>
+          </NESContainerW>
+        </div>
+      </>
+    </div>
   );
 };
 

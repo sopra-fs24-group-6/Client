@@ -10,6 +10,9 @@ class User {
     this.status = null;
     this.password= null;
     this.createdAt=null;
+    this.wins = null;
+    this.losses = null;
+    this.winlossratio = null;
     Object.assign(this, data);
   }
 }

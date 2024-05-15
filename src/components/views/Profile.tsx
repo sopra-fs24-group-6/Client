@@ -7,6 +7,8 @@ import CustomButton from "../ui/CustomButton";
 import NavBar from "../ui/NavBar";
 //import initialPlayers from "components/placeholders/playerlist";
 import languages from "helpers/languages.json";
+import { getDomain } from "helpers/getDomain";
+import background2 from "../../assets/Backgrounds/bg5.jpeg";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -25,11 +27,15 @@ const Profile = () => {
 
   const [friends, setFriends] = useState([]);
   const [friendRequests, setFriendRequests] = useState([]);
+  const [avatar, setAvatar] = useState(null);
+  const [isHovered, setIsHovered] = useState(false);
   const [friendRequestsSent, setFriendRequestsSent] = useState([]);
 
   const usernameInputRef = useRef(null);
   const birthDateInputRef = useRef(null);
   const nameInputRef = useRef(null);
+  // Initialize timestamp only once
+  const [timestamp] = useState(new Date().getTime());
 
   const updateFriendRequests = async () => {
     const friendRequestsResponse = await api.get(
@@ -107,7 +113,9 @@ const Profile = () => {
         const response = await api.get(`/users/${userId}`);
         console.log(response.data);
         setUser(response.data);
-
+        const avatarSrc = getDomain() + "/" + response.data.avatarUrl + `?v=${timestamp}`;
+        console.log(avatarSrc)
+        setAvatar(avatarSrc);
         setIsLoggedInUser(
           localStorage.getItem("userId") === String(response.data.id)
         );
@@ -131,8 +139,23 @@ const Profile = () => {
       }
     };
 
+    // const fetchAvatar = async () => {
+    //   try {
+    //     // Replace with the actual backend endpoint
+    //     const response = await api.get(`/${userId}/avatar`)
+    //     const avatarSrc = getDomain() + response.data.avatarUrl;
+    //     console.log(avatarSrc)
+    //     setAvatar(avatarSrc);
+    //   } catch (error) {
+    //     console.error(`Failed to fetch avatar: ${handleError(error)}`);
+    //     // Fallback to a default image if fetching fails
+    //     setAvatar("/path/to/default/avatar.png");
+    //   }
+    // };
+
     fetchUserDetails();
-  }, [userId, navigate]);
+    // fetchAvatar();
+  }, [userId, navigate, avatar]);
 
   //retrieve all users from server
   const fetchUsers = async () => {
@@ -167,7 +190,7 @@ const Profile = () => {
         senderUserId: user.id,
         receiverUserId,
       };
-      await api.post(`/friends/friendRequests`, requestBody);
+      await api.post("/friends/friendRequests", requestBody);
       setFriendRequestsSent([...friendRequestsSent, receiverUserId]);
     } catch (error) {
       console.error("Failed to send friend request:", handleError(error));
@@ -205,6 +228,7 @@ const Profile = () => {
       hour12: false,
     };
     const date = new Date(dateString);
+
     return date.toLocaleDateString("en-US", options);
   };
 
@@ -216,6 +240,26 @@ const Profile = () => {
     };
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", options);
+    
+  const handleFileChange = async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      // Prepare the form data
+      const formData = new FormData();
+      formData.append("avatar", file);
+
+      // Send the new avatar to the server (via WebSocket or an API)
+      try {
+        const response = await api.post(`/${userId}/avatar`, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+
+        // Update the local avatar display
+        setAvatar(getDomain() + "/" + response.data.avatarUrl + `?v=${timestamp}`);
+      } catch (error) {
+        console.error("Failed to upload avatar:", handleError(error));
+      }
+    }
   };
 
   const updateUserData = async () => {
@@ -253,7 +297,53 @@ const Profile = () => {
       <div className="Extension Flex">
         <NESContainerW title="" className="left">
           <NESContainerW title="User Information">
-            <div>
+            <div
+              style={{ position: "relative", display: "inline-block" }}
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}
+            >
+              {/* Avatar */}
+              <img
+                src={avatar}
+                alt="User Avatar"
+                style={{ width: "100px", height: "100px", borderRadius: "50%" }}
+              />
+
+              {/* Plus Button Overlay */}
+              {(isHovered && localStorage.getItem("userId") === userId) && (
+                <div
+                  className="nes-badge"
+                  style={{
+                    position: "absolute",
+                    top: "50%",
+                    left: "45%",
+                    transform: "translate(-50%, -50%)",
+                    backgroundColor: "green",
+                    borderRadius: "50%",
+                    width: "30px",
+                    height: "30px",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    cursor: "pointer",
+                  }}
+                >
+                  <span className="is-primary" onClick={() => document.getElementById("fileInput").click()}>
+                    +
+                  </span>
+                </div>
+              )}
+
+              {/* Hidden File Input */}
+              <input
+                type="file"
+                id="fileInput"
+                accept="image/*"
+                style={{ display: "none" }}
+                onChange={handleFileChange}
+              />
+            </div>
+            {/* <div>
               <span className="info-title">Name:</span>
               {isEditable ? (
                 <div className="editable-input">
@@ -266,7 +356,7 @@ const Profile = () => {
               ) : (
                 <p className="info-text">{user.name}</p>
               )}
-            </div>
+            </div> */}
             <div>
               <span className="info-title">Status:</span>
               <p className="info-text">
@@ -411,9 +501,8 @@ const Profile = () => {
                     <ul
                       className="user-list"
                       style={{
-                        listStyle: "none",
-                        padding: 0,
-                        margin: 0,
+                        maxHeight: "100px",
+                        overflowY: "auto",
                       }}
                     >
                       {filteredUsers.map((user) => (
@@ -489,8 +578,13 @@ const Profile = () => {
               </tbody>
             </table>
           </NESContainerW>
-          <NESContainerW title="Recent Games">
-            <p>Coming Soon</p>
+          <NESContainerW title="" className="right style scrollable2" scrollable={true}>
+            <NESContainerW title="User Stats">
+              <p>Coming Soon</p>
+            </NESContainerW>
+            <NESContainerW title="Recent Games">
+              <p>Coming Soon</p>
+            </NESContainerW>
           </NESContainerW>
         </NESContainerW>
       </div>

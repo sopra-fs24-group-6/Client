@@ -9,26 +9,36 @@ import "../../styles/ui/CustomButton.scss";
 import NESContainerW from "../ui/NESContainerW";
 import CustomButton from "../ui/CustomButton";
 import useLogout from "hooks/useLogout";
+import WoodButton from "components/ui/WoodButton";
+import background1 from "../../assets/Backgrounds/bg4.jpeg";
 
 const Menu = () => {
   const navigate = useNavigate();
   const logout = useLogout();
 
   return (
-    <>
-      <NavBar />
-      <div className="Center">
-        <NesContainer title="Welcome to">
-          <h1 className="press-start-font">Word Wolf</h1>
-        </NesContainer>
-      </div>
-      <div className="Extension">
-        <NESContainerW title="Pick an option" className="center">
+    <div
+      className="background"
+      style={{ backgroundImage: `url(${background1})` }}
+    >
+      <>
+        <NavBar />
+        <div className="Center">
+          <NesContainer title="Welcome to">
+            <h1 className="press-start-font">Word Wolf</h1>
+          </NesContainer>
+        </div>
+        <div className="Extension">
+          {/* <NESContainerW title="Pick an option" className="center"> */}
           <CustomButton
             text="How To Play"
             className="large w50 hover-green"
             onClick={() => navigate("/howtoplay")}
           />
+          {/* <WoodButton
+          text="How to play"
+          className="wood wood50"
+          onClick={() => navigate("/howtoplay")}/> */}
           <div className="button-container">
             <CustomButton
               text="Create Lobby"
@@ -45,17 +55,18 @@ const Menu = () => {
             <CustomButton
               text="Leaderboard"
               className="w25 hover-orange"
-              onClick={() => console.log("Create Lobby button clicked!")}
+              onClick={() => navigate("/leaderboard")}
             />
             <CustomButton
               text="Sign out"
               className="w25 hover-red"
-              onClick={() => logout}
+              onClick={() => logout()}
             />
           </div>
-        </NESContainerW>
-      </div>
-    </>
+          {/* </NESContainerW> */}
+        </div>
+      </>
+    </div>
   );
 };
 
