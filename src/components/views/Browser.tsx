@@ -18,10 +18,11 @@ const Browser = () => {
   const [password, setPassword] = useState(null);
   const [selectedLobby, setSelectedLobby] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const userId = localStorage.getItem("userId");
 
+  //*** For Testing Purposes***
   useEffect(() => {
-    const getLobbies = async () => {
+    // Immediately-invoked function expression (IIFE) with an async function
+    (async () => {
       try {
         const response = await api.get("/lobbies");
         setLobbies(response.data);
@@ -33,17 +34,21 @@ const Browser = () => {
           )}`
         );
       }
-    };
-    // get all available lobbies when mount
-    getLobbies();
-
-    // polling with interval
-    const intervalId = setInterval(getLobbies, 3000);
-
-    return () => clearInterval(intervalId);
+    })();
   }, []);
 
-
+  const getLobbies = async () => {
+    try {
+      const response = await api.get("/lobbies");
+      setLobbies(response.data);
+    } catch (error) {
+      alert(
+        `Something went wrong when trying to fetch available lobbies: \n${handleError(
+          error
+        )}`
+      );
+    }
+  };
   const joinLobby = async (selectedLobby) => {
     setSelectedLobby(selectedLobby);
     // const userId = localStorage.getItem("id");
@@ -54,22 +59,10 @@ const Browser = () => {
       // navigate("/lobbies/" + selectedLobby.id);
       //For testing purposes
       navigate(`/lobby/${selectedLobby.id}`, { state: { isAdmin: false } });
-    if (!selectedLobby.isPrivate) {
-      try {
-        await api.post("/lobbies/" + selectedLobby.id + "/players", { userId });
-        navigate(`/lobby/${selectedLobby.id}`, { state: { isAdmin: false } })
-      } catch (error) {
-        alert(
-          `Something went wrong during joining lobby: \n${handleError(
-            error
-          )}`
-        );
-      }
     } else {
       setPasswordPrompt(true);
     }
   };
-};
 
   const passwordSubmit = async () => {
     try {
@@ -78,12 +71,11 @@ const Browser = () => {
       });
       // const userId = localStorage.getItem("id");
       const userId = "3"; // ***This is for test***
-      await api.post("/lobbies/" + selectedLobby.id + "/authentication", { password });
-      //await api.post("/lobbies/" + selectedLobby.id + "/players", { userId });
+      await api.post("/lobbies/" + selectedLobby.id + "/players", { userId });
       navigate(`/lobby/${selectedLobby.id}`, { state: { isAdmin: false } });
     } catch (error) {
       alert(
-        `Something went wrong during the authentication: \n${handleError(
+        `Something went wrong during the authentifiation: \n${handleError(
           error
         )}`
       );
@@ -116,7 +108,6 @@ const Browser = () => {
                   <th className="table-header">Players</th>
                   <th className="table-header">Player Limit</th>
                   <th className="table-header">Themes</th>
-                  <th className="table-header">Status</th>
                   <th className="table-header"></th>
                 </tr>
               </thead>
@@ -125,20 +116,16 @@ const Browser = () => {
                   <tr key={lobby.id}>
                     <td className="browser-items">{lobby.name}</td>
                     <td className="browser-items">
-                      {lobby.isPrivate ? "Private" : "Public"}
+                      {lobby.password ? "Private" : "Public"}
                     </td>
                     <td className="browser-items">{lobby.players.length}</td>
                     <td className="browser-items">{lobby.playerLimit}</td>
                     <td className="browser-items">{lobby.themes.join(", ")}</td>
                     <td className="browser-items">
-                      {lobby.status}
-                    </td>
-                    <td className="browser-items">
                       <CustomButton
                         text="Join"
                         className="small hover-green"
                         onClick={() => joinLobby(lobby)}
-                        disabled={lobby.status !== "OPEN"}
                       />
                     </td>
                   </tr>
@@ -178,6 +165,5 @@ const Browser = () => {
     </>
   );
 };
-
 
 export default Browser;
