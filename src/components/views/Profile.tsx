@@ -300,25 +300,28 @@ const Profile = () => {
             
             {/* Plus Button Overlay */}
             {(isHovered && localStorage.getItem('userId') === userId) && (
-              <button
-                onClick={() => document.getElementById("fileInput").click()}
-                style={{
-                  position: "absolute",
-                  top: "50%",
-                  left: "50%",
-                  transform: "translate(-50%, -50%)",
-                  width: "30px",
-                  height: "30px",
-                  borderRadius: "50%",
-                  backgroundColor: "green",
-                  color: "white",
-                  border: "none",
-                  cursor: "pointer",
-                }}
-              >
-                +
-              </button>
-            )}
+                <div
+                  className="nes-badge"
+                  style={{
+                    position: "absolute",
+                    top: "50%",
+                    left: "45%",
+                    transform: "translate(-50%, -50%)",
+                    backgroundColor: "green",
+                    borderRadius: "50%",
+                    width: "30px",
+                    height: "30px",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    cursor: "pointer",
+                  }}
+                >
+                  <span className="is-primary" onClick={() => document.getElementById("fileInput").click()}>
+                    +
+                  </span>
+                </div>
+              )}
 
             {/* Hidden File Input */}
             <input
