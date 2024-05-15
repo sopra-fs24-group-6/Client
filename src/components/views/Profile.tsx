@@ -113,8 +113,9 @@ const Profile = () => {
         const response = await api.get(`/users/${userId}`);
         console.log(response.data);
         setUser(response.data);
-        const avatarSrc = getDomain() + "/" + response.data.avatarUrl + `?v=${timestamp}`;
-        console.log(avatarSrc)
+        const avatarSrc =
+          getDomain() + "/" + response.data.avatarUrl + `?v=${timestamp}`;
+        console.log(avatarSrc);
         setAvatar(avatarSrc);
         setIsLoggedInUser(
           localStorage.getItem("userId") === String(response.data.id)
@@ -240,7 +241,8 @@ const Profile = () => {
     };
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", options);
-    
+  };
+
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -255,7 +257,9 @@ const Profile = () => {
         });
 
         // Update the local avatar display
-        setAvatar(getDomain() + "/" + response.data.avatarUrl + `?v=${timestamp}`);
+        setAvatar(
+          getDomain() + "/" + response.data.avatarUrl + `?v=${timestamp}`
+        );
       } catch (error) {
         console.error("Failed to upload avatar:", handleError(error));
       }
@@ -310,7 +314,7 @@ const Profile = () => {
               />
 
               {/* Plus Button Overlay */}
-              {(isHovered && localStorage.getItem("userId") === userId) && (
+              {isHovered && localStorage.getItem("userId") === userId && (
                 <div
                   className="nes-badge"
                   style={{
@@ -328,7 +332,10 @@ const Profile = () => {
                     cursor: "pointer",
                   }}
                 >
-                  <span className="is-primary" onClick={() => document.getElementById("fileInput").click()}>
+                  <span
+                    className="is-primary"
+                    onClick={() => document.getElementById("fileInput").click()}
+                  >
                     +
                   </span>
                 </div>
@@ -454,6 +461,8 @@ const Profile = () => {
               )}
             </div>
           </NESContainerW>
+        </NESContainerW>
+        <NESContainerW title="" className="right">
           <NESContainerW title="Friends">
             <ul className="list-style">
               {friends.map((player, index) => (
@@ -556,8 +565,6 @@ const Profile = () => {
               </ul>
             </NESContainerW>
           )}
-        </NESContainerW>
-        <NESContainerW title="" className="right">
           <NESContainerW title="User Stats">
             <table style={{ margin: "0 auto", textAlign: "center" }}>
               <thead>
@@ -577,14 +584,6 @@ const Profile = () => {
                 </tr>
               </tbody>
             </table>
-          </NESContainerW>
-          <NESContainerW title="" className="right style scrollable2" scrollable={true}>
-            <NESContainerW title="User Stats">
-              <p>Coming Soon</p>
-            </NESContainerW>
-            <NESContainerW title="Recent Games">
-              <p>Coming Soon</p>
-            </NESContainerW>
           </NESContainerW>
         </NESContainerW>
       </div>

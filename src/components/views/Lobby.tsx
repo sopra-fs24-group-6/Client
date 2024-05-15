@@ -243,7 +243,7 @@ const GameLobby = () => {
     try {
       const requesterId = localStorage.getItem("userId");
       console.log("requesterId:" + requesterId);
-      console.log("playerId:" + playerId)
+      console.log("playerId:" + playerId);
       console.log("lobbyId:" + lobbyId);
       if (!requesterId) {
         alert("No requesterId found in local storage.");
@@ -386,18 +386,22 @@ const GameLobby = () => {
                     max={120}
                     step={10}
                     value={discussionTimer}
-                    onChange={(e) => setDiscussionTimer(parseInt(e.target.value))}
+                    onChange={(e) =>
+                      setDiscussionTimer(parseInt(e.target.value))
+                    }
                     disabled={!isAdmin}
                   />
                 </div>
                 <div className="Space Flex">
                   <label>Themes:</label>
-                  <button
-                    onClick={() => setShowThemePopUp(true)}
-                    disabled={!isAdmin || availableThemes.length === 0}
-                  >
-                    Select Themes
-                  </button>
+                  {isAdmin && (
+                    <button
+                      onClick={() => setShowThemePopUp(true)}
+                      disabled={!isAdmin || availableThemes.length === 0}
+                    >
+                      Select Themes
+                    </button>
+                  )}
                   {showThemePopUp && (
                     <ThemePopUp
                       themes={availableThemes}
@@ -601,7 +605,6 @@ const GameLobby = () => {
               </div>
             </div>
           )}
-
         </div>
       </>
     </div>
