@@ -11,6 +11,7 @@ import NesContainer from "../ui/NESContainer";
 import "styles/views/Lobby.scss";
 import NESContainerW from "../ui/NESContainerW";
 import { getDomain } from "helpers/getDomain";
+import background2 from "../../assets/Backgrounds/bg5.jpeg";
 
 const LeaderBoard = () => {
   const navigate = useNavigate();
@@ -123,8 +124,8 @@ const LeaderBoard = () => {
                   />
           </NESContainerW>
         </div>
-      </div>
-    </>
+      </>
+    </div>
   );
 };
 

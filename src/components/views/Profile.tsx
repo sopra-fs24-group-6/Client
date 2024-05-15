@@ -8,6 +8,7 @@ import NavBar from "../ui/NavBar";
 //import initialPlayers from "components/placeholders/playerlist";
 import languages from "helpers/languages.json";
 import { getDomain } from "helpers/getDomain";
+import background2 from "../../assets/Backgrounds/bg5.jpeg";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -112,7 +113,7 @@ const Profile = () => {
         const response = await api.get(`/users/${userId}`);
         console.log(response.data);
         setUser(response.data);
-        const avatarSrc = getDomain() + '/' + response.data.avatarUrl + `?v=${timestamp}`;
+        const avatarSrc = getDomain() + "/" + response.data.avatarUrl + `?v=${timestamp}`;
         console.log(avatarSrc)
         setAvatar(avatarSrc);
         setIsLoggedInUser(
@@ -227,6 +228,7 @@ const Profile = () => {
       hour12: false,
     };
     const date = new Date(dateString);
+
     return date.toLocaleDateString("en-US", options);
   };
 
@@ -236,15 +238,15 @@ const Profile = () => {
       // Prepare the form data
       const formData = new FormData();
       formData.append("avatar", file);
-  
+
       // Send the new avatar to the server (via WebSocket or an API)
       try {
         const response = await api.post(`/${userId}/avatar`, formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
-        
+
         // Update the local avatar display
-        setAvatar(getDomain() + '/' + response.data.avatarUrl + `?v=${timestamp}`);
+        setAvatar(getDomain() + "/" + response.data.avatarUrl + `?v=${timestamp}`);
       } catch (error) {
         console.error("Failed to upload avatar:", handleError(error));
       }
@@ -348,67 +350,12 @@ const Profile = () => {
                 <p className="info-text">{user.name}</p>
               )}
             </div> */}
-            <div>
-              <span className="info-title">Status:</span>
-              <p className="info-text">
-                <span style={{ marginRight: 8 }}>
-                  {`${user.status === "OFFLINE" ? "🔴" : "🟢"} ${user.status}`}
-                </span>
-              </p>
-            </div>
-            <div>
-              <span className="info-title">Username:</span>
-
-              {isEditable ? (
-                <div className="editable-input">
-                  <input
-                    ref={usernameInputRef}
-                    type="text"
-                    defaultValue={user.username}
-                  ></input>
-                </div>
-              ) : (
-                <p className="info-text">{user.username}</p>
-              )}
-            </div>
-            <div>
-              <span className="info-title">Birth Date:</span>
-              {isEditable ? (
-                <div className="editable-input">
-                  <input
-                    ref={birthDateInputRef}
-                    type="date"
-                    defaultValue={
-                      new Date(user.birthDate)?.toISOString()?.slice(0, 10) ||
-                      ""
-                    }
-                  ></input>
-                </div>
-              ) : (
-                <p className="info-text">{user.birthDate || "Not provided"}</p>
-              )}
-            </div>
-            <div>
-              <span className="info-title">Language:</span>
-
-              {isEditable ? (
-                <div className="editable-input">
-                  <select
-                    defaultValue={`${user.language}`}
-                    value={selectedLanguage}
-                    onChange={(e) => setSelectedLanguage(e.target.value)}
-                  >
-                    {languages.map((lang) => (
-                      <option key={lang.code} value={lang.code}>
-                        {lang.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              ) : (
+              <div>
+                <span className="info-title">Status:</span>
                 <p className="info-text">
-                  {languages.find((lang) => lang.code === user.language)
-                    ?.name || "Unknown Language"}
+                  <span style={{ marginRight: 8 }}>
+                    {`${user.status === "OFFLINE" ? "🔴" : "🟢"} ${user.status}`}
+                  </span>
                 </p>
               )}
             </div>
@@ -488,9 +435,8 @@ const Profile = () => {
                     <ul
                       className="user-list"
                       style={{
-                        listStyle: "none",
-                        padding: 0,
-                        margin: 0,
+                        maxHeight: "100px",
+                        overflowY: "auto",
                       }}
                     >
                       {filteredUsers.map((user) => (
@@ -549,12 +495,17 @@ const Profile = () => {
           <NESContainerW title="User Stats">
             <p>Coming Soon</p>
           </NESContainerW>
-          <NESContainerW title="Recent Games">
-            <p>Coming Soon</p>
+          <NESContainerW title="" className="right style scrollable2" scrollable={true}>
+            <NESContainerW title="User Stats">
+              <p>Coming Soon</p>
+            </NESContainerW>
+            <NESContainerW title="Recent Games">
+              <p>Coming Soon</p>
+            </NESContainerW>
           </NESContainerW>
-        </NESContainerW>
-      </div>
-    </>
+        </div>
+      </>
+    </div>
   );
 };
 
