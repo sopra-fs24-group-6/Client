@@ -125,6 +125,7 @@ const Browser = () => {
                       <CustomButton
                         text="Join"
                         className="small hover-green"
+                        disabled={lobby.players.length >= lobby.playerLimit}
                         onClick={() => joinLobby(lobby)}
                       />
                     </td>

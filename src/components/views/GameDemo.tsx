@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Client } from "@stomp/stompjs";
-import { getBrokerURL } from "helpers/getBrokerURL"
+import { getBrokerURL } from "helpers/getBrokerURL";
 import { useNavigate } from "react-router-dom";
 
 const GameDemo = () => {
@@ -74,14 +74,20 @@ const GameDemo = () => {
         // message has content<String>, userId<Long>, username<String>
         stompClient.subscribe(`/queue/${userId}/chat`, (message) => {
           const newChatMessage = JSON.parse(message.body);
-          setChatMessages((prevChatMessages) => [...prevChatMessages, newChatMessage]);
+          setChatMessages((prevChatMessages) => [
+            ...prevChatMessages,
+            newChatMessage,
+          ]);
         });
 
         // subscribe clue
         // message has content<String>, userId<Long>, username<String>
         stompClient.subscribe(`/queue/${userId}/clue`, (message) => {
           const newClueMessage = JSON.parse(message.body);
-          setClueMessages((prevClueMessages) => [...prevClueMessages, newClueMessage]);
+          setClueMessages((prevClueMessages) => [
+            ...prevClueMessages,
+            newClueMessage,
+          ]);
         });
 
         // subscribe round timer
@@ -100,10 +106,13 @@ const GameDemo = () => {
 
         // subscribe discussion timer
         // message has single integer, which indicates remaining seconds
-        stompClient.subscribe(`/topic/${lobbyId}/discussionTimer`, (message) => {
-          const newDiscussionTime = JSON.parse(message.body);
-          setDiscussionTimer(newDiscussionTime);
-        });
+        stompClient.subscribe(
+          `/topic/${lobbyId}/discussionTimer`,
+          (message) => {
+            const newDiscussionTime = JSON.parse(message.body);
+            setDiscussionTimer(newDiscussionTime);
+          }
+        );
 
         // subscribe clue turn
         // message has userId<Long>
@@ -138,8 +147,6 @@ const GameDemo = () => {
           const event = JSON.parse(message.body);
           setPlayers(event);
         });
-
-
       },
       onStompError: (frame) => {
         console.error("Broker reported error: " + frame.headers["message"]);
@@ -162,7 +169,6 @@ const GameDemo = () => {
     };
   }, [userId]);
 
-
   const sendMessage = () => {
     if (client && connected && draftMessage) {
       const chatMessage = {
@@ -175,7 +181,6 @@ const GameDemo = () => {
         body: JSON.stringify(chatMessage),
       });
       setDraftMessage("");
-
     } else {
       console.log("STOMP connection is not established.");
     }
@@ -183,6 +188,21 @@ const GameDemo = () => {
 
   const sendClue = () => {
     if (client && connected && draftMessage) {
+      const normalizedDraftMessage = draftMessage
+        .toLowerCase()
+        .replace(/\s/g, "");
+      const normalizedWord = word.toLowerCase().replace(/\s/g, "");
+
+      if (
+        normalizedDraftMessage === normalizedWord ||
+        normalizedDraftMessage.includes(normalizedWord)
+      ) {
+        console.log(
+          "Clue cannot be submitted. It is equal or too similar to the word."
+        );
+
+        return;
+      }
       const clueMessage = {
         content: draftMessage,
         userId: userId,
@@ -193,7 +213,6 @@ const GameDemo = () => {
         body: JSON.stringify(clueMessage),
       });
       setDraftMessage("");
-
     } else {
       console.log("STOMP connection is not established.");
     }
@@ -232,7 +251,6 @@ const GameDemo = () => {
   //   setUserId(userIdInput);
   //   setIsUserIdSet(true);
   // };
-
 
   return (
     <div>
@@ -331,25 +349,50 @@ const GameDemo = () => {
       {phase === "gameResult" && gameResult && (
         <div>
           <p>Winner role: {gameResult.winnerRole}</p>
-          <p>Winners: {gameResult.winners.map(w => `${w.username}`).join(", ")}</p>
-          <p>Losers: {gameResult.losers.map(l => `${l.username}`).join(", ")}</p>
+          <p>
+            Winners: {gameResult.winners.map((w) => `${w.username}`).join(", ")}
+          </p>
+          <p>
+            Losers: {gameResult.losers.map((l) => `${l.username}`).join(", ")}
+          </p>
         </div>
       )}
 
       {/* Clue and Chat log */}
       <p>Clue log</p>
-      <div id="messageList" style={{ height: "200px", overflowY: "scroll", marginBottom: "20px", border: "1px solid #ccc", padding: "10px" }}>
+      <div
+        id="messageList"
+        style={{
+          height: "200px",
+          overflowY: "scroll",
+          marginBottom: "20px",
+          border: "1px solid #ccc",
+          padding: "10px",
+        }}
+      >
         {clueMessages.map((msg, index) => (
-          <div key={index}>{msg.username}: {msg.content}</div>
+          <div key={index}>
+            {msg.username}: {msg.content}
+          </div>
         ))}
       </div>
       <p>Discussion log</p>
-      <div id="messageList" style={{ height: "200px", overflowY: "scroll", marginBottom: "20px", border: "1px solid #ccc", padding: "10px" }}>
+      <div
+        id="messageList"
+        style={{
+          height: "200px",
+          overflowY: "scroll",
+          marginBottom: "20px",
+          border: "1px solid #ccc",
+          padding: "10px",
+        }}
+      >
         {chatMessages.map((msg, index) => (
-          <div key={index}>{msg.username}: {msg.content}</div>
+          <div key={index}>
+            {msg.username}: {msg.content}
+          </div>
         ))}
       </div>
-
     </div>
   );
 };
