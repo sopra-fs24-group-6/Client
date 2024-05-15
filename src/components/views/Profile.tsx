@@ -8,6 +8,7 @@ import NavBar from "../ui/NavBar";
 //import initialPlayers from "components/placeholders/playerlist";
 import languages from "helpers/languages.json";
 import { getDomain } from "helpers/getDomain";
+import background2 from "../../assets/Backgrounds/bg5.jpeg";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -43,7 +44,7 @@ const Profile = () => {
         const response = await api.get(`/users/${userId}`);
         console.log(response.data);
         setUser(response.data);
-        const avatarSrc = getDomain() + '/' + response.data.avatarUrl + `?v=${timestamp}`;
+        const avatarSrc = getDomain() + "/" + response.data.avatarUrl + `?v=${timestamp}`;
         console.log(avatarSrc)
         setAvatar(avatarSrc);
 
@@ -154,6 +155,7 @@ const Profile = () => {
       hour12: false,
     };
     const date = new Date(dateString);
+
     return date.toLocaleDateString("en-US", options);
   };
 
@@ -163,15 +165,15 @@ const Profile = () => {
       // Prepare the form data
       const formData = new FormData();
       formData.append("avatar", file);
-  
+
       // Send the new avatar to the server (via WebSocket or an API)
       try {
         const response = await api.post(`/${userId}/avatar`, formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
-        
+
         // Update the local avatar display
-        setAvatar(getDomain() + '/' + response.data.avatarUrl + `?v=${timestamp}`);
+        setAvatar(getDomain() + "/" + response.data.avatarUrl + `?v=${timestamp}`);
       } catch (error) {
         console.error("Failed to upload avatar:", handleError(error));
       }
@@ -208,54 +210,58 @@ const Profile = () => {
   }
 
   return (
-    <>
-      <NavBar />
-      <div className="Extension Flex">
-        <NESContainerW title="" className="left">
-          <NESContainerW title="User Information">
-          <div
-            style={{ position: "relative", display: "inline-block" }}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-          >
-            {/* Avatar */}
-            <img
-              src={avatar}
-              alt="User Avatar"
-              style={{ width: "100px", height: "100px", borderRadius: "50%" }}
-            />
-            
-            {/* Plus Button Overlay */}
-            {isHovered && (
-              <button
-                onClick={() => document.getElementById("fileInput").click()}
-                style={{
-                  position: "absolute",
-                  top: "35px",
-                  left: "35px",
-                  width: "30px",
-                  height: "30px",
-                  borderRadius: "50%",
-                  backgroundColor: "green",
-                  color: "white",
-                  border: "none",
-                  cursor: "pointer",
-                }}
+    <div
+      className="background"
+      style={{ backgroundImage: `url(${background2})` }}
+    >
+      <>
+        <NavBar />
+        <div className="Extension Flex">
+          <NESContainerW title="" className="left style scrollable2" scrollable={true}>
+            <NESContainerW title="User Information">
+              <div
+                style={{ position: "relative", display: "inline-block" }}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
               >
-                +
-              </button>
-            )}
+                {/* Avatar */}
+                <img
+                  src={avatar}
+                  alt="User Avatar"
+                  style={{ width: "100px", height: "100px", borderRadius: "50%" }}
+                />
 
-            {/* Hidden File Input */}
-            <input
-              type="file"
-              id="fileInput"
-              accept="image/*"
-              style={{ display: "none" }}
-              onChange={handleFileChange}
-            />
-          </div>
-            {/* <div>
+                {/* Plus Button Overlay */}
+                {isHovered && (
+                  <button
+                    onClick={() => document.getElementById("fileInput").click()}
+                    style={{
+                      position: "absolute",
+                      top: "35px",
+                      left: "35px",
+                      width: "30px",
+                      height: "30px",
+                      borderRadius: "50%",
+                      backgroundColor: "green",
+                      color: "white",
+                      border: "none",
+                      cursor: "pointer",
+                    }}
+                  >
+                    +
+                  </button>
+                )}
+
+                {/* Hidden File Input */}
+                <input
+                  type="file"
+                  id="fileInput"
+                  accept="image/*"
+                  style={{ display: "none" }}
+                  onChange={handleFileChange}
+                />
+              </div>
+              {/* <div>
               <span className="info-title">Name:</span>
               {isEditable ? (
                 <div className="editable-input">
@@ -269,192 +275,193 @@ const Profile = () => {
                 <p className="info-text">{user.name}</p>
               )}
             </div> */}
-            <div>
-              <span className="info-title">Status:</span>
-              <p className="info-text">
-                <span style={{ marginRight: 8 }}>
-                  {`${user.status === "OFFLINE" ? "🔴" : "🟢"} ${user.status}`}
-                </span>
-              </p>
-            </div>
-            <div>
-              <span className="info-title">Username:</span>
-
-              {isEditable ? (
-                <div className="editable-input">
-                  <input
-                    ref={usernameInputRef}
-                    type="text"
-                    defaultValue={user.username}
-                  ></input>
-                </div>
-              ) : (
-                <p className="info-text">{user.username}</p>
-              )}
-            </div>
-            <div>
-              <span className="info-title">Birth Date:</span>
-              {isEditable ? (
-                <div className="editable-input">
-                  <input
-                    ref={birthDateInputRef}
-                    type="date"
-                    defaultValue={
-                      new Date(user.birthDate)?.toISOString()?.slice(0, 10) ||
-                      ""
-                    }
-                  ></input>
-                </div>
-              ) : (
-                <p className="info-text">{user.birthDate || "Not provided"}</p>
-              )}
-            </div>
-            <div>
-              <span className="info-title">Language:</span>
-
-              {isEditable ? (
-                <div className="editable-input">
-                  <select
-                    defaultValue={`${user.language}`}
-                    value={selectedLanguage}
-                    onChange={(e) => setSelectedLanguage(e.target.value)}
-                  >
-                    {languages.map((lang) => (
-                      <option key={lang.code} value={lang.code}>
-                        {lang.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              ) : (
+              <div>
+                <span className="info-title">Status:</span>
                 <p className="info-text">
-                  {languages.find((lang) => lang.code === user.language)
-                    ?.name || "Unknown Language"}
+                  <span style={{ marginRight: 8 }}>
+                    {`${user.status === "OFFLINE" ? "🔴" : "🟢"} ${user.status}`}
+                  </span>
                 </p>
-              )}
-            </div>
-            <div>
-              <span className="info-title">Creation Date:</span>
-              <p className="info-text">{formatDate(user.creationDate)}</p>
-            </div>
+              </div>
+              <div>
+                <span className="info-title">Username:</span>
 
-            <div className="user-details button-container">
-              {isLoggedInUser && !isEditable && (
-                <CustomButton
-                  text="Edit"
-                  className="hover-orange"
-                  onClick={() => setIsEditable(true)}
-                />
-              )}
-              {isLoggedInUser && isEditable && (
-                <React.Fragment>
-                  <CustomButton
-                    text="Cancel"
-                    className="hover-red"
-                    onClick={() => setIsEditable(false)}
-                  />
-                  <CustomButton
-                    text="Save"
-                    className="hover-green"
-                    onClick={updateUserData}
-                  />
-                </React.Fragment>
-              )}
-            </div>
-          </NESContainerW>
-          <NESContainerW title="Friends">
-            <ul className="list-style">
-              {friends.map((player, index) => (
-                <li className="Aligner" key={index}>
-                  {player.username}
+                {isEditable ? (
+                  <div className="editable-input">
+                    <input
+                      ref={usernameInputRef}
+                      type="text"
+                      defaultValue={user.username}
+                    ></input>
+                  </div>
+                ) : (
+                  <p className="info-text">{user.username}</p>
+                )}
+              </div>
+              <div>
+                <span className="info-title">Birth Date:</span>
+                {isEditable ? (
+                  <div className="editable-input">
+                    <input
+                      ref={birthDateInputRef}
+                      type="date"
+                      defaultValue={
+                        new Date(user.birthDate)?.toISOString()?.slice(0, 10) ||
+                        ""
+                      }
+                    ></input>
+                  </div>
+                ) : (
+                  <p className="info-text">{user.birthDate || "Not provided"}</p>
+                )}
+              </div>
+              <div>
+                <span className="info-title">Language:</span>
 
+                {isEditable ? (
+                  <div className="editable-input">
+                    <select
+                      defaultValue={`${user.language}`}
+                      value={selectedLanguage}
+                      onChange={(e) => setSelectedLanguage(e.target.value)}
+                    >
+                      {languages.map((lang) => (
+                        <option key={lang.code} value={lang.code}>
+                          {lang.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                ) : (
+                  <p className="info-text">
+                    {languages.find((lang) => lang.code === user.language)
+                      ?.name || "Unknown Language"}
+                  </p>
+                )}
+              </div>
+              <div>
+                <span className="info-title">Creation Date:</span>
+                <p className="info-text">{formatDate(user.creationDate)}</p>
+              </div>
+
+              <div className="user-details button-container">
+                {isLoggedInUser && !isEditable && (
                   <CustomButton
-                    text="Invite"
-                    className="small-kick margin-kick hover-red"
+                    text="Edit"
+                    className="hover-orange"
+                    onClick={() => setIsEditable(true)}
                   />
-                </li>
-              ))}
-            </ul>
-            <CustomButton
-              text="Add Friends"
-              className="small-kick margin-kick hover-red"
-              onClick={() => setIsUserListOpen(!isUserListOpen)}
-            />
-            {isUserListOpen && (
-              <div className="modal-background">
-                <div className="modal-content">
-                  <CustomButton
-                    text="Close"
-                    className="medium-kick margin-kick hover-red"
-                    onClick={() => setIsUserListOpen(!isUserListOpen)}
-                  ></CustomButton>
-                  <input
-                    type="text"
-                    value={searchInput}
-                    onChange={handleSearchInputChange}
-                    placeholder="Search by name..."
-                  />
-                  <div
-                    className="user-list-container"
-                    style={{
-                      maxHeight: "100px",
-                      overflowY: "auto",
-                    }}
-                  >
-                    <ul
-                      className="user-list"
+                )}
+                {isLoggedInUser && isEditable && (
+                  <React.Fragment>
+                    <CustomButton
+                      text="Cancel"
+                      className="hover-red"
+                      onClick={() => setIsEditable(false)}
+                    />
+                    <CustomButton
+                      text="Save"
+                      className="hover-green"
+                      onClick={updateUserData}
+                    />
+                  </React.Fragment>
+                )}
+              </div>
+            </NESContainerW>
+            <NESContainerW title="Friends">
+              <ul className="list-style">
+                {friends.map((player, index) => (
+                  <li className="Aligner" key={index}>
+                    {player.username}
+
+                    <CustomButton
+                      text="Invite"
+                      className="small-kick margin-kick hover-red"
+                    />
+                  </li>
+                ))}
+              </ul>
+              <CustomButton
+                text="Add Friends"
+                className="small-kick margin-kick hover-red"
+                onClick={() => setIsUserListOpen(!isUserListOpen)}
+              />
+              {isUserListOpen && (
+                <div className="modal-background">
+                  <div className="modal-content">
+                    <CustomButton
+                      text="Close"
+                      className="medium-kick margin-kick hover-red"
+                      onClick={() => setIsUserListOpen(!isUserListOpen)}
+                    ></CustomButton>
+                    <input
+                      type="text"
+                      value={searchInput}
+                      onChange={handleSearchInputChange}
+                      placeholder="Search by name..."
+                    />
+                    <div
+                      className="user-list-container"
                       style={{
-                        listStyle: "none",
-                        padding: 0,
-                        margin: 0,
+                        maxHeight: "100px",
+                        overflowY: "auto",
                       }}
                     >
-                      {filteredUsers.map((user) => (
-                        <li key={user.id}>
-                          {user.username}{" "}
-                          <CustomButton
-                            text="Add Friend"
-                            className="small-kick margin-kick hover-green"
-                            onClick={() => sendFriendRequest(user.id)}
-                          ></CustomButton>
-                        </li>
-                      ))}
-                    </ul>
+                      <ul
+                        className="user-list"
+                        style={{
+                          listStyle: "none",
+                          padding: 0,
+                          margin: 0,
+                        }}
+                      >
+                        {filteredUsers.map((user) => (
+                          <li key={user.id}>
+                            {user.username}{" "}
+                            <CustomButton
+                              text="Add Friend"
+                              className="small-kick margin-kick hover-green"
+                              onClick={() => sendFriendRequest(user.id)}
+                            ></CustomButton>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
+            </NESContainerW>
+            <NESContainerW title="Friend Requests">
+              <ul className="list-style">
+                {friendRequests.map((requester) => (
+                  <li className="Aligner" key={requester.id}>
+                    {requester.username}
+                    <CustomButton
+                      text="Accept"
+                      className="small-kick margin-kick hover-green"
+                      onClick={() => acceptFriendRequest(requester)}
+                    />
+                    <CustomButton
+                      text="Deny"
+                      className="small-kick margin-kick hover-red"
+                      onClick={() => denyFriendRequest(requester)}
+                    />
+                  </li>
+                ))}
+              </ul>
+            </NESContainerW>
           </NESContainerW>
-          <NESContainerW title="Friend Requests">
-            <ul className="list-style">
-              {friendRequests.map((requester) => (
-                <li className="Aligner" key={requester.id}>
-                  {requester.username}
-                  <CustomButton
-                    text="Accept"
-                    className="small-kick margin-kick hover-green"
-                    onClick={() => acceptFriendRequest(requester)}
-                  />
-                  <CustomButton
-                    text="Deny"
-                    className="small-kick margin-kick hover-red"
-                    onClick={() => denyFriendRequest(requester)}
-                  />
-                </li>
-              ))}
-            </ul>
+          <NESContainerW title="" className="right style scrollable2" scrollable={true}>
+            <NESContainerW title="User Stats">
+              <p>Coming Soon</p>
+            </NESContainerW>
+            <NESContainerW title="Recent Games">
+              <p>Coming Soon</p>
+            </NESContainerW>
           </NESContainerW>
-        </NESContainerW>
-        <NESContainerW title="" className="right">
-          <NESContainerW title="User Stats">
-            <p>Coming Soon</p>
-          </NESContainerW>
-          <NESContainerW title="Recent Games">
-            <p>Coming Soon</p>
-          </NESContainerW>
-        </NESContainerW>
-      </div>
-    </>
+        </div>
+      </>
+    </div>
   );
 };
 

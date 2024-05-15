@@ -15,6 +15,7 @@ import Slider from "../ui/Slider";
 import CustomButton from "../ui/CustomButton";
 import ThemePopUp from "components/ui/ThemePopUp";
 import { useLobbyWebSocket } from "helpers/LobbyWebSocketManager";
+import background2 from "../../assets/Backgrounds/bg5.jpeg";
 
 // import { Client } from "@stomp/stompjs";
 // import { getBrokerURL } from "helpers/getBrokerURL"
@@ -238,13 +239,12 @@ const GameLobby = () => {
   };
 
   const kickPlayer = async (playerId) => {
-
-  //const kickPlayer = async (targetUserId) => {
+    //const kickPlayer = async (targetUserId) => {
     try {
       const requesterId = localStorage.getItem("userId");
-      console.log('requesterId:' + requesterId);
-      console.log('playerId:' + playerId)
-      console.log('lobbyId:' + lobbyId);
+      console.log("requesterId:" + requesterId);
+      console.log("playerId:" + playerId)
+      console.log("lobbyId:" + lobbyId);
       if (!requesterId) {
         alert("No requesterId found in local storage.");
 
@@ -254,7 +254,7 @@ const GameLobby = () => {
         userId: requesterId,
       };
       await api.delete("/lobbies/" + lobbyId + "/players/" + playerId, {
-      //await api.delete("/lobbies/" + lobbyId + "/players/" + targetUserId, {
+        //await api.delete("/lobbies/" + lobbyId + "/players/" + targetUserId, {
         data: requestBody,
       });
     } catch (error) {
@@ -287,319 +287,324 @@ const GameLobby = () => {
   };
 
   return (
-    <>
-      <NavBar />
-      <div className="Center">
-        <NesContainer title="">
-          <h1 className="press-start-font">Lobby Settings</h1>
-        </NesContainer>
-        <div className="Extension Flex">
-          <NESContainerW title="Choose Settings" className="left">
-            <div className="wrapper">
-              <div className="setting-container">
-                <label>Lobby Name:</label>
-                <input
-                  className="setting-field"
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  disabled={!isAdmin}
-                />
-              </div>
-              <div className="Space Flex">
-                <label> Lobby Type:</label>
-                <NESRadioButton
-                  name="Lobby Type"
-                  options={[
-                    { label: "Public", value: "public" },
-                    { label: "Private", value: "private" },
-                  ]}
-                  defaultValue={isPrivate ? "private" : "public"}
-                  onChange={lobbyTypeChanger}
-                  disabled={!isAdmin || isPublished}
-                />
-              </div>
-              {isPrivate && (
+    <div
+      className="background"
+      style={{ backgroundImage: `url(${background2})` }}
+    >
+      <>
+        <NavBar />
+        <div className="Center">
+          <NesContainer title="">
+            <h1 className="press-start-font">Lobby Settings</h1>
+          </NesContainer>
+          <div className="Extension Flex">
+            <NESContainerW title="Choose Settings" className="left style">
+              <div className="wrapper">
                 <div className="setting-container">
-                  <div className="Space Flex">
-                    <label>Password:</label>
-                    <input
-                      className="setting-field"
-                      type="text"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      disabled={!isAdmin}
+                  <label>Lobby Name:</label>
+                  <input
+                    className="setting-field"
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    disabled={!isAdmin}
+                  />
+                </div>
+                <div className="Space Flex">
+                  <label> Lobby Type:</label>
+                  <NESRadioButton
+                    name="Lobby Type"
+                    options={[
+                      { label: "Public", value: "public" },
+                      { label: "Private", value: "private" },
+                    ]}
+                    defaultValue={isPrivate ? "private" : "public"}
+                    onChange={lobbyTypeChanger}
+                    disabled={!isAdmin || isPublished}
+                  />
+                </div>
+                {isPrivate && (
+                  <div className="setting-container">
+                    <div className="Space Flex">
+                      <label>Password:</label>
+                      <input
+                        className="setting-field"
+                        type="text"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        disabled={!isAdmin}
+                      />
+                    </div>
+                  </div>
+                )}
+                <div className="Space Flex">
+                  <label>Player Limit:</label>
+                  <PlayerLimiter
+                    value={playerLimit}
+                    disabled={!isAdmin}
+                    onPlayerLimitChange={handlePlayerLimitChange}
+                  />
+                </div>
+                <div className="Space Flex">
+                  <label htmlFor="roundLimit">Round Limit:</label>{" "}
+                  {/* Accessible label association */}
+                  <RoundLimiter
+                    value={rounds}
+                    onRoundLimitChange={handleRoundLimitChange}
+                    disabled={!isAdmin}
+                  />
+                </div>
+                <div className="Space Flex">
+                  <label>Round Timer:</label>
+                  <Slider
+                    //min={60}
+                    min={5} // for developing phase
+                    max={120}
+                    step={10}
+                    value={roundTimer}
+                    onChange={(e) => setRoundTimer(parseInt(e.target.value))}
+                    disabled={!isAdmin}
+                  />
+                </div>
+                <div className="Space Flex">
+                  <label>Clue Timer:</label>
+                  <Slider
+                    // min={10}
+                    min={5} // for developing phase
+                    max={20}
+                    step={5}
+                    value={clueTimer}
+                    onChange={(e) => setClueTimer(parseInt(e.target.value))}
+                    disabled={!isAdmin}
+                  />
+                </div>
+                <div className="Space Flex">
+                  <label>Discussion Timer:</label>
+                  <Slider
+                    min={5}
+                    // min={60}
+                    max={120}
+                    step={10}
+                    value={discussionTimer}
+                    onChange={(e) => setDiscussionTimer(parseInt(e.target.value))}
+                    disabled={!isAdmin}
+                  />
+                </div>
+                <div className="Space Flex">
+                  <label>Themes:</label>
+                  <button
+                    onClick={() => setShowThemePopUp(true)}
+                    disabled={!isAdmin || availableThemes.length === 0}
+                  >
+                    Select Themes
+                  </button>
+                  {showThemePopUp && (
+                    <ThemePopUp
+                      themes={availableThemes}
+                      selectedThemes={selectedThemes}
+                      onSelect={handleSelectThemes}
+                      onClose={handleThemePopUpClose}
+                    />
+                  )}
+                  <ul>
+                    {selectedThemes.map((theme) => (
+                      <li key={theme}>{theme}</li>
+                    ))}
+                  </ul>
+                </div>
+                {!isPublished && isAdmin && (
+                  <div className="Space">
+                    <CustomButton
+                      text="Create Lobby"
+                      className="50 hover-orange margin-top"
+                      onClick={() => createLobby()}
                     />
                   </div>
-                </div>
-              )}
-              <div className="Space Flex">
-                <label>Player Limit:</label>
-                <PlayerLimiter
-                  value={playerLimit}
-                  disabled={!isAdmin}
-                  onPlayerLimitChange={handlePlayerLimitChange}
-                />
-              </div>
-              <div className="Space Flex">
-                <label htmlFor="roundLimit">Round Limit:</label>{" "}
-                {/* Accessible label association */}
-                <RoundLimiter
-                  value={rounds}
-                  onRoundLimitChange={handleRoundLimitChange}
-                  disabled={!isAdmin}
-                />
-              </div>
-              <div className="Space Flex">
-                <label>Round Timer:</label>
-                <Slider
-                  //min={60}
-                  min={5} // for developing phase
-                  max={120}
-                  step={10}
-                  value={roundTimer}
-                  onChange={(e) => setRoundTimer(parseInt(e.target.value))}
-                  disabled={!isAdmin}
-                />
-              </div>
-              <div className="Space Flex">
-                <label>Clue Timer:</label>
-                <Slider
-                  // min={10}
-                  min={5} // for developing phase
-                  max={20}
-                  step={5}
-                  value={clueTimer}
-                  onChange={(e) => setClueTimer(parseInt(e.target.value))}
-                  disabled={!isAdmin}
-                />
-              </div>
-              <div className="Space Flex">
-                <label>Discussion Timer:</label>
-                <Slider
-                  min={5}
-                  // min={60}
-                  max={120}
-                  step={10}
-                  value={discussionTimer}
-                  onChange={(e) => setDiscussionTimer(parseInt(e.target.value))}
-                  disabled={!isAdmin}
-                />
-              </div>
-              <div className="Space Flex">
-                <label>Themes:</label>
-                <button
-                  onClick={() => setShowThemePopUp(true)}
-                  disabled={!isAdmin || availableThemes.length === 0}
-                >
-                  Select Themes
-                </button>
-                {showThemePopUp && (
-                  <ThemePopUp
-                    themes={availableThemes}
-                    selectedThemes={selectedThemes}
-                    onSelect={handleSelectThemes}
-                    onClose={handleThemePopUpClose}
-                  />
                 )}
-                <ul>
-                  {selectedThemes.map((theme) => (
-                    <li key={theme}>{theme}</li>
-                  ))}
-                </ul>
+                {isPublished && isAdmin && (
+                  <div className="Space">
+                    <CustomButton
+                      text="Start Game"
+                      className="50 hover-green margin-right margin-top"
+                      onClick={() => setShowStartGamePopUp(true)}
+                    />
+                    <CustomButton
+                      text="Update Lobby"
+                      className="50 hover-orange margin-right margin-top"
+                      onClick={() => updateLobby()}
+                    />
+                    <CustomButton
+                      text="Delete Lobby"
+                      className="50 hover-red margin-top"
+                      onClick={() => setShowDeleteLobbyPopUp(true)}
+                    />
+                  </div>
+                )}
+                {!isAdmin && (
+                  <div className="Space">
+                    <CustomButton
+                      text="Leave Lobby"
+                      className="50 hover-red margin-top"
+                      onClick={() => setShowLeaveLobbyPopUp(true)}
+                    />
+                  </div>
+                )}
               </div>
-              {!isPublished && isAdmin && (
+            </NESContainerW>
+            <NESContainerW title="Players Joined" className="right style">
+              <h2>
+                Players {players.length} / {playerLimit}
+              </h2>
+              <ul className="list-style">
+                {players.map((player, index) => {
+                  return (
+                    <li className="Aligner" key={player.userId || index}>
+                      {player.username}
+                      {String(player.userId) === String(lobbyAdmin) ? (
+                        <span>&nbsp;(Host)</span>
+                      ) : (
+                        isAdmin && (
+                          <CustomButton
+                            text="Kick"
+                            className="small-kick margin-kick hover-red"
+                            onClick={() => kickPlayer(player.userId)}
+                          />
+                        )
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+              {isPublished && (
                 <div className="Space">
                   <CustomButton
-                    text="Create Lobby"
-                    className="50 hover-orange margin-top"
-                    onClick={() => createLobby()}
+                    text="Invite Friends"
+                    className="small 50 hover-green"
+                    onClick={() => toggleFriendsPopup()}
                   />
                 </div>
               )}
-              {isPublished && isAdmin && (
-                <div className="Space">
-                  <CustomButton
-                    text="Start Game"
-                    className="50 hover-green margin-right margin-top"
-                    onClick={() => setShowStartGamePopUp(true)}
-                  />
-                  <CustomButton
-                    text="Update Lobby"
-                    className="50 hover-orange margin-right margin-top"
-                    onClick={() => updateLobby()}
-                  />
-                  <CustomButton
-                    text="Delete Lobby"
-                    className="50 hover-red margin-top"
-                    onClick={() => setShowDeleteLobbyPopUp(true)}
-                  />
-                </div>
-              )}
-              {!isAdmin && (
-                <div className="Space">
-                  <CustomButton
-                    text="Leave Lobby"
-                    className="50 hover-red margin-top"
-                    onClick={() => setShowLeaveLobbyPopUp(true)}
-                  />
-                </div>
-              )}
+            </NESContainerW>
+          </div>
+
+          {/* Pop-ups */}
+          {isKicked && (
+            <div className="popup-container">
+              <div className="popup">
+                <p>Oops, you have been kicked out by the host...</p>
+                <p>You will be redirected to the menu screen.</p>
+              </div>
             </div>
-          </NESContainerW>
-          <NESContainerW title="Players Joined" className="right">
-            <h2>
-              Players {players.length} / {playerLimit}
-            </h2>
-            <ul className="list-style">
-              {players.map((player, index) => {
-                return (
-                  <li className="Aligner" key={player.userId || index}>
-                    {player.username}
-                    {String(player.userId) === String(lobbyAdmin) ? (
-                      <span>&nbsp;(Host)</span>
-                    ) : (
-                      isAdmin && (
-                        <CustomButton
-                          text="Kick"
-                          className="small-kick margin-kick hover-red"
-                          onClick={() => kickPlayer(player.userId)}
-                        />
-                      )
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
-            {isPublished && (
-              <div className="Space">
+          )}
+          {isLobbyDeleted && !isAdmin && (
+            <div className="popup-container">
+              <div className="popup">
+                <p>Oops, lobby has been deleted by the host...</p>
+                <p>You will be redirected to the menu screen.</p>
+              </div>
+            </div>
+          )}
+          {showCreated && (
+            <div className="popup-container">
+              <div className="popup">
+                <p>Lobby has been successfully created!</p>
                 <CustomButton
-                  text="Invite Friends"
-                  className="small 50 hover-green"
-                  onClick={() => toggleFriendsPopup()}
+                  text="OK"
+                  className="small hover-green"
+                  onClick={() => setShowCreated(false)}
                 />
               </div>
-            )}
-          </NESContainerW>
+            </div>
+          )}
+          {showUpdateLobbyPopUp && (
+            <div className="popup-container">
+              <div className="popup">
+                <p>Lobby has been successfully updated!</p>
+                <CustomButton
+                  text="OK"
+                  className="small hover-green"
+                  onClick={() => setShowUpdateLobbyPopUp(false)}
+                />
+              </div>
+            </div>
+          )}
+          {showJoinLobbyPopUp && !isAdmin && (
+            <div className="popup-container">
+              <div className="popup">
+                <p>Joined lobby successfully!</p>
+                <p>Please wait until host starts game.</p>
+                <CustomButton
+                  text="OK"
+                  className="small hover-green"
+                  onClick={() => setShowJoinLobbyPopUp(false)}
+                />
+              </div>
+            </div>
+          )}
+          {showStartGamePopUp && (
+            <div className="popup-container">
+              <div className="popup">
+                <p>Are you ready to start game?</p>
+                <CustomButton
+                  text="OK"
+                  className="small hover-green margin-right"
+                  onClick={() => {
+                    setShowStartGamePopUp(false);
+                    startGame();
+                  }}
+                />
+                <CustomButton
+                  text="Cancel"
+                  className="small hover-red"
+                  onClick={() => setShowStartGamePopUp(false)}
+                />
+              </div>
+            </div>
+          )}
+          {showDeleteLobbyPopUp && (
+            <div className="popup-container">
+              <div className="popup">
+                <p>Do you really want to delete lobby?</p>
+                <CustomButton
+                  text="OK"
+                  className="small hover-green margin-right"
+                  onClick={() => {
+                    setShowDeleteLobbyPopUp(false);
+                    navigate("/menu");
+                  }}
+                />
+                <CustomButton
+                  text="Cancel"
+                  className="small hover-red"
+                  onClick={() => setShowDeleteLobbyPopUp(false)}
+                />
+              </div>
+            </div>
+          )}
+          {showLeaveLobbyPopUp && (
+            <div className="popup-container">
+              <div className="popup">
+                <p>Do you really want to leave lobby?</p>
+                <CustomButton
+                  text="OK"
+                  className="small hover-green margin-right"
+                  onClick={() => {
+                    setShowLeaveLobbyPopUp(false);
+                    navigate("/menu");
+                  }}
+                />
+                <CustomButton
+                  text="Cancel"
+                  className="small hover-red"
+                  onClick={() => setShowLeaveLobbyPopUp(false)}
+                />
+              </div>
+            </div>
+          )}
+
         </div>
-
-        {/* Pop-ups */}
-        {isKicked && (
-          <div className="popup-container">
-            <div className="popup">
-              <p>Oops, you have been kicked out by the host...</p>
-              <p>You will be redirected to the menu screen.</p>
-            </div>
-          </div>
-        )}
-        {isLobbyDeleted && !isAdmin && (
-          <div className="popup-container">
-            <div className="popup">
-              <p>Oops, lobby has been deleted by the host...</p>
-              <p>You will be redirected to the menu screen.</p>
-            </div>
-          </div>
-        )}
-        {showCreated && (
-          <div className="popup-container">
-            <div className="popup">
-              <p>Lobby has been successfully created!</p>
-              <CustomButton
-                text="OK"
-                className="small hover-green"
-                onClick={() => setShowCreated(false)}
-              />
-            </div>
-          </div>
-        )}
-        {showUpdateLobbyPopUp && (
-          <div className="popup-container">
-            <div className="popup">
-              <p>Lobby has been successfully updated!</p>
-              <CustomButton
-                text="OK"
-                className="small hover-green"
-                onClick={() => setShowUpdateLobbyPopUp(false)}
-              />
-            </div>
-          </div>
-        )}
-        {showJoinLobbyPopUp && !isAdmin && (
-          <div className="popup-container">
-            <div className="popup">
-              <p>Joined lobby successfully!</p>
-              <p>Please wait until host starts game.</p>
-              <CustomButton
-                text="OK"
-                className="small hover-green"
-                onClick={() => setShowJoinLobbyPopUp(false)}
-              />
-            </div>
-          </div>
-        )}
-        {showStartGamePopUp && (
-          <div className="popup-container">
-            <div className="popup">
-              <p>Are you ready to start game?</p>
-              <CustomButton
-                text="OK"
-                className="small hover-green margin-right"
-                onClick={() => {
-                  setShowStartGamePopUp(false);
-                  startGame();
-                }}
-              />
-              <CustomButton
-                text="Cancel"
-                className="small hover-red"
-                onClick={() => setShowStartGamePopUp(false)}
-              />
-            </div>
-          </div>
-        )}
-        {showDeleteLobbyPopUp && (
-          <div className="popup-container">
-            <div className="popup">
-              <p>Do you really want to delete lobby?</p>
-              <CustomButton
-                text="OK"
-                className="small hover-green margin-right"
-                onClick={() => {
-                  setShowDeleteLobbyPopUp(false);
-                  navigate("/menu");
-                }}
-              />
-              <CustomButton
-                text="Cancel"
-                className="small hover-red"
-                onClick={() => setShowDeleteLobbyPopUp(false)}
-              />
-            </div>
-          </div>
-        )}
-        {showLeaveLobbyPopUp && (
-          <div className="popup-container">
-            <div className="popup">
-              <p>Do you really want to leave lobby?</p>
-              <CustomButton
-                text="OK"
-                className="small hover-green margin-right"
-                onClick={() => {
-                  setShowLeaveLobbyPopUp(false);
-                  navigate("/menu");
-                }}
-              />
-              <CustomButton
-                text="Cancel"
-                className="small hover-red"
-                onClick={() => setShowLeaveLobbyPopUp(false)}
-              />
-            </div>
-          </div>
-        )}
-
-      </div>
-    </>
+      </>
+    </div>
   );
 };
 

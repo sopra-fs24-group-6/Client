@@ -11,6 +11,7 @@ import NesContainer from "../ui/NESContainer";
 import "styles/views/Lobby.scss";
 import NESContainerW from "../ui/NESContainerW";
 import { getDomain } from "helpers/getDomain";
+import background2 from "../../assets/Backgrounds/bg5.jpeg";
 
 const LeaderBoard = () => {
   const navigate = useNavigate();
@@ -44,52 +45,56 @@ const LeaderBoard = () => {
       );
     }
   };
-  
+
 
   return (
-    <>
-      <NavBar />
-      <div className="Center">
-        <NesContainer title="">
-          <h1 className="press-start-font">Leader Board</h1>
-        </NesContainer>
-        <div className="Space">
-          <NESContainerW title="LeaderBoard" className="center">
-            <table style={{ margin: "0 auto", textAlign: "center" }}>
-              <thead>
-                <tr>
-                  <th className="table-header"> User Name</th>
-                  <th className="table-header">Wins</th>
-                  <th className="table-header">Losses</th>
-                  <th className="table-header">WinLossRatio</th>
-                  <th className="table-header">Ranking</th>
-                  <th className="table-header"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {players.map((player, index) => (
-                  <tr key={player.id}>
-                    <td className="browser-items">
-                    <img
-                      src={getDomain() + "/" +  player.avatarUrl + `?v=${timestamp}`} // Replace with the actual default image path
-                      alt={`${player.username}'s avatar`}
-                      style={{ width: "32px", height: "32px", borderRadius: "50%", marginRight: "8px" }}
-                    />
-                      {player.username}
-                    </td>
-                    <td className="browser-items">
-                      {player.wins}
-                    </td>
-                    <td className="browser-items">
-                      {player.losses}
-                    </td>
-                    <td className="browser-items">
-                      {player.winlossratio.toFixed(2)}
-                    </td>
-                    <td className="browser-items">
-                      {index + 1}
-                    </td>
-                    {/* 
+    <div
+      className="background"
+      style={{ backgroundImage: `url(${background2})` }}
+    >
+      <>
+        <NavBar />
+        <div className="Center">
+          <NesContainer title="">
+            <h1 className="press-start-font">Leaderboard</h1>
+          </NesContainer>
+          <div className="Space">
+            <NESContainerW title="" className="center style scrollable" scrollable={true}>
+              <table style={{ margin: "0 auto", textAlign: "center" }}>
+                <thead>
+                  <tr>
+                    <th className="table-header"> User Name</th>
+                    <th className="table-header">Wins</th>
+                    <th className="table-header">Losses</th>
+                    <th className="table-header">WinLossRatio</th>
+                    <th className="table-header">Ranking</th>
+                    <th className="table-header"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {players.map((player, index) => (
+                    <tr key={player.id}>
+                      <td className="browser-items">
+                        <img
+                          src={getDomain() + "/" + player.avatarUrl + `?v=${timestamp}`} // Replace with the actual default image path
+                          alt={`${player.username}'s avatar`}
+                          style={{ width: "32px", height: "32px", borderRadius: "50%", marginRight: "8px" }}
+                        />
+                        {player.username}
+                      </td>
+                      <td className="browser-items">
+                        {player.wins}
+                      </td>
+                      <td className="browser-items">
+                        {player.losses}
+                      </td>
+                      <td className="browser-items">
+                        {player.winlossratio.toFixed(2)}
+                      </td>
+                      <td className="browser-items">
+                        {index + 1}
+                      </td>
+                      {/* 
                     we could change this to friend invitation function
                     <td className="browser-items">
                       <CustomButton
@@ -98,19 +103,20 @@ const LeaderBoard = () => {
                         onClick={() => joinLobby(lobby)}
                       />
                     </td> */}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <CustomButton
-                    text="Back"
-                    className="small hover-green"
-                    onClick={() => navigate(-1)}
-                  />
-          </NESContainerW>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <CustomButton
+                text="Back"
+                className="small hover-green"
+                onClick={() => navigate(-1)}
+              />
+            </NESContainerW>
+          </div>
         </div>
-      </div>
-    </>
+      </>
+    </div>
   );
 };
 

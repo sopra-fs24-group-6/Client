@@ -10,6 +10,7 @@ import NavBar from "../ui/NavBar";
 import NesContainer from "../ui/NESContainer";
 import "styles/views/Lobby.scss";
 import NESContainerW from "../ui/NESContainerW";
+import background2 from "../../assets/Backgrounds/bg5.jpeg";
 
 const Browser = () => {
   const navigate = useNavigate();
@@ -54,20 +55,21 @@ const Browser = () => {
       // navigate("/lobbies/" + selectedLobby.id);
       //For testing purposes
       navigate(`/lobby/${selectedLobby.id}`, { state: { isAdmin: false } });
-    if (!selectedLobby.isPrivate) {
-      try {
-        await api.post("/lobbies/" + selectedLobby.id + "/players", { userId });
-        navigate(`/lobby/${selectedLobby.id}`, { state: { isAdmin: false } })
-      } catch (error) {
-        alert(
-          `Something went wrong during joining lobby: \n${handleError(
-            error
-          )}`
-        );
+      if (!selectedLobby.isPrivate) {
+        try {
+          await api.post("/lobbies/" + selectedLobby.id + "/players", { userId });
+          navigate(`/lobby/${selectedLobby.id}`, { state: { isAdmin: false } })
+        } catch (error) {
+          alert(
+            `Something went wrong during joining lobby: \n${handleError(
+              error
+            )}`
+          );
+        }
+      } else {
+        setPasswordPrompt(true);
       }
-    } else {
-      setPasswordPrompt(true);
-    }
+    };
   };
 
   const passwordSubmit = async () => {
@@ -93,88 +95,95 @@ const Browser = () => {
   );
 
   return (
-    <>
-      <NavBar />
-      <div className="Center">
-        <NesContainer title="">
-          <h1 className="press-start-font">Lobby Browser</h1>
-        </NesContainer>
-        <div className="Space">
-          <NESContainerW title="Join a lobby" className="center">
-            <input
-              type="text"
-              placeholder="Search by lobby name"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <table style={{ margin: "0 auto", textAlign: "center" }}>
-              <thead>
-                <tr>
-                  <th className="table-header"> Lobby Name</th>
-                  <th className="table-header">Lobby Type</th>
-                  <th className="table-header">Players</th>
-                  <th className="table-header">Player Limit</th>
-                  <th className="table-header">Themes</th>
-                  <th className="table-header">Status</th>
-                  <th className="table-header"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredLobbies.map((lobby) => (
-                  <tr key={lobby.id}>
-                    <td className="browser-items">{lobby.name}</td>
-                    <td className="browser-items">
-                      {lobby.isPrivate ? "Private" : "Public"}
-                    </td>
-                    <td className="browser-items">{lobby.players.length}</td>
-                    <td className="browser-items">{lobby.playerLimit}</td>
-                    <td className="browser-items">{lobby.themes.join(", ")}</td>
-                    <td className="browser-items">
-                      {lobby.status}
-                    </td>
-                    <td className="browser-items">
-                      <CustomButton
-                        text="Join"
-                        className="small hover-green"
-                        onClick={() => joinLobby(lobby)}
-                        disabled={lobby.status !== "OPEN"}
-                      />
-                    </td>
+    <div
+      className="background"
+      style={{ backgroundImage: `url(${background2})` }}
+    >
+      <>
+        <NavBar />
+        <div className="Center">
+          <NesContainer title="">
+            <h1 className="press-start-font">Lobby Browser</h1>
+          </NesContainer>
+          <div className="Space">
+            <NESContainerW title="Join a lobby" className="center style">
+              <table style={{ margin: "0 auto", textAlign: "center" }}>
+                <thead>
+                  <tr>
+                    <th className="table-header"> Lobby Name</th>
+                    <th className="table-header">Lobby Type</th>
+                    <th className="table-header">Players</th>
+                    <th className="table-header">Player Limit</th>
+                    <th className="table-header">Themes</th>
+                    <th className="table-header">Status</th>
+                    <th className="table-header"></th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-            {passwordPrompt && (
-              <div className="popup-container">
-                <div className="popup">
-                  <input
-                    type="password"
-                    placeholder="Enter lobby password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                  <CustomButton
-                    text="Submit"
-                    className="small hover-green"
-                    onClick={passwordSubmit}
-                  />
-                  <CustomButton
-                    text="Cancel"
-                    className="small hover-red"
-                    onClick={() => setPasswordPrompt(false)}
-                  />
-                </div>
+                </thead>
+                <tbody>
+                  {filteredLobbies.map((lobby) => (
+                    <tr key={lobby.id}>
+                      <td className="browser-items">{lobby.name}</td>
+                      <td className="browser-items">
+                        {lobby.isPrivate ? "Private" : "Public"}
+                      </td>
+                      <td className="browser-items">{lobby.players.length}</td>
+                      <td className="browser-items">{lobby.playerLimit}</td>
+                      <td className="browser-items">{lobby.themes.join(", ")}</td>
+                      <td className="browser-items">
+                        {lobby.status}
+                      </td>
+                      <td className="browser-items">
+                        <CustomButton
+                          text="Join"
+                          className="small hover-green"
+                          onClick={() => joinLobby(lobby)}
+                          disabled={lobby.status !== "OPEN"}
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <div className="spacing">
+                <input
+                  type="text"
+                  placeholder="Search by lobby name"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
               </div>
-            )}
-            <CustomButton
+              {passwordPrompt && (
+                <div className="popup-container">
+                  <div className="popup">
+                    <input
+                      type="password"
+                      placeholder="Enter lobby password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                    />
+                    <CustomButton
+                      text="Submit"
+                      className="small hover-green"
+                      onClick={passwordSubmit}
+                    />
+                    <CustomButton
+                      text="Cancel"
+                      className="small hover-red"
+                      onClick={() => setPasswordPrompt(false)}
+                    />
+                  </div>
+                </div>
+              )}
+              {/* <CustomButton
               text="Refresh"
               className="small hover-green"
               onClick={() => getLobbies()}
-            />
-          </NESContainerW>
+            /> */}
+            </NESContainerW>
+          </div>
         </div>
-      </div>
-    </>
+      </>
+    </div>
   );
 };
 

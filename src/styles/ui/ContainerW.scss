@@ -26,6 +26,24 @@
     margin-right: auto;
   }
 
+  &.style {
+    //background-color: #CA895F;
+    background-color: #8E6E53;
+    //background-color: #817E9F;
+    //color: #C6D8D3;
+    color: #212529;
+  }
+
+  &.scrollable {
+    overflow-y: auto;
+    max-height: 600px;
+  }
+
+  &.scrollable2 {
+    overflow-y: auto;
+    max-height: 750px;
+  }
+
   .setting-container {
     display: flex;
     flex-direction: row;
