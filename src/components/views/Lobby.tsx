@@ -232,6 +232,7 @@ const GameLobby = () => {
       clueTimer,
       discussionTimer,
       themes: selectedThemes,
+      isPrivate
     };
     if (isAdmin) {
       try {
@@ -337,7 +338,7 @@ const GameLobby = () => {
                     ]}
                     defaultValue={isPrivate ? "private" : "public"}
                     onChange={lobbyTypeChanger}
-                    disabled={!isAdmin || isPublished}
+                    disabled={!isAdmin}// || isPublished}
                   />
                 </div>
                 {isPrivate && (
