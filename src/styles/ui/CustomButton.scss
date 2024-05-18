@@ -78,4 +78,18 @@
     margin-top: 2rem;
   }
 
+  &.set-size {
+    width: 150px;
+    height: 60px;
+    font-size: small;
+  }
+
+  &.send {
+    font-size: 0.75rem;
+    margin-top: 5px;
+    padding-top: 6px;
+    padding-bottom: 5px;
+    padding-left: 9px;
+    padding-right: 9px;
+  }
 }

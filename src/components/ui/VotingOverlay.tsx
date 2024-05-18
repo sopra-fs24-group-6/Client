@@ -1,5 +1,6 @@
 import React from "react";
 import "../../styles/ui/VotingOverlay.scss";
+import CustomButton from "./CustomButton";
 
 interface Player {
   userId: string;
@@ -45,9 +46,8 @@ const VotingOverlay: React.FC<VotingOverlayProps> = ({
     <div className={`voting-overlay ${isVisible ? "show" : ""}`}>
       {!hasVoted ? (
         players.map(player => (
-          <button key={player.userId} onClick={() => onVote(player.userId)}>
-            {player.username}
-          </button>
+          <CustomButton text={player.username} className="hover-red" key={player.userId} onClick={() => onVote(player.userId)}/>
+            
         ))
       ) : (
         <div className="waiting-message">

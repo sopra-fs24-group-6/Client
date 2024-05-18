@@ -1,24 +1,57 @@
 .container {
-    display: flex;
-    height: 100vh;
-  }
-  
-  .settings {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-    background-color: #f0f0f0; /* Example background color */
+  display: flex;
+  height: 100vh;
+}
+
+.settings, .players {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  background-color: #f0f0f0; // Light grey background
+}
+
+// Specifically targeting theme settings to stack vertically
+.theme-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: 10px;
+
+  .theme-control-container {
+      margin-bottom: 10px;  // Space between the button and the tags
   }
 
-  .players {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-    background-color: #f0f0f0; /* Example background color */
+  .theme-tags-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      width: 100%;
   }
+
+  .theme-tag {
+      color: #333; // Dark grey for text
+      padding: 2px 5px; // Minimal padding
+      margin: 0 5px 5px 0; // Margin for spacing between tags
+      border-radius: 16px; // Rounded corners for aesthetics
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background-color: transparent; // Removing background color
+
+      .remove-theme {
+          background: none;
+          border: none;
+          color: #333; // Matching text color
+          cursor: pointer;
+          font-size: 14px; // Appropriately sized for interaction
+          padding: 0 5px; // Padding just around the 'x' for a better click area
+      }
+  }
+
+  .theme-tag:hover {
+      background-color: #e0e0e0; // Light hover effect for better user interaction
+  }
+}

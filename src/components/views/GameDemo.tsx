@@ -3,7 +3,7 @@ import { api, handleError } from "helpers/api";
 import { Client } from "@stomp/stompjs";
 import { getBrokerURL } from "helpers/getBrokerURL";
 import { useNavigate } from "react-router-dom";
-
+import { getDomain } from "helpers/getDomain";
 import RoleWordOverlay from "components/ui/RoleWordOverlay";
 import NESContainerW from "components/ui/NESContainerW";
 import "../../styles/ui/GameDemo.scss";
@@ -12,6 +12,17 @@ import InfoBar from "components/ui/InfoBar";
 import NESContainer from "components/ui/NESContainer";
 import PlayerIcons from "components/ui/PlayerIcons";
 import TimerDisplay from "components/ui/TimerDisplay";
+import CustomButton from "components/ui/CustomButton";
+import background3 from "../../assets/Backgrounds/bgGameView.jpeg";
+
+interface Player {
+  userId: string;
+  username: string;
+}
+
+interface AvatarMap {
+  [userId: string]: string; // Maps userId to avatar URL
+}
 
 const GameDemo = () => {
   const [client, setClient] = useState(null);
@@ -46,6 +57,8 @@ const GameDemo = () => {
   const [draftClueMessage, setDraftClueMessage] = useState("");
   const [playerTurn, setPlayerTurn] = useState("");
   const [startPlayers, setStartPlayers] = useState([]);
+  const [userIds, setUserIds] = useState([]);
+  const [avatars, setAvatars] = useState([]);
 
   useEffect(() => {
     const playerGetter = async () => {
@@ -53,6 +66,9 @@ const GameDemo = () => {
       try {
         const response = await api.get(`/lobbies/${id}/players`);
         setStartPlayers(response.data);
+
+        const fetchedUserIds = response.data.map(player => player.userId);
+        setUserIds(fetchedUserIds);
       } catch (error) {
         alert(`Couldn't fetch players in the lobby: \n${handleError(error)}`);
       }
@@ -61,13 +77,56 @@ const GameDemo = () => {
     playerGetter();
   }, []);
 
+  // useEffect(() => {
+  //   const avatarGetter = async () => {
+  //     if (userIds.length === 0) return;
+  //     try {
+  //       const fetchPromises = userIds.map(userId =>
+  //         api.get(`/users/${userId}`)
+  //       );
+  //       const responses = await Promise.all(fetchPromises);
+  //       const fetchedAvatars = responses.map(response => {
+  //         const user = response.data;
+
+  //         return {
+  //           userId: user.id,
+  //           avatarUrl: getDomain() + "/" + user.avatarUrl + `?v=${Date.now()}`
+  //         };
+  //       });
+  //       setAvatars(fetchedAvatars);
+  //     } catch (error) {
+  //       alert(`Couldn't fetch avatars: \n${handleError(error)}`);
+  //     }
+  //   };
+
+  //   avatarGetter();
+  // }, [userIds]);
+
+  const fetchAvatars = async (startPlayers: Player[]) => {
+    const avatarPromises = players.map(player =>
+      api.get(`/users/${player.userId}`).then(response => ({
+        userId: player.userId,
+        avatarUrl: `${getDomain()}/${response.data.avatarUrl}?v=${Date.now()}`
+      }))
+    );
+    const avatars = await Promise.all(avatarPromises);
+    setAvatars(avatars.reduce((acc, avatar) => ({
+      ...acc,
+      [avatar.userId]: avatar.avatarUrl
+    }), {}));
+  };
+
+
   useEffect(() => {
-    const overlayTimer = setTimeout(() => {
-      setRoleOverlay(false);
-    }, 8000);
+    let overlayTimer;
+    if (roleOverlay) {
+      overlayTimer = setTimeout(() => {
+        setRoleOverlay(false);
+      }, 8000);
+    }
 
     return () => clearTimeout(overlayTimer);
-  }, []);
+  }, [roleOverlay]);
 
   useEffect(() => {
     if (phase === "vote") {
@@ -146,17 +205,17 @@ const GameDemo = () => {
   //   ));
   // };
 
-  const renderPlayerButtons = () => {
-    return players.map((player) => (
-      <button
-        key={player.userId}
-        className={`button ${player.isTurn ? "active-turn" : ""}`}
-        disabled={!player.isTurn}
-      >
-        {player.username}
-      </button>
-    ));
-  };
+  // const renderPlayerButtons = () => {
+  //   return players.map((player) => (
+  //     <button
+  //       key={player.userId}
+  //       className={`button ${player.isTurn ? "active-turn" : ""}`}
+  //       disabled={!player.isTurn}
+  //     >
+  //       {player.username}
+  //     </button>
+  //   ));
+  // };
 
   // these settings are for demo. userId and lobbyId should be set appropriately.
   // const [userId, setUserId] = useState("");
@@ -204,8 +263,11 @@ const GameDemo = () => {
             setHasAlreadyVoted(false);
             setCurrentRound(event.currentRound);
             setMaxRound(event.maxRound);
+            fetchAvatars(startPlayers);
             setShowResults(false);
             setVoteOverlay(false);
+            setRoleOverlay(true);
+            fetchAvatars(startPlayers);
           }
           // if (event.eventType === "vote") {
           //   setVoteOverlay(true);
@@ -345,23 +407,16 @@ const GameDemo = () => {
 
   const sendClue = () => {
     if (client && connected && draftClueMessage) {
-      const normalizedDraftMessage = draftMessage
-        .toLowerCase()
-        .replace(/\s/g, "");
-      const normalizedWord = word.toLowerCase().replace(/\s/g, "");
+      const normalizedDraftMessage = draftClueMessage.toLowerCase().trim();
 
-      if (
-        normalizedDraftMessage === normalizedWord ||
-        normalizedDraftMessage.includes(normalizedWord)
-      ) {
-        console.log(
-          "Clue cannot be submitted. It is equal or too similar to the word."
-        );
+      if (!normalizedDraftMessage || normalizedDraftMessage === word.toLowerCase().trim()) {
+        console.error("Clue cannot be submitted: It is equal or too similar to the word.");
 
         return;
       }
+
       const clueMessage = {
-        content: draftClueMessage,
+        content: normalizedDraftMessage,
         userId: userId,
         lobbyId: lobbyId,
       };
@@ -369,11 +424,12 @@ const GameDemo = () => {
         destination: `/app/clue/${lobbyId}/sendMessage`,
         body: JSON.stringify(clueMessage),
       });
-      setDraftClueMessage("");
+      setDraftClueMessage(""); // Clear the draft message after sending
     } else {
-      console.log("STOMP connection is not established.");
+      console.error("STOMP connection is not established or draft clue is empty.");
     }
   };
+
 
   const sendVote = (votedUserId) => {
     if (client && connected) {
@@ -391,26 +447,152 @@ const GameDemo = () => {
       console.log("STOMP connection is not established.");
     }
   };
-  
+
+  //Current layout
+  //   return (
+  //     <>
+  //       <div className="Center">
+  //         <NESContainer title="Play">
+  //           <h1 className="press-start-font">Word Wolf</h1>
+  //         </NESContainer>
+  //       </div>
+  //       <div className="main-container">
+  //         <RoleWordOverlay isVisible={roleOverlay} word={word} isWolf={isWolf} />
+  //         <div className="container1">
+  //           <div className="container1-top">
+  //             <h1>{word || "Role: " + role}</h1>
+  //             <div className="info-container">
+  //               <TimerDisplay label={phase !== "discussion" ? "Round time" : "Discussion time"} timer={phase !== "discussion" ? roundTimer : discussionTimer} />
+  //               <p>Role: {role}</p>
+  //             </div>
+  //           </div>
+  //           <PlayerIcons players={players} />
+  //         </div>
+  //         {voteOverlay && (
+  //           <VotingOverlay
+  //             players={players}
+  //             onVote={sendVote}
+  //             hasVoted={hasAlreadyVoted}
+  //             isVisible={voteOverlay}
+  //             results={gameResult}
+  //             displayResults={showResults}
+  //           />
+  //         )}
+  //         <div className="container2">
+  //           <h3>Clues</h3>
+  //           <div className="log-area" ref={clueLogRef}>
+  //             {clueMessages.map((msg, index) => (
+  //               <div key={index}>{msg.username}: {msg.content}</div>
+  //             ))}
+  //           </div>
+  //           <input
+  //             type="text"
+  //             value={draftClueMessage}
+  //             onChange={(e) => setDraftClueMessage(e.target.value)}
+  //             disabled={phase !== "clue" || !isCurrentPlayerTurn}
+  //             onKeyPress={(e) => e.key === "Enter" && sendClue()}
+  //             placeholder="Type a clue..."
+  //             style={{ width: "75%" }}
+  //           />
+  //           <CustomButton text="Send" className="send hover-orange" onClick={sendClue} disabled={phase !== "clue" || !isCurrentPlayerTurn}/>
+  //           <hr className="hr" />
+  //           <h3>Chat</h3>
+  //           <div className="log-area" ref={chatLogRef}>
+  //             {chatMessages.map((msg, index) => (
+  //               <div key={index}>{msg.username}: {msg.content}</div>
+  //             ))}
+  //           </div>
+  //           <div className="input-area">
+  //             <input
+  //               type="text"
+  //               value={draftChatMessage}
+  //               onChange={(e) => setDraftChatMessage(e.target.value)}
+  //               onKeyPress={(e) => e.key === "Enter" && sendMessage()}
+  //               placeholder="Type a message..."
+  //               disabled={phase !== "discussion"}
+  //               style={{ width: "75%" }}
+  //             />
+  //             <CustomButton text="Send" className="send hover-orange" onClick={sendMessage} disabled={phase !== "discussion"}/>
+  //           </div>
+  //         </div>
+  //         <InfoBar currentPlayer={playerTurn} role={role} word={word} clueTimer={clueTimer} />
+  //       </div>
+  //     </>
+  //   );
+  // };
+
+  // export default GameDemo;
+
   return (
     <>
+      {/* <div
+        className="background"
+        style={{ backgroundImage: `url(${background3})` }}
+      > */}
       <div className="Center">
         <NESContainer title="Play">
           <h1 className="press-start-font">Word Wolf</h1>
         </NESContainer>
       </div>
-      <div className="main-container">
+      <div className="container-all">
         <RoleWordOverlay isVisible={roleOverlay} word={word} isWolf={isWolf} />
-        <div className="container1">
-          <div className="container1-top">
-            <h1>{word || "Role: " + role}</h1>
-            <div className="info-container">
-              <TimerDisplay label={phase !== "discussion" ? "Round time" : "Discussion time"} timer={phase !== "discussion" ? roundTimer : discussionTimer} />
-              <p>Role: {role}</p>
+        <div className="container-top">
+          <h1>{word || "Role: " + role}</h1>
+          <div className="info">
+            <TimerDisplay label={phase !== "discussion" ? "Round time" : "Discussion time"} timer={phase !== "discussion" ? roundTimer : discussionTimer} />
+            <p>Role: {role}</p>
+            <div className="player-details">
+              {players.map(player => (
+                <div key={player.userId} className="player-info">
+                  <img src={player.avatarUrl} alt={`${player.username}'s avatar`} className="player-avatar" />
+                  <p>{player.username}</p>
+                </div>
+              ))}
             </div>
           </div>
-          <PlayerIcons players={players} />
+          {/* <PlayerIcons players={players} /> */}
         </div>
+        <div className="container-bottom">
+          <div className="chat-align">
+            <h3>Clues</h3>
+            <div className="log-area" ref={clueLogRef}>
+              {clueMessages.map((msg, index) => (
+                <div key={index}>{msg.username}: {msg.content}</div>
+              ))}
+            </div>
+            <div className="input-area">
+              <input
+                type="text"
+                value={draftClueMessage}
+                onChange={(e) => setDraftClueMessage(e.target.value)}
+                disabled={phase !== "clue" || !isCurrentPlayerTurn}
+                onKeyPress={(e) => e.key === "Enter" && sendClue()}
+                placeholder="Type a clue..."
+              />
+              <CustomButton text="Send" className="send hover-orange" onClick={sendClue} disabled={phase !== "clue" || !isCurrentPlayerTurn} />
+            </div>
+          </div>
+          <div className="chat-align">
+            <h3>Chat</h3>
+            <div className="log-area" ref={chatLogRef}>
+              {chatMessages.map((msg, index) => (
+                <div key={index}>{msg.username}: {msg.content}</div>
+              ))}
+            </div>
+            <div className="input-area">
+              <input
+                type="text"
+                value={draftChatMessage}
+                onChange={(e) => setDraftChatMessage(e.target.value)}
+                onKeyPress={(e) => e.key === "Enter" && sendMessage()}
+                placeholder="Type a message..."
+                disabled={phase !== "discussion"}
+              />
+              <CustomButton text="Send" className="send hover-orange" onClick={sendMessage} disabled={phase !== "discussion"} />
+            </div>
+          </div>
+        </div>
+        <InfoBar currentPlayer={playerTurn} role={role} word={word} clueTimer={clueTimer} />
         {voteOverlay && (
           <VotingOverlay
             players={players}
@@ -421,45 +603,8 @@ const GameDemo = () => {
             displayResults={showResults}
           />
         )}
-        <div className="container2">
-          <h3>Clues</h3>
-          <div className="log-area" ref={clueLogRef}>
-            {clueMessages.map((msg, index) => (
-              <div key={index}>{msg.username}: {msg.content}</div>
-            ))}
-          </div>
-          <input
-            type="text"
-            value={draftClueMessage}
-            onChange={(e) => setDraftClueMessage(e.target.value)}
-            disabled={phase !== "clue" || !isCurrentPlayerTurn}
-            onKeyPress={(e) => e.key === "Enter" && sendClue()}
-            placeholder="Type a clue..."
-            style={{ width: "80%", marginRight: "10px" }}
-          />
-          <button onClick={sendClue} disabled={phase !== "clue" || !isCurrentPlayerTurn}>Send</button>
-          <hr className="hr" />
-          <h3>Chat</h3>
-          <div className="log-area" ref={chatLogRef}>
-            {chatMessages.map((msg, index) => (
-              <div key={index}>{msg.username}: {msg.content}</div>
-            ))}
-          </div>
-          <div className="input-area">
-            <input
-              type="text"
-              value={draftChatMessage}
-              onChange={(e) => setDraftChatMessage(e.target.value)}
-              onKeyPress={(e) => e.key === "Enter" && sendMessage()}
-              placeholder="Type a message..."
-              disabled={phase !== "discussion"}
-              style={{ width: "80%", marginRight: "10px" }}
-            />
-            <button onClick={sendMessage} disabled={phase !== "discussion"}>Send</button>
-          </div>
-        </div>
-        <InfoBar currentPlayer={playerTurn} role={role} word={word} clueTimer={clueTimer} />
       </div>
+      {/* </div> */}
     </>
   );
 };

@@ -42,57 +42,61 @@ const LeaderBoard = () => {
 
   return (
     <>
-      <NavBar />
-      <div className="Center">
-        <NesContainer title="">
-          <h1 className="press-start-font">Leader Board</h1>
-        </NesContainer>
-        <div className="Space">
-          <NESContainerW title="LeaderBoard" className="center">
-            <table style={{ margin: "0 auto", textAlign: "center" }}>
-              <thead>
-                <tr>
-                  <th className="table-header"> User Name</th>
-                  <th className="table-header">Wins</th>
-                  <th className="table-header">Losses</th>
-                  <th className="table-header">WinLossRatio</th>
-                  <th className="table-header">Ranking</th>
-                  <th className="table-header"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {players.map((player, index) => (
-                  <tr key={player.id}>
-                    <td className="browser-items"
-                      onClick={() => handleUsernameClick(player.id)}
-                      onMouseEnter={() => setHoveredUserId(player.id)}
-                      onMouseLeave={() => setHoveredUserId(null)}
-                      style={{
-                        color: hoveredUserId === player.id ? "green" : "black",
-                        transform: hoveredUserId === player.id ? "scale(1.1)" : "scale(1)",
-                        transition: "color 0.3s, transform 0.3s",
-                      }}
-                    >
-                      <img
-                        src={getDomain() + "/" + player.avatarUrl + `?v=${timestamp}`} // Replace with the actual default image path
-                        alt={`${player.username}'s avatar`}
-                        style={{ width: "32px", height: "32px", borderRadius: "50%", marginRight: "8px" }}
-                      />
-                      {player.username}
-                    </td>
-                    <td className="browser-items">
-                      {player.wins}
-                    </td>
-                    <td className="browser-items">
-                      {player.losses}
-                    </td>
-                    <td className="browser-items">
-                      {player.winlossratio.toFixed(2)}
-                    </td>
-                    <td className="browser-items">
-                      {index + 1 + (currentPage - 1) * 10}
-                    </td>
-                    {/* 
+      <div
+        className="background"
+        style={{ backgroundImage: `url(${background2})` }}
+      >
+        <NavBar />
+        <div className="Center">
+          <NesContainer title="">
+            <h1 className="press-start-font">Leader Board</h1>
+          </NesContainer>
+          <div className="Space">
+            <NESContainerW title="LeaderBoard" className="center style">
+              <table style={{ margin: "0 auto", textAlign: "center" }}>
+                <thead>
+                  <tr>
+                    <th className="table-header"> User Name</th>
+                    <th className="table-header">Wins</th>
+                    <th className="table-header">Losses</th>
+                    <th className="table-header">WinLossRatio</th>
+                    <th className="table-header">Ranking</th>
+                    <th className="table-header"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {players.map((player, index) => (
+                    <tr key={player.id}>
+                      <td className="browser-items"
+                        onClick={() => handleUsernameClick(player.id)}
+                        onMouseEnter={() => setHoveredUserId(player.id)}
+                        onMouseLeave={() => setHoveredUserId(null)}
+                        style={{
+                          color: hoveredUserId === player.id ? "green" : "black",
+                          transform: hoveredUserId === player.id ? "scale(1.1)" : "scale(1)",
+                          transition: "color 0.3s, transform 0.3s",
+                        }}
+                      >
+                        <img
+                          src={getDomain() + "/" + player.avatarUrl + `?v=${timestamp}`} // Replace with the actual default image path
+                          alt={`${player.username}'s avatar`}
+                          style={{ width: "32px", height: "32px", borderRadius: "50%", marginRight: "8px" }}
+                        />
+                        {player.username}
+                      </td>
+                      <td className="browser-items">
+                        {player.wins}
+                      </td>
+                      <td className="browser-items">
+                        {player.losses}
+                      </td>
+                      <td className="browser-items">
+                        {player.winlossratio.toFixed(2)}
+                      </td>
+                      <td className="browser-items">
+                        {index + 1 + (currentPage - 1) * 10}
+                      </td>
+                      {/* 
                     we could change this to friend invitation function
                     <td className="browser-items">
                       <CustomButton
@@ -101,28 +105,29 @@ const LeaderBoard = () => {
                         onClick={() => joinLobby(lobby)}
                       />
                     </td> */}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <CustomButton
-              text="Prev"
-              className="small hover-green"
-              onClick={() => setCurrentPage(currentPage - 1)}
-              disabled={currentPage === 1}
-            />
-            <CustomButton
-              text="Next"
-              className="small hover-green"
-              onClick={() => setCurrentPage(currentPage + 1)}
-              disabled={players.length < playersPerPage}
-            />
-            <CustomButton
-              text="Back"
-              className="small hover-green"
-              onClick={() => navigate(-1)}
-            />
-          </NESContainerW>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <CustomButton
+                text="Prev"
+                className="small hover-orange"
+                onClick={() => setCurrentPage(currentPage - 1)}
+                disabled={currentPage === 1}
+              />
+              <CustomButton
+                text="Next"
+                className="small hover-green"
+                onClick={() => setCurrentPage(currentPage + 1)}
+                disabled={players.length < playersPerPage}
+              />
+              <CustomButton
+                text="Back"
+                className="small hover-red"
+                onClick={() => navigate(-1)}
+              />
+            </NESContainerW>
+          </div>
         </div>
       </div>
     </>
