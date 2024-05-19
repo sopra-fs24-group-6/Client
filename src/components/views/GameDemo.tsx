@@ -562,7 +562,7 @@ const GameDemo = () => {
             />
             <p>Role: {role}</p>
             <div className="player-details">
-              {startPlayers.map((player) => (
+              {players.map((player) => (
                 <div key={player.userId} className="player-info">
                   <img src={getDomain() + "/" + player.avatarUrl + `?v=${timestamp}`} alt={`${player.username}'s avatar`} className="player-avatar" />
                   <p>{player.username}</p>
