@@ -96,13 +96,14 @@
   justify-content: center;
   height: 80vh;
   width: 100%;
+  overflow: auto;
 }
 
 .container-top {
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 55vh;
+  height: 50vh;
   width: 80%;
   margin-top: 1%;
 }
@@ -120,8 +121,8 @@
   align-items: flex-start;
   width: 80%;
   height: 25vh;
-  margin-top: 5vh;
-  margin-bottom: 5vh;
+  margin-top: 3vh;
+  margin-bottom: 2vh;
   gap: 5%;
 }
 
