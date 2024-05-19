@@ -67,7 +67,7 @@ const GameDemo = () => {
         const response = await api.get(`/lobbies/${id}/players`);
         setStartPlayers(response.data);
 
-        const fetchedUserIds = response.data.map(player => player.userId);
+        const fetchedUserIds = response.data.map((player) => player.userId);
         setUserIds(fetchedUserIds);
       } catch (error) {
         alert(`Couldn't fetch players in the lobby: \n${handleError(error)}`);
@@ -103,19 +103,23 @@ const GameDemo = () => {
   // }, [userIds]);
 
   const fetchAvatars = async (startPlayers: Player[]) => {
-    const avatarPromises = players.map(player =>
-      api.get(`/users/${player.userId}`).then(response => ({
+    const avatarPromises = players.map((player) =>
+      api.get(`/users/${player.userId}`).then((response) => ({
         userId: player.userId,
-        avatarUrl: `${getDomain()}/${response.data.avatarUrl}?v=${Date.now()}`
+        avatarUrl: `${getDomain()}/${response.data.avatarUrl}?v=${Date.now()}`,
       }))
     );
     const avatars = await Promise.all(avatarPromises);
-    setAvatars(avatars.reduce((acc, avatar) => ({
-      ...acc,
-      [avatar.userId]: avatar.avatarUrl
-    }), {}));
+    setAvatars(
+      avatars.reduce(
+        (acc, avatar) => ({
+          ...acc,
+          [avatar.userId]: avatar.avatarUrl,
+        }),
+        {}
+      )
+    );
   };
-
 
   useEffect(() => {
     let overlayTimer;
@@ -330,10 +334,10 @@ const GameDemo = () => {
           setIsCurrentPlayerTurn(String(event.userId) === String(userId));
 
           const turnUserId = JSON.parse(message.body).userId;
-          setPlayers(currentPlayers =>
-            currentPlayers.map(player => ({
+          setPlayers((currentPlayers) =>
+            currentPlayers.map((player) => ({
               ...player,
-              isTurn: player.userId === turnUserId
+              isTurn: player.userId === turnUserId,
             }))
           );
         });
@@ -406,17 +410,23 @@ const GameDemo = () => {
   };
 
   const sendClue = () => {
-    if (client && connected && draftClueMessage) {
-      const normalizedDraftMessage = draftClueMessage.toLowerCase().trim();
+    if (client && connected) {
+      if (draftClueMessage && role === "Villager") {
+        const normalizedDraftMessage = draftClueMessage.toLowerCase().trim();
 
-      if (!normalizedDraftMessage || normalizedDraftMessage === word.toLowerCase().trim()) {
-        console.error("Clue cannot be submitted: It is equal or too similar to the word.");
+        if (
+          !normalizedDraftMessage ||
+          normalizedDraftMessage === word.toLowerCase().trim()
+        ) {
+          alert(
+            "Clue cannot be submitted: It is equal or too similar to the word."
+          );
 
-        return;
+          return;
+        }
       }
-
       const clueMessage = {
-        content: normalizedDraftMessage,
+        content: draftClueMessage,
         userId: userId,
         lobbyId: lobbyId,
       };
@@ -426,10 +436,11 @@ const GameDemo = () => {
       });
       setDraftClueMessage(""); // Clear the draft message after sending
     } else {
-      console.error("STOMP connection is not established or draft clue is empty.");
+      console.error(
+        "STOMP connection is not established or draft clue is empty."
+      );
     }
   };
-
 
   const sendVote = (votedUserId) => {
     if (client && connected) {
@@ -539,12 +550,19 @@ const GameDemo = () => {
         <div className="container-top">
           <h1>{word || "Role: " + role}</h1>
           <div className="info">
-            <TimerDisplay label={phase !== "discussion" ? "Round time" : "Discussion time"} timer={phase !== "discussion" ? roundTimer : discussionTimer} />
+            <TimerDisplay
+              label={phase !== "discussion" ? "Round time" : "Discussion time"}
+              timer={phase !== "discussion" ? roundTimer : discussionTimer}
+            />
             <p>Role: {role}</p>
             <div className="player-details">
-              {players.map(player => (
+              {players.map((player) => (
                 <div key={player.userId} className="player-info">
-                  <img src={player.avatarUrl} alt={`${player.username}'s avatar`} className="player-avatar" />
+                  <img
+                    src={player.avatarUrl}
+                    alt={`${player.username}'s avatar`}
+                    className="player-avatar"
+                  />
                   <p>{player.username}</p>
                 </div>
               ))}
@@ -557,7 +575,9 @@ const GameDemo = () => {
             <h3>Clues</h3>
             <div className="log-area" ref={clueLogRef}>
               {clueMessages.map((msg, index) => (
-                <div key={index}>{msg.username}: {msg.content}</div>
+                <div key={index}>
+                  {msg.username}: {msg.content}
+                </div>
               ))}
             </div>
             <div className="input-area">
@@ -569,14 +589,21 @@ const GameDemo = () => {
                 onKeyPress={(e) => e.key === "Enter" && sendClue()}
                 placeholder="Type a clue..."
               />
-              <CustomButton text="Send" className="send hover-orange" onClick={sendClue} disabled={phase !== "clue" || !isCurrentPlayerTurn} />
+              <CustomButton
+                text="Send"
+                className="send hover-orange"
+                onClick={sendClue}
+                disabled={phase !== "clue" || !isCurrentPlayerTurn}
+              />
             </div>
           </div>
           <div className="chat-align">
             <h3>Chat</h3>
             <div className="log-area" ref={chatLogRef}>
               {chatMessages.map((msg, index) => (
-                <div key={index}>{msg.username}: {msg.content}</div>
+                <div key={index}>
+                  {msg.username}: {msg.content}
+                </div>
               ))}
             </div>
             <div className="input-area">
@@ -588,11 +615,21 @@ const GameDemo = () => {
                 placeholder="Type a message..."
                 disabled={phase !== "discussion"}
               />
-              <CustomButton text="Send" className="send hover-orange" onClick={sendMessage} disabled={phase !== "discussion"} />
+              <CustomButton
+                text="Send"
+                className="send hover-orange"
+                onClick={sendMessage}
+                disabled={phase !== "discussion"}
+              />
             </div>
           </div>
         </div>
-        <InfoBar currentPlayer={playerTurn} role={role} word={word} clueTimer={clueTimer} />
+        <InfoBar
+          currentPlayer={playerTurn}
+          role={role}
+          word={word}
+          clueTimer={clueTimer}
+        />
         {voteOverlay && (
           <VotingOverlay
             players={players}
@@ -769,7 +806,8 @@ export default GameDemo;
 
 // export default GameDemo;
 
-{/* // const startGame = () => {
+{
+  /* // const startGame = () => {
 //   if (client && connected) {
 //     client.publish({
 //       destination: "/app/startGame",
@@ -789,7 +827,8 @@ export default GameDemo;
 
 // return (
 //   <div>
-//     {/* This is for demo to set userId manually */}
+//     {/* This is for demo to set userId manually */
+}
 //     {/*<div>*/}
 //     {/*  <button onClick={startGame}>StartGame</button>*/}
 //     {/*</div>*/}
@@ -809,7 +848,9 @@ export default GameDemo;
 //     {/*)}*/}
 //     {/*<hr/>*/}
 
-{/* Display phase */ }
+{
+  /* Display phase */
+}
 // <div>
 //   <RoleWordOverlay isVisible={roleOverlay} word={word} isWolf={isWolf} />
 // </div>
@@ -834,12 +875,20 @@ export default GameDemo;
 //     />
 //   )}
 // </div>
-{/* <h2>Phase: {phase}</h2> */ }
-{/* Assigned word and role  */ }
-{/* Round Timer */ }
-{/* <div>
+{
+  /* <h2>Phase: {phase}</h2> */
+}
+{
+  /* Assigned word and role  */
+}
+{
+  /* Round Timer */
+}
+{
+  /* <div>
         {phase === "clue" && <p>Clue phase remaining:{roundTimer} seconds</p>}
-      </div> */}
+      </div> */
+}
 
 //     {/* Clue Timer and input */}
 //     <div>
