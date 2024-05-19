@@ -14,6 +14,7 @@ import PlayerIcons from "components/ui/PlayerIcons";
 import TimerDisplay from "components/ui/TimerDisplay";
 import CustomButton from "components/ui/CustomButton";
 import background3 from "../../assets/Backgrounds/bgGameView.jpeg";
+import leaderList from "components/placeholders/leaderlist";
 
 interface Player {
   userId: string;
@@ -37,7 +38,7 @@ const GameDemo = () => {
   const [isWolf, setIsWolf] = useState(null);
   const [word, setWord] = useState("");
   const [isCurrentPlayerTurn, setIsCurrentPlayerTurn] = useState(false);
-  const [players, setPlayers] = useState([]);
+  const [players, setPlayers] = useState(leaderList);
   const [hasAlreadyVoted, setHasAlreadyVoted] = useState(false);
   const [gameResult, setGameResult] = useState(null);
   const lobbyId = localStorage.getItem("lobbyId");
@@ -59,13 +60,14 @@ const GameDemo = () => {
   const [startPlayers, setStartPlayers] = useState([]);
   const [userIds, setUserIds] = useState([]);
   const [avatars, setAvatars] = useState([]);
+  const [timestamp] = useState(new Date().getTime());
 
   useEffect(() => {
     const playerGetter = async () => {
       const id = localStorage.getItem("lobbyId");
       try {
         const response = await api.get(`/lobbies/${id}/players`);
-        setStartPlayers(response.data);
+        setPlayers(response.data);
 
         const fetchedUserIds = response.data.map(player => player.userId);
         setUserIds(fetchedUserIds);
@@ -102,19 +104,19 @@ const GameDemo = () => {
   //   avatarGetter();
   // }, [userIds]);
 
-  const fetchAvatars = async (startPlayers: Player[]) => {
-    const avatarPromises = players.map(player =>
-      api.get(`/users/${player.userId}`).then(response => ({
-        userId: player.userId,
-        avatarUrl: `${getDomain()}/${response.data.avatarUrl}?v=${Date.now()}`
-      }))
-    );
-    const avatars = await Promise.all(avatarPromises);
-    setAvatars(avatars.reduce((acc, avatar) => ({
-      ...acc,
-      [avatar.userId]: avatar.avatarUrl
-    }), {}));
-  };
+  // const fetchAvatars = async (startPlayers: Player[]) => {
+  //   const avatarPromises = players.map(player =>
+  //     api.get(`/users/${player.userId}`).then(response => ({
+  //       userId: player.userId,
+  //       avatarUrl: `${getDomain()}/${response.data.avatarUrl}?v=${Date.now()}`
+  //     }))
+  //   );
+  //   const avatars = await Promise.all(avatarPromises);
+  //   setAvatars(avatars.reduce((acc, avatar) => ({
+  //     ...acc,
+  //     [avatar.userId]: avatar.avatarUrl
+  //   }), {}));
+  // };
 
 
   useEffect(() => {
@@ -263,11 +265,11 @@ const GameDemo = () => {
             setHasAlreadyVoted(false);
             setCurrentRound(event.currentRound);
             setMaxRound(event.maxRound);
-            fetchAvatars(startPlayers);
+            // fetchAvatars(startPlayers);
             setShowResults(false);
             setVoteOverlay(false);
             setRoleOverlay(true);
-            fetchAvatars(startPlayers);
+            // fetchAvatars(startPlayers);
           }
           // if (event.eventType === "vote") {
           //   setVoteOverlay(true);
@@ -544,7 +546,7 @@ const GameDemo = () => {
             <div className="player-details">
               {players.map(player => (
                 <div key={player.userId} className="player-info">
-                  <img src={player.avatarUrl} alt={`${player.username}'s avatar`} className="player-avatar" />
+                  <img src={getDomain() + "/" + player.avatarUrl + `?v=${timestamp}`} alt={`${player.username}'s avatar`} className="player-avatar" />
                   <p>{player.username}</p>
                 </div>
               ))}
