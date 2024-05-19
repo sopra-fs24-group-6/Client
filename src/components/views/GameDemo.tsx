@@ -57,6 +57,8 @@ const GameDemo = () => {
   const [draftClueMessage, setDraftClueMessage] = useState("");
   const [playerTurn, setPlayerTurn] = useState("");
   const [startPlayers, setStartPlayers] = useState([]);
+  const [hasSentClue, setHasSentClue] = useState(false);
+
   const [userIds, setUserIds] = useState([]);
   const [avatars, setAvatars] = useState([]);
 
@@ -66,7 +68,6 @@ const GameDemo = () => {
       try {
         const response = await api.get(`/lobbies/${id}/players`);
         setStartPlayers(response.data);
-
         const fetchedUserIds = response.data.map((player) => player.userId);
         setUserIds(fetchedUserIds);
       } catch (error) {
@@ -77,6 +78,9 @@ const GameDemo = () => {
     playerGetter();
   }, []);
 
+  useEffect(() => {
+    console.log(startPlayers);  // This will log whenever startPlayers changes
+  }, [startPlayers]);
   // useEffect(() => {
   //   const avatarGetter = async () => {
   //     if (userIds.length === 0) return;
@@ -340,6 +344,9 @@ const GameDemo = () => {
               isTurn: player.userId === turnUserId,
             }))
           );
+          if (String(event.userId) === String(userId)) {
+            setHasSentClue(false);
+          }
         });
 
         // subscribe game result
@@ -411,7 +418,7 @@ const GameDemo = () => {
 
   const sendClue = () => {
     if (client && connected) {
-      if (draftClueMessage && role === "Villager") {
+      if (draftClueMessage && role === "Villager" && !hasSentClue) {
         const normalizedDraftMessage = draftClueMessage.toLowerCase().trim();
 
         if (
@@ -434,7 +441,8 @@ const GameDemo = () => {
         destination: `/app/clue/${lobbyId}/sendMessage`,
         body: JSON.stringify(clueMessage),
       });
-      setDraftClueMessage(""); // Clear the draft message after sending
+      setDraftClueMessage("");
+      setHasSentClue(true);
     } else {
       console.error(
         "STOMP connection is not established or draft clue is empty."
@@ -556,7 +564,7 @@ const GameDemo = () => {
             />
             <p>Role: {role}</p>
             <div className="player-details">
-              {players.map((player) => (
+              {startPlayers.map((player) => (
                 <div key={player.userId} className="player-info">
                   <img
                     src={player.avatarUrl}
@@ -585,7 +593,7 @@ const GameDemo = () => {
                 type="text"
                 value={draftClueMessage}
                 onChange={(e) => setDraftClueMessage(e.target.value)}
-                disabled={phase !== "clue" || !isCurrentPlayerTurn}
+                disabled={phase !== "clue" || !isCurrentPlayerTurn || hasSentClue}
                 onKeyPress={(e) => e.key === "Enter" && sendClue()}
                 placeholder="Type a clue..."
               />
@@ -593,7 +601,7 @@ const GameDemo = () => {
                 text="Send"
                 className="send hover-orange"
                 onClick={sendClue}
-                disabled={phase !== "clue" || !isCurrentPlayerTurn}
+                disabled={phase !== "clue" || !isCurrentPlayerTurn || hasSentClue}
               />
             </div>
           </div>
