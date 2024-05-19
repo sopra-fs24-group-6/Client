@@ -70,6 +70,10 @@ const GameDemo = () => {
       try {
         const response = await api.get(`/lobbies/${id}/players`);
         setPlayers(response.data);
+        // Log each player's avatarUrl
+      response.data.forEach(player => {
+        console.log(`Player ${player.userId} avatarUrl:`, getDomain() + "/" + player.avatarUrl + `?v=${timestamp}`);
+      });
 
         const fetchedUserIds = response.data.map(player => player.userId);
         setUserIds(fetchedUserIds);
@@ -564,7 +568,11 @@ const GameDemo = () => {
             <div className="player-details">
               {players.map((player) => (
                 <div key={player.userId} className="player-info">
-                  <img src={getDomain() + "/" + player.avatarUrl + `?v=${timestamp}`} alt={`${player.username}'s avatar`} className="player-avatar" />
+                  <img 
+                  src={getDomain() + "/" + player.avatarUrl + `?v=${timestamp}`} 
+                  alt={`${player.username}'s avatar`}
+                  style={{ width: "32px", height: "32px", borderRadius: "50%", marginRight: "8px" }}
+                   className="player-avatar" />
                   <p>{player.username}</p>
                 </div>
               ))}
