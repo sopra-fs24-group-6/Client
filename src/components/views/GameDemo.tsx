@@ -71,11 +71,14 @@ const GameDemo = () => {
         const response = await api.get(`/lobbies/${id}/players`);
         setPlayers(response.data);
         // Log each player's avatarUrl
-      response.data.forEach(player => {
-        console.log(`Player ${player.userId} avatarUrl:`, getDomain() + "/" + player.avatarUrl + `?v=${timestamp}`);
-      });
+        response.data.forEach((player) => {
+          console.log(
+            `Player ${player.userId} avatarUrl:`,
+            getDomain() + "/" + player.avatarUrl + `?v=${timestamp}`
+          );
+        });
 
-        const fetchedUserIds = response.data.map(player => player.userId);
+        const fetchedUserIds = response.data.map((player) => player.userId);
         setUserIds(fetchedUserIds);
       } catch (error) {
         alert(`Couldn't fetch players in the lobby: \n${handleError(error)}`);
@@ -86,7 +89,7 @@ const GameDemo = () => {
   }, []);
 
   useEffect(() => {
-    console.log(startPlayers);  // This will log whenever startPlayers changes
+    console.log(startPlayers); // This will log whenever startPlayers changes
   }, [startPlayers]);
   // useEffect(() => {
   //   const avatarGetter = async () => {
@@ -363,7 +366,7 @@ const GameDemo = () => {
         // message has word<String>. if null, it indicates Wolf.
         stompClient.subscribe(`/queue/${userId}/wordAssignment`, (message) => {
           const event = JSON.parse(message.body);
-          if (event.word === null) {
+          if (event.isWolf) {
             setIsWolf(true);
             setRole("Wolf");
           } else {
@@ -568,11 +571,19 @@ const GameDemo = () => {
             <div className="player-details">
               {players.map((player) => (
                 <div key={player.userId} className="player-info">
-                  <img 
-                  src={getDomain() + "/" + player.avatarUrl + `?v=${timestamp}`} 
-                  alt={`${player.username}'s avatar`}
-                  style={{ width: "32px", height: "32px", borderRadius: "50%", marginRight: "8px" }}
-                   className="player-avatar" />
+                  <img
+                    src={
+                      getDomain() + "/" + player.avatarUrl + `?v=${timestamp}`
+                    }
+                    alt={`${player.username}'s avatar`}
+                    style={{
+                      width: "32px",
+                      height: "32px",
+                      borderRadius: "50%",
+                      marginRight: "8px",
+                    }}
+                    className="player-avatar"
+                  />
                   <p>{player.username}</p>
                 </div>
               ))}
@@ -595,7 +606,9 @@ const GameDemo = () => {
                 type="text"
                 value={draftClueMessage}
                 onChange={(e) => setDraftClueMessage(e.target.value)}
-                disabled={phase !== "clue" || !isCurrentPlayerTurn || hasSentClue}
+                disabled={
+                  phase !== "clue" || !isCurrentPlayerTurn || hasSentClue
+                }
                 onKeyPress={(e) => e.key === "Enter" && sendClue()}
                 placeholder="Type a clue..."
               />
@@ -603,7 +616,9 @@ const GameDemo = () => {
                 text="Send"
                 className="send hover-orange"
                 onClick={sendClue}
-                disabled={phase !== "clue" || !isCurrentPlayerTurn || hasSentClue}
+                disabled={
+                  phase !== "clue" || !isCurrentPlayerTurn || hasSentClue
+                }
               />
             </div>
           </div>
@@ -642,6 +657,7 @@ const GameDemo = () => {
         />
         {voteOverlay && (
           <VotingOverlay
+            word={word}
             players={players}
             onVote={sendVote}
             hasVoted={hasAlreadyVoted}
