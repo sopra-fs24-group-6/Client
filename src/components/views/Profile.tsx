@@ -302,7 +302,7 @@ const Profile = () => {
                 />
                 {isHovered &&
                   localStorage.getItem("userId") === userId &&
-                  isEditable && (
+                  (
                   <div
                     className="nes-badge"
                     style={{
