@@ -36,7 +36,7 @@ const GameDemo = () => {
   const [clueMessages, setClueMessages] = useState([]);
   const [phase, setPhase] = useState<string>("");
   const [isWolf, setIsWolf] = useState(null);
-  const [word, setWord] = useState("");
+  const [word, setWord] = useState(null);
   const [isCurrentPlayerTurn, setIsCurrentPlayerTurn] = useState(false);
   const [players, setPlayers] = useState(leaderList);
   const [hasAlreadyVoted, setHasAlreadyVoted] = useState(false);
@@ -471,82 +471,7 @@ const GameDemo = () => {
       console.log("STOMP connection is not established.");
     }
   };
-
-  //Current layout
-  //   return (
-  //     <>
-  //       <div className="Center">
-  //         <NESContainer title="Play">
-  //           <h1 className="press-start-font">Word Wolf</h1>
-  //         </NESContainer>
-  //       </div>
-  //       <div className="main-container">
-  //         <RoleWordOverlay isVisible={roleOverlay} word={word} isWolf={isWolf} />
-  //         <div className="container1">
-  //           <div className="container1-top">
-  //             <h1>{word || "Role: " + role}</h1>
-  //             <div className="info-container">
-  //               <TimerDisplay label={phase !== "discussion" ? "Round time" : "Discussion time"} timer={phase !== "discussion" ? roundTimer : discussionTimer} />
-  //               <p>Role: {role}</p>
-  //             </div>
-  //           </div>
-  //           <PlayerIcons players={players} />
-  //         </div>
-  //         {voteOverlay && (
-  //           <VotingOverlay
-  //             players={players}
-  //             onVote={sendVote}
-  //             hasVoted={hasAlreadyVoted}
-  //             isVisible={voteOverlay}
-  //             results={gameResult}
-  //             displayResults={showResults}
-  //           />
-  //         )}
-  //         <div className="container2">
-  //           <h3>Clues</h3>
-  //           <div className="log-area" ref={clueLogRef}>
-  //             {clueMessages.map((msg, index) => (
-  //               <div key={index}>{msg.username}: {msg.content}</div>
-  //             ))}
-  //           </div>
-  //           <input
-  //             type="text"
-  //             value={draftClueMessage}
-  //             onChange={(e) => setDraftClueMessage(e.target.value)}
-  //             disabled={phase !== "clue" || !isCurrentPlayerTurn}
-  //             onKeyPress={(e) => e.key === "Enter" && sendClue()}
-  //             placeholder="Type a clue..."
-  //             style={{ width: "75%" }}
-  //           />
-  //           <CustomButton text="Send" className="send hover-orange" onClick={sendClue} disabled={phase !== "clue" || !isCurrentPlayerTurn}/>
-  //           <hr className="hr" />
-  //           <h3>Chat</h3>
-  //           <div className="log-area" ref={chatLogRef}>
-  //             {chatMessages.map((msg, index) => (
-  //               <div key={index}>{msg.username}: {msg.content}</div>
-  //             ))}
-  //           </div>
-  //           <div className="input-area">
-  //             <input
-  //               type="text"
-  //               value={draftChatMessage}
-  //               onChange={(e) => setDraftChatMessage(e.target.value)}
-  //               onKeyPress={(e) => e.key === "Enter" && sendMessage()}
-  //               placeholder="Type a message..."
-  //               disabled={phase !== "discussion"}
-  //               style={{ width: "75%" }}
-  //             />
-  //             <CustomButton text="Send" className="send hover-orange" onClick={sendMessage} disabled={phase !== "discussion"}/>
-  //           </div>
-  //         </div>
-  //         <InfoBar currentPlayer={playerTurn} role={role} word={word} clueTimer={clueTimer} />
-  //       </div>
-  //     </>
-  //   );
-  // };
-
-  // export default GameDemo;
-
+  
   return (
     <>
       {/* <div
