@@ -8,7 +8,7 @@ import NESContainerW from "../ui/NESContainerW";
 import CustomButton from "../ui/CustomButton";
 import languages from "helpers/languages.json";
 import "../../styles/ui/AppBody.scss";
-import background1 from "../../assets/Backgrounds/bg4.jpeg";
+import background1 from "../../assets/Backgrounds/bg2.jpeg";
 
 const Registration = () => {
   const navigate = useNavigate();
@@ -57,7 +57,7 @@ const Registration = () => {
           </NesContainer>
         </div>
         <div className="Extension">
-          <NESContainerW title="Welcome" className="center">
+          <NESContainerW title="Welcome" className="center style">
             <div className="field-aligner">
               <label className="log-label">Username:</label>
               <input
@@ -108,45 +108,3 @@ const Registration = () => {
 };
 
 export default Registration;
-
-
-{/* <NESContainerW title="">
-<div className="login container">
-<label>Username:</label>
-<input
-className="username-field"
-type="text"
-value={username}
-onChange={(e) => setUsername(e.target.value)}
-/>
-<label>Name:</label>
-<input
-className="name-field"
-type="text"
-value={name}
-onChange={(e) => setName(e.target.value)}
-/>
-<label>Password:</label>
-<input
-className="username-field"
-type={isSecure ? "password" : "text"}
-value={password}
-onChange={(e) => setPassword(e.target.value)}
-/>
-<CustomButton
-text={isSecure ? "Show" : "Hide"}
-className={
-  isSecure ? "small 50 hover-green" : "small 50 hover-orange"
-}
-onClick={() => setIsSecure((prev) => !prev)}
-/>
-<div className="login button-container">
-<CustomButton
-  text="Register"
-  disabled={!username || !name || !password}
-  className="50 hover-green"
-  onClick={() => doRegistration()}
-/>
-</div>
-</div>
-</NESContainerW> */}

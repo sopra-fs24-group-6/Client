@@ -1,10 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { api, handleError } from "helpers/api";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
-import User from "models/User";
-import Lobby from "models/Lobby";
 import "styles/views/Lobby.scss";
-import initialPlayers from "components/placeholders/playerlist";
 import NavBar from "../ui/NavBar";
 import NesContainer from "../ui/NESContainer";
 import NESContainerW from "../ui/NESContainerW";
@@ -15,7 +12,8 @@ import Slider from "../ui/Slider";
 import CustomButton from "../ui/CustomButton";
 import ThemePopUp from "components/ui/ThemePopUp";
 import { useLobbyWebSocket } from "helpers/LobbyWebSocketManager";
-import background2 from "../../assets/Backgrounds/bg5.jpeg";
+import background2 from "../../assets/Backgrounds/bg2.jpeg";
+import "styles/ui/popUp.scss";
 
 // import { Client } from "@stomp/stompjs";
 // import { getBrokerURL } from "helpers/getBrokerURL"
@@ -343,7 +341,7 @@ const GameLobby = () => {
                     ]}
                     defaultValue={isPrivate ? "private" : "public"}
                     onChange={lobbyTypeChanger}
-                    disabled={!isAdmin}// || isPublished}
+                    disabled={!isAdmin}
                   />
                 </div>
                 {isPrivate && (
@@ -380,10 +378,9 @@ const GameLobby = () => {
                 <div className="Space Flex">
                   <label>Round Timer:</label>
                   <Slider
-                    //min={60}
-                    min={5} // for developing phase
-                    max={120}
-                    step={10}
+                    min={30}
+                    max={180}
+                    step={5}
                     value={roundTimer}
                     onChange={(e) => setRoundTimer(parseInt(e.target.value))}
                     disabled={!isAdmin}
@@ -392,8 +389,7 @@ const GameLobby = () => {
                 <div className="Space Flex">
                   <label>Clue Timer:</label>
                   <Slider
-                    // min={10}
-                    min={5} // for developing phase
+                    min={5}
                     max={20}
                     step={5}
                     value={clueTimer}
@@ -405,9 +401,8 @@ const GameLobby = () => {
                   <label>Discussion Timer:</label>
                   <Slider
                     min={5}
-                    // min={60}
-                    max={120}
-                    step={10}
+                    max={180}
+                    step={5}
                     value={discussionTimer}
                     onChange={(e) =>
                       setDiscussionTimer(parseInt(e.target.value))
@@ -415,29 +410,6 @@ const GameLobby = () => {
                     disabled={!isAdmin}
                   />
                 </div>
-                {/* <div className="Space Flex">
-                  <label>Themes:</label>
-                  {isAdmin && (
-                    <CustomButton
-                      text="Select theme"
-                      className="small hover-orange"
-                      onClick={() => setShowThemePopUp(true)}
-                      disabled={!isAdmin || availableThemes.length === 0}/>
-                  )}
-                  {showThemePopUp && (
-                    <ThemePopUp
-                      themes={availableThemes}
-                      selectedThemes={selectedThemes}
-                      onSelect={handleSelectThemes}
-                      onClose={handleThemePopUpClose}
-                    />
-                  )}
-                  <ul>
-                    {selectedThemes.map((theme) => (
-                      <li key={theme}>{theme}</li>
-                    ))}
-                  </ul>
-                </div> */}
                 <div className="theme-container">
                   <div className="theme-label-button">
                     <label>Themes:</label>
@@ -467,7 +439,6 @@ const GameLobby = () => {
                     ))}
                   </div>
                 </div>
-
                 {!isPublished && isAdmin && (
                   <div className="Space">
                     <CustomButton
@@ -528,7 +499,6 @@ const GameLobby = () => {
               </ul>
             </NESContainerW>
           </div>
-
           {/* Pop-ups */}
           {isKicked && (
             <div className="popup-container">
@@ -558,18 +528,6 @@ const GameLobby = () => {
               </div>
             </div>
           )}
-          {/* {showUpdateLobbyPopUp && (
-            <div className="popup-container">
-              <div className="popup">
-                <p>Lobby has been successfully updated!</p>
-                <CustomButton
-                  text="OK"
-                  className="small hover-green"
-                  onClick={() => setShowUpdateLobbyPopUp(false)}
-                />
-              </div>
-            </div>
-          )} */}
           {showJoinLobbyPopUp && !isAdmin && (
             <div className="popup-container">
               <div className="popup">

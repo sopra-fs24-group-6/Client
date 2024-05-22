@@ -1,5 +1,5 @@
 import React from "react";
-import "../../styles/ui/AppBody.scss"; // Adjust the path as necessary
+import "../../styles/ui/AppBody.scss";
 
 interface SliderProps {
   min: number;

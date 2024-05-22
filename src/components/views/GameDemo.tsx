@@ -5,25 +5,14 @@ import { getBrokerURL } from "helpers/getBrokerURL";
 import { useNavigate } from "react-router-dom";
 import { getDomain } from "helpers/getDomain";
 import RoleWordOverlay from "components/ui/RoleWordOverlay";
-import NESContainerW from "components/ui/NESContainerW";
 import "../../styles/ui/GameDemo.scss";
 import VotingOverlay from "components/ui/VotingOverlay";
 import InfoBar from "components/ui/InfoBar";
 import NESContainer from "components/ui/NESContainer";
-import PlayerIcons from "components/ui/PlayerIcons";
 import TimerDisplay from "components/ui/TimerDisplay";
 import CustomButton from "components/ui/CustomButton";
-import background3 from "../../assets/Backgrounds/bgGameView.jpeg";
+import background3 from "../../assets/Backgrounds/grass.png";
 import leaderList from "components/placeholders/leaderlist";
-
-interface Player {
-  userId: string;
-  username: string;
-}
-
-interface AvatarMap {
-  [userId: string]: string; // Maps userId to avatar URL
-}
 
 const GameDemo = () => {
   const [client, setClient] = useState(null);
@@ -69,13 +58,10 @@ const GameDemo = () => {
       const id = localStorage.getItem("lobbyId");
       try {
         const response = await api.get(`/lobbies/${id}/players`);
-        setPlayers(response.data);
+        setStartPlayers(response.data);
         // Log each player's avatarUrl
-        response.data.forEach((player) => {
-          console.log(
-            `Player ${player.userId} avatarUrl:`,
-            getDomain() + "/" + player.avatarUrl + `?v=${timestamp}`
-          );
+        response.data.forEach(player => {
+          console.log(`Player ${player.userId} avatarUrl:`, getDomain() + "/" + player.avatarUrl + `?v=${timestamp}`);
         });
 
         const fetchedUserIds = response.data.map((player) => player.userId);
@@ -87,48 +73,6 @@ const GameDemo = () => {
 
     playerGetter();
   }, []);
-
-  useEffect(() => {
-    console.log(startPlayers); // This will log whenever startPlayers changes
-  }, [startPlayers]);
-  // useEffect(() => {
-  //   const avatarGetter = async () => {
-  //     if (userIds.length === 0) return;
-  //     try {
-  //       const fetchPromises = userIds.map(userId =>
-  //         api.get(`/users/${userId}`)
-  //       );
-  //       const responses = await Promise.all(fetchPromises);
-  //       const fetchedAvatars = responses.map(response => {
-  //         const user = response.data;
-
-  //         return {
-  //           userId: user.id,
-  //           avatarUrl: getDomain() + "/" + user.avatarUrl + `?v=${Date.now()}`
-  //         };
-  //       });
-  //       setAvatars(fetchedAvatars);
-  //     } catch (error) {
-  //       alert(`Couldn't fetch avatars: \n${handleError(error)}`);
-  //     }
-  //   };
-
-  //   avatarGetter();
-  // }, [userIds]);
-
-  // const fetchAvatars = async (startPlayers: Player[]) => {
-  //   const avatarPromises = players.map(player =>
-  //     api.get(`/users/${player.userId}`).then(response => ({
-  //       userId: player.userId,
-  //       avatarUrl: `${getDomain()}/${response.data.avatarUrl}?v=${Date.now()}`
-  //     }))
-  //   );
-  //   const avatars = await Promise.all(avatarPromises);
-  //   setAvatars(avatars.reduce((acc, avatar) => ({
-  //     ...acc,
-  //     [avatar.userId]: avatar.avatarUrl
-  //   }), {}));
-  // };
 
   useEffect(() => {
     let overlayTimer;
@@ -176,66 +120,6 @@ const GameDemo = () => {
     scrollClue();
   }, [clueMessages]);
 
-  // const renderVotingButtons = () => {
-  //   // if (phase !== "vote") {
-  //   //   return null;
-  //   // }
-
-  //   return (
-  //     <div className="voting-container">
-  //       {players.map((player) => (
-  //         <button
-  //           key={player.userId}
-  //           onClick={() => sendVote(player.userId)}
-  //           disabled={hasAlreadyVoted}
-  //         >
-  //           <span className="player-name">{player.username}</span>
-  //           <span className="vote-text">{hasAlreadyVoted ? "Voted" : "Vote"}</span>
-  //         </button>
-  //       ))}
-  //     </div>
-  //   );
-  // };
-
-  // const handleHover = (event) => {
-  //   if (!isCurrentPlayerTurn || hasAlreadyVoted || phase !== "vote") {
-  //     event.target.style.cursor = "not-allowed";
-  //   }
-  // };
-
-  // const renderVotingButtonsWithHover = () => {
-  //   return players.map((player) => (
-  //     <div key={player.userId} onMouseOver={handleHover}>
-  //       <button
-  //         key={player.userId}
-  //         disabled={!isCurrentPlayerTurn || hasAlreadyVoted || phase !== "vote"}
-  //         onClick={() => sendVote(player.userId)}
-  //         className="voting-button"
-  //       >
-  //         {player.username}
-  //       </button>
-  //     </div>
-  //   ));
-  // };
-
-  // const renderPlayerButtons = () => {
-  //   return players.map((player) => (
-  //     <button
-  //       key={player.userId}
-  //       className={`button ${player.isTurn ? "active-turn" : ""}`}
-  //       disabled={!player.isTurn}
-  //     >
-  //       {player.username}
-  //     </button>
-  //   ));
-  // };
-
-  // these settings are for demo. userId and lobbyId should be set appropriately.
-  // const [userId, setUserId] = useState("");
-  // const [userIdInput, setUserIdInput] = useState("");
-  // const [isUserIdSet, setIsUserIdSet] = useState(false);
-  // const lobbyId = "1";
-
   /**
    * WebSocket Notes
    *
@@ -276,11 +160,9 @@ const GameDemo = () => {
             setHasAlreadyVoted(false);
             setCurrentRound(event.currentRound);
             setMaxRound(event.maxRound);
-            // fetchAvatars(startPlayers);
             setShowResults(false);
             setVoteOverlay(false);
             setRoleOverlay(true);
-            // fetchAvatars(startPlayers);
           }
           // if (event.eventType === "vote") {
           //   setVoteOverlay(true);
@@ -315,6 +197,9 @@ const GameDemo = () => {
         // message has single integer, which indicates remaining seconds
         stompClient.subscribe(`/topic/${lobbyId}/roundTimer`, (message) => {
           const newRoundTime = JSON.parse(message.body);
+          if (newRoundTime === 0) {
+            setPlayerTurn("");
+          };
           setRoundTimer(newRoundTime);
         });
 
@@ -425,7 +310,6 @@ const GameDemo = () => {
     if (client && connected) {
       if (draftClueMessage && role === "Villager" && !hasSentClue) {
         const normalizedDraftMessage = draftClueMessage.toLowerCase().trim();
-
         if (
           !normalizedDraftMessage ||
           normalizedDraftMessage === word.toLowerCase().trim()
@@ -472,591 +356,120 @@ const GameDemo = () => {
     }
   };
 
-  //Current layout
-  //   return (
-  //     <>
-  //       <div className="Center">
-  //         <NESContainer title="Play">
-  //           <h1 className="press-start-font">Word Wolf</h1>
-  //         </NESContainer>
-  //       </div>
-  //       <div className="main-container">
-  //         <RoleWordOverlay isVisible={roleOverlay} word={word} isWolf={isWolf} />
-  //         <div className="container1">
-  //           <div className="container1-top">
-  //             <h1>{word || "Role: " + role}</h1>
-  //             <div className="info-container">
-  //               <TimerDisplay label={phase !== "discussion" ? "Round time" : "Discussion time"} timer={phase !== "discussion" ? roundTimer : discussionTimer} />
-  //               <p>Role: {role}</p>
-  //             </div>
-  //           </div>
-  //           <PlayerIcons players={players} />
-  //         </div>
-  //         {voteOverlay && (
-  //           <VotingOverlay
-  //             players={players}
-  //             onVote={sendVote}
-  //             hasVoted={hasAlreadyVoted}
-  //             isVisible={voteOverlay}
-  //             results={gameResult}
-  //             displayResults={showResults}
-  //           />
-  //         )}
-  //         <div className="container2">
-  //           <h3>Clues</h3>
-  //           <div className="log-area" ref={clueLogRef}>
-  //             {clueMessages.map((msg, index) => (
-  //               <div key={index}>{msg.username}: {msg.content}</div>
-  //             ))}
-  //           </div>
-  //           <input
-  //             type="text"
-  //             value={draftClueMessage}
-  //             onChange={(e) => setDraftClueMessage(e.target.value)}
-  //             disabled={phase !== "clue" || !isCurrentPlayerTurn}
-  //             onKeyPress={(e) => e.key === "Enter" && sendClue()}
-  //             placeholder="Type a clue..."
-  //             style={{ width: "75%" }}
-  //           />
-  //           <CustomButton text="Send" className="send hover-orange" onClick={sendClue} disabled={phase !== "clue" || !isCurrentPlayerTurn}/>
-  //           <hr className="hr" />
-  //           <h3>Chat</h3>
-  //           <div className="log-area" ref={chatLogRef}>
-  //             {chatMessages.map((msg, index) => (
-  //               <div key={index}>{msg.username}: {msg.content}</div>
-  //             ))}
-  //           </div>
-  //           <div className="input-area">
-  //             <input
-  //               type="text"
-  //               value={draftChatMessage}
-  //               onChange={(e) => setDraftChatMessage(e.target.value)}
-  //               onKeyPress={(e) => e.key === "Enter" && sendMessage()}
-  //               placeholder="Type a message..."
-  //               disabled={phase !== "discussion"}
-  //               style={{ width: "75%" }}
-  //             />
-  //             <CustomButton text="Send" className="send hover-orange" onClick={sendMessage} disabled={phase !== "discussion"}/>
-  //           </div>
-  //         </div>
-  //         <InfoBar currentPlayer={playerTurn} role={role} word={word} clueTimer={clueTimer} />
-  //       </div>
-  //     </>
-  //   );
-  // };
-
-  // export default GameDemo;
-
   return (
     <>
-      {/* <div
+      <div
         className="background"
         style={{ backgroundImage: `url(${background3})` }}
-      > */}
-      <div className="Center">
-        <NESContainer title="Play">
-          <h1 className="press-start-font">Word Wolf</h1>
-        </NESContainer>
-      </div>
-      <div className="container-all">
-        <RoleWordOverlay isVisible={roleOverlay} word={word} isWolf={isWolf} />
-        <div className="container-top">
-          <h1>{!isWolf ? word || "Role: " + role : "Role: " + role}</h1>
-          <div className="info">
-            <TimerDisplay
-              label={phase !== "discussion" ? "Round time" : "Discussion time"}
-              timer={phase !== "discussion" ? roundTimer : discussionTimer}
-            />
-            <p>Role: {role}</p>
-            <div className="player-details">
-              {players.map((player) => (
+      >
+        <div className="Center">
+          <NESContainer title="Play">
+            <h1 className="press-start-font">Word Wolf</h1>
+          </NESContainer>
+        </div>
+        <div className="container-all">
+          <RoleWordOverlay isVisible={roleOverlay} word={word} isWolf={isWolf} />
+          <div className="container-top">
+            <h1>{!isWolf ? word || "Role: " + role : "Role: " + role}</h1>
+            <div className="info">
+              <TimerDisplay
+                label={phase !== "discussion" ? "Round time" : "Discussion time"}
+                timer={phase !== "discussion" ? roundTimer : discussionTimer}
+              />
+              <p>Role: {role}</p>
+            </div>
+            <div className={`player-details ${startPlayers.length % 2 !== 0 ? "odd-last-centered" : ""}`}>
+              {startPlayers.map((player, index) => (
                 <div key={player.userId} className="player-info">
                   <img
-                    src={
-                      getDomain() + "/" + player.avatarUrl + `?v=${timestamp}`
-                    }
+                    src={getDomain() + "/" + player.avatarUrl + `?v=${timestamp}`}
                     alt={`${player.username}'s avatar`}
-                    style={{
-                      width: "32px",
-                      height: "32px",
-                      borderRadius: "50%",
-                      marginRight: "8px",
-                    }}
-                    className="player-avatar"
+                    className={`player-avatar ${player.userId === playerTurn ? "player-avatar-turn" : ""}`}
                   />
                   <p>{player.username}</p>
                 </div>
               ))}
             </div>
           </div>
-          {/* <PlayerIcons players={players} /> */}
-        </div>
-        <div className="container-bottom">
-          <div className="chat-align">
-            <h3>Clues</h3>
-            <div className="log-area" ref={clueLogRef}>
-              {clueMessages.map((msg, index) => (
-                <div key={index}>
-                  {msg.username}: {msg.content}
-                </div>
-              ))}
+          <div className="container-bottom">
+            <div className="chat-align">
+              <h3>Clues</h3>
+              <div className="log-area" ref={clueLogRef}>
+                {clueMessages.map((msg, index) => (
+                  <div key={index}>
+                    {msg.username}: {msg.content}
+                  </div>
+                ))}
+              </div>
+              <div className="input-area">
+                <input
+                  type="text"
+                  value={draftClueMessage}
+                  onChange={(e) => setDraftClueMessage(e.target.value)}
+                  disabled={
+                    phase !== "clue" || !isCurrentPlayerTurn || hasSentClue
+                  }
+                  onKeyPress={(e) => e.key === "Enter" && sendClue()}
+                  placeholder="Type a clue..."
+                />
+                <CustomButton
+                  text="Send"
+                  className="send hover-orange"
+                  onClick={sendClue}
+                  disabled={
+                    phase !== "clue" || !isCurrentPlayerTurn || hasSentClue
+                  }
+                />
+              </div>
             </div>
-            <div className="input-area">
-              <input
-                type="text"
-                value={draftClueMessage}
-                onChange={(e) => setDraftClueMessage(e.target.value)}
-                disabled={
-                  phase !== "clue" || !isCurrentPlayerTurn || hasSentClue
-                }
-                onKeyPress={(e) => e.key === "Enter" && sendClue()}
-                placeholder="Type a clue..."
-              />
-              <CustomButton
-                text="Send"
-                className="send hover-orange"
-                onClick={sendClue}
-                disabled={
-                  phase !== "clue" || !isCurrentPlayerTurn || hasSentClue
-                }
-              />
+            <div className="chat-align">
+              <h3>Chat</h3>
+              <div className="log-area" ref={chatLogRef}>
+                {chatMessages.map((msg, index) => (
+                  <div key={index}>
+                    {msg.username}: {msg.content}
+                  </div>
+                ))}
+              </div>
+              <div className="input-area">
+                <input
+                  type="text"
+                  value={draftChatMessage}
+                  onChange={(e) => setDraftChatMessage(e.target.value)}
+                  onKeyPress={(e) => e.key === "Enter" && sendMessage()}
+                  placeholder="Type a message..."
+                  disabled={phase !== "discussion"}
+                />
+                <CustomButton
+                  text="Send"
+                  className="send hover-orange"
+                  onClick={sendMessage}
+                  disabled={phase !== "discussion"}
+                />
+              </div>
             </div>
           </div>
-          <div className="chat-align">
-            <h3>Chat</h3>
-            <div className="log-area" ref={chatLogRef}>
-              {chatMessages.map((msg, index) => (
-                <div key={index}>
-                  {msg.username}: {msg.content}
-                </div>
-              ))}
-            </div>
-            <div className="input-area">
-              <input
-                type="text"
-                value={draftChatMessage}
-                onChange={(e) => setDraftChatMessage(e.target.value)}
-                onKeyPress={(e) => e.key === "Enter" && sendMessage()}
-                placeholder="Type a message..."
-                disabled={phase !== "discussion"}
-              />
-              <CustomButton
-                text="Send"
-                className="send hover-orange"
-                onClick={sendMessage}
-                disabled={phase !== "discussion"}
-              />
-            </div>
-          </div>
-        </div>
-        <InfoBar
-          currentPlayer={playerTurn}
-          role={role}
-          word={word}
-          clueTimer={clueTimer}
-        />
-        {voteOverlay && (
-          <VotingOverlay
+          <InfoBar
+            currentRound={`${currentRound}/${maxRound}`}
+            role={role}
             word={word}
-            players={players}
-            onVote={sendVote}
-            hasVoted={hasAlreadyVoted}
-            isVisible={voteOverlay}
-            results={gameResult}
-            displayResults={showResults}
+            clueTimer={clueTimer}
           />
-        )}
+          {voteOverlay && (
+            <VotingOverlay
+              word={word}
+              players={players}
+              onVote={sendVote}
+              hasVoted={hasAlreadyVoted}
+              isVisible={voteOverlay}
+              results={gameResult}
+              displayResults={showResults}
+            />
+          )}
+        </div>
       </div>
-      {/* </div> */}
     </>
   );
 };
 
 export default GameDemo;
-
-//   return (
-//     <div>
-//       {/* This is for demo to set userId manually */}
-//       {/*<div>*/}
-//       {/*  <button onClick={startGame}>StartGame</button>*/}
-//       {/*</div>*/}
-//       {/*{!isUserIdSet && (*/}
-//       {/*  <>*/}
-//       {/*    <input*/}
-//       {/*      type="number"*/}
-//       {/*      value={userIdInput}*/}
-//       {/*      onChange={(e) => setUserIdInput(e.target.value)}*/}
-//       {/*      placeholder="Enter your userId..."*/}
-//       {/*    />*/}
-//       {/*    <button onClick={setUserIdAndHide}>Set UserId</button>*/}
-//       {/*  </>*/}
-//       {/*)}*/}
-//       {/*{isUserIdSet && (*/}
-//       {/*  <div>Your userId is {userId}</div>*/}
-//       {/*)}*/}
-//       {/*<hr/>*/}
-
-//       {/* Display phase */}
-//       <h2>Phase: {phase}</h2>
-//       <h2>Round: {currentRound}/{maxRound}</h2>
-
-//       {/* Assigned word and role  */}
-//       <div>
-//         {isWolf === null ? (
-//           <></>
-//         ) : isWolf ? (
-//           <p>You are the wolf! Try to blend in.</p>
-//         ) : (
-//           <p>This round&apos;s word is: {word}</p>
-//         )}
-//     {/* // Check from here how to use multiple rounds on the display end
-//         // */}
-//     <>
-//       <div className="Center">
-//         <NESContainer title="Play">
-//           <h1 className="press-start-font">Word Wolf</h1>
-//         </NESContainer>
-// //
-//       </div>
-//       <div className="main-container">
-//         <RoleWordOverlay isVisible={roleOverlay} word={word} isWolf={isWolf} />
-//         <div className="container1">
-//           <div className="container1-top">
-//             {word ? (
-//               <div className="top-section">
-//                 <h1>{word}</h1>
-//                 <div className="info-container">
-//                   {phase !== "discussion" ? (
-//                     <TimerDisplay label="Round time" timer={roundTimer} />
-//                   ) : (
-//                     <TimerDisplay label="Discussion time" timer={discussionTimer} />
-//                   )}
-//                   <p>Role: {role}</p>
-//                 </div>
-//               </div>
-//             ) : (
-//               <div className="top-section">
-//                 <h1>Role: {role}</h1>
-//                 <div className="info-container2">
-//                   {phase !== "discussion" ? (
-//                     <TimerDisplay label="Round time" timer={roundTimer} />
-//                   ) : (
-//                     <TimerDisplay label="Discussion time" timer={discussionTimer} />
-//                   )}
-//                 </div>
-//               </div>
-//             )}
-//           </div>
-//           {/* <div className="player-buttons">
-//             {renderPlayerButtons()}
-//           </div> */}
-//           {/* <PlayerIcons players={startPlayers} /> */}
-//           <div className="container3">
-//             <PlayerIcons players={startPlayers} />
-//           </div>
-//         </div>
-//         {voteOverlay && (
-//           <VotingOverlay
-//             players={players}
-//             onVote={sendVote}
-//             hasVoted={hasAlreadyVoted}
-//             isVisible={voteOverlay}
-//             results={gameResult}
-//             displayResults={showResults}
-//           />
-//         )}
-//         <div className="container2">
-//           <h3>Clues</h3>
-//           <div className="log-area" ref={clueLogRef}>
-//             {clueMessages.map((msg, index) => (
-//               <div key={index}>{msg.username}: {msg.content}</div>
-//             ))}
-//           </div>
-//           <input
-//             type="text"
-//             value={draftClueMessage}
-//             onChange={(e) => setDraftClueMessage(e.target.value)}
-//             disabled={phase !== "clue" || !isCurrentPlayerTurn}
-//             onKeyPress={(e) => e.key === "Enter" && sendClue()}
-//             placeholder="Type a clue..."
-//             style={{ width: "80%", marginRight: "10px" }}
-//           />
-//           <button onClick={sendClue} disabled={phase !== "clue" || !isCurrentPlayerTurn}>Send</button>
-//           <hr className="hr" />
-//           <h3>Chat</h3>
-//           <div className="log-area" ref={chatLogRef}>
-//             {chatMessages.map((msg, index) => (
-//               <div key={index}>{msg.username}: {msg.content}</div>
-//             ))}
-//           </div>
-//           <div className="input-area">
-//             <input
-//               type="text"
-//               value={draftChatMessage}
-//               onChange={(e) => setDraftChatMessage(e.target.value)}
-//               onKeyPress={(e) => e.key === "Enter" && sendMessage()}
-//               placeholder="Type a message..."
-//               disabled={phase !== "discussion"}
-//               style={{ width: "80%", marginRight: "10px" }}
-//             />
-//             <button onClick={sendMessage} disabled={phase !== "discussion"}>Send</button>
-//           </div>
-//         </div>
-//         {/* //check */}
-//       )}
-//       {phase === "vote" && hasAlreadyVoted && (
-//         <p>You have voted. Please wait for voting of other players.</p>
-//       )}
-
-//       {/* Result */}
-//       {phase === "roundResult" && gameResult && (
-//         <div>
-//           <p>Winner role: {gameResult.winnerRole}</p>
-//           <p>Winners: {gameResult.winners.map(w => `${w.username}`).join(", ")}</p>
-//           <p>Losers: {gameResult.losers.map(l => `${l.username}`).join(", ")}</p>
-//         </div>
-//       )}
-
-//       {/* Clue and Chat log */}
-//       <p>Clue log</p>
-//       <div id="messageList" style={{ height: "200px", overflowY: "scroll", marginBottom: "20px", border: "1px solid #ccc", padding: "10px" }}>
-//         {clueMessages.map((msg, index) => (
-//           <div key={index}>{msg.username}: {msg.content}</div>
-//         ))}
-// {/* // check how to display multiple rounds */}
-//         <InfoBar currentPlayer={playerTurn} role={role} word={word} clueTimer={clueTimer} />
-//       </div>
-//     </>
-//   );
-// };
-
-// export default GameDemo;
-
-{
-  /* // const startGame = () => {
-//   if (client && connected) {
-//     client.publish({
-//       destination: "/app/startGame",
-//       body: JSON.stringify({ lobbyId, userId }),
-//     });
-//   } else {
-//     console.log("STOMP connection is not established.");
-//   }
-// }
-
-// this function is for demo and should be deleted.
-// const setUserIdAndHide = () => {
-//   setUserId(userIdInput);
-//   setIsUserIdSet(true);
-// };
-
-
-// return (
-//   <div>
-//     {/* This is for demo to set userId manually */
-}
-//     {/*<div>*/}
-//     {/*  <button onClick={startGame}>StartGame</button>*/}
-//     {/*</div>*/}
-//     {/*{!isUserIdSet && (*/}
-//     {/*  <>*/}
-//     {/*    <input*/}
-//     {/*      type="number"*/}
-//     {/*      value={userIdInput}*/}
-//     {/*      onChange={(e) => setUserIdInput(e.target.value)}*/}
-//     {/*      placeholder="Enter your userId..."*/}
-//     {/*    />*/}
-//     {/*    <button onClick={setUserIdAndHide}>Set UserId</button>*/}
-//     {/*  </>*/}
-//     {/*)}*/}
-//     {/*{isUserIdSet && (*/}
-//     {/*  <div>Your userId is {userId}</div>*/}
-//     {/*)}*/}
-//     {/*<hr/>*/}
-
-{
-  /* Display phase */
-}
-// <div>
-//   <RoleWordOverlay isVisible={roleOverlay} word={word} isWolf={isWolf} />
-// </div>
-// <div>
-//   <NESContainerW title={phase}>
-//     <div className="info-section">
-//       <h1>{word}</h1>
-//       <div className="timers">
-//         <p>Round Time: {roundTimer}s</p>
-//         <p>Clue Time: {clueTimer}s</p>
-//       </div>
-//     </div>
-//   </NESContainerW>
-//   {voteOverlay && (
-//     <VotingOverlay
-//       players={players}
-//       onVote={sendVote}
-//       hasVoted={hasAlreadyVoted}
-//       isVisible={voteOverlay}
-//       results={gameResult}
-//       displayResults={showResults}
-//     />
-//   )}
-// </div>
-{
-  /* <h2>Phase: {phase}</h2> */
-}
-{
-  /* Assigned word and role  */
-}
-{
-  /* Round Timer */
-}
-{
-  /* <div>
-        {phase === "clue" && <p>Clue phase remaining:{roundTimer} seconds</p>}
-      </div> */
-}
-
-//     {/* Clue Timer and input */}
-//     <div>
-//       {phase === "clue" && isCurrentPlayerTurn && (
-//         <>
-//           <p>Your clue turn remaining: {clueTimer} seconds</p>
-//           <input
-//             type="text"
-//             value={draftMessage}
-//             onChange={(e) => setDraftMessage(e.target.value)}
-//             disabled={!isCurrentPlayerTurn}
-//             onKeyPress={(e) => e.key === "Enter" && sendClue()}
-//             placeholder="Type a clue..."
-//             style={{ width: "80%", marginRight: "10px" }}
-//           />
-//           <button onClick={sendClue}>Send</button>
-//         </>
-//       )}
-//     </div>
-
-//     {/* Discussion Timer and Chat */}
-//     {phase === "discussion" && (
-//       <>
-//         <p>Discussion phase remaining: {discussionTimer} seconds</p>
-//         <input
-//           type="text"
-//           value={draftMessage}
-//           onChange={(e) => setDraftMessage(e.target.value)}
-//           onKeyPress={(e) => e.key === "Enter" && sendMessage()}
-//           placeholder="Type a message..."
-//           style={{ width: "80%", marginRight: "10px" }}
-//         />
-//         <button onClick={sendMessage}>Send</button>
-//       </>
-//     )}
-
-//     {/* Voting button */}
-//     {/* {phase === "vote" && !hasAlreadyVoted && (
-//       <div>
-//         {players
-//           .filter((player) => String(player.userId) !== String(userId))
-//           .map((player) => (
-//             <div key={player.userId}>
-//               <p>{player.username}</p>
-//               <button onClick={() => sendVote(player.userId)}>Vote</button>
-//             </div>
-//           ))}
-//       </div>
-//     )}
-//     {phase === "vote" && hasAlreadyVoted && (
-//       <p>You have voted. Please wait for voting of other players.</p>
-//     )} */}
-
-//     {/* Result */}
-//     {/* {phase === "gameResult" && gameResult && (
-//       <div>
-//         <p>Winner role: {gameResult.winnerRole}</p>
-//         <p>Winners: {gameResult.winners.map(w => `${w.username}`).join(", ")}</p>
-//         <p>Losers: {gameResult.losers.map(l => `${l.username}`).join(", ")}</p>
-//       </div>
-//     )} */}
-
-//     {/* Clue and Chat log */}
-//     <p>Clue log</p>
-//     <div id="messageList" style={{ height: "200px", overflowY: "scroll", marginBottom: "20px", border: "1px solid #ccc", padding: "10px" }}>
-//       {clueMessages.map((msg, index) => (
-//         <div key={index}>{msg.username}: {msg.content}</div>
-//       ))}
-//     </div>
-//     <p>Discussion log</p>
-//     <div id="messageList" style={{ height: "200px", overflowY: "scroll", marginBottom: "20px", border: "1px solid #ccc", padding: "10px" }}>
-//       {chatMessages.map((msg, index) => (
-//         <div key={index}>{msg.username}: {msg.content}</div>
-//       ))}
-//     </div>
-//   </div>
-// );
-
-// return (
-//   <div className="container">
-//     {/* Left Side: Game Info and Timers */}
-//     <div className="game-area">
-//       <RoleWordOverlay isVisible={roleOverlay} word={word} isWolf={isWolf} />
-//       <div className="panel">
-//         <h1>{word}</h1>
-//         <p>Round Time: {roundTimer}s</p>
-//         <p>Clue Time: {clueTimer}s</p>
-//       </div>
-//       {voteOverlay && (
-//         <VotingOverlay
-//           players={players}
-//           onVote={sendVote}
-//           hasVoted={hasAlreadyVoted}
-//           isVisible={voteOverlay}
-//           results={gameResult}
-//           displayResults={showResults}
-//         />
-//       )}
-//     </div>
-
-//     {/* Right Side: Interaction Area for Clues and Chat */}
-//     <div className="interaction-area">
-//       {phase === "clue" && isCurrentPlayerTurn && (
-//         <div className="input-area">
-//           <p>Your clue turn remaining: {clueTimer} seconds</p>
-//           <textarea
-//             value={draftMessage}
-//             onChange={(e) => setDraftMessage(e.target.value)}
-//             disabled={!isCurrentPlayerTurn}
-//             placeholder="Type a clue..."
-//           />
-//           <button onClick={sendClue}>Send</button>
-//         </div>
-//       )}
-
-//       {phase === "discussion" && (
-//         <div className="input-area">
-//           <p>Discussion phase remaining: {discussionTimer} seconds</p>
-//           <textarea
-//             value={draftMessage}
-//             onChange={(e) => setDraftMessage(e.target.value)}
-//             onKeyPress={(e) => e.key === "Enter" && sendMessage()}
-//             placeholder="Type a message..."
-//           />
-//           <button onClick={sendMessage}>Send</button>
-//         </div>
-//       )}
-
-//       {/* Logs for Clue and Chat */}
-//       <div className="log-area">
-//         <h2>Clue Log</h2>
-//         {clueMessages.map((msg, index) => (
-//           <div key={index}>{msg.username}: {msg.content}</div>
-//         ))}
-//       </div>
-
-//       <div className="log-area">
-//         <h2>Chat Log</h2>
-//         {chatMessages.map((msg, index) => (
-//           <div key={index}>{msg.username}: {msg.content}</div>
-//         ))}
-//       </div>
-//     </div>
-//   </div>
-// ); */}

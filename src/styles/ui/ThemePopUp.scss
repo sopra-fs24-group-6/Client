@@ -26,18 +26,18 @@
   .theme-tags-container {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px; // Space between tags
+    gap: 10px;
     margin-top: 10px;
   }
 
   .theme-tag {
-    background-color: #666666; // Dark background for contrast
-    color: white; // White text
-    padding: 5px 10px; // Padding around text
-    border-radius: 16px; // Pill-shaped border
+    background-color: #666666;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 16px;
     display: flex;
     align-items: center;
-    gap: 5px; // Space between text and close button
+    gap: 5px;
 
     .remove-theme {
       background: none;

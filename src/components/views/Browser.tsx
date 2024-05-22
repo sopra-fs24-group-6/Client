@@ -4,13 +4,12 @@ import { useNavigate } from "react-router-dom";
 import "styles/views/Browser.scss";
 import "styles/ui/popUp.scss";
 import CustomButton from "components/ui/CustomButton";
-import BaseContainer from "components/ui/BaseContainer";
 import lobbyList from "components/placeholders/lobbylist";
 import NavBar from "../ui/NavBar";
 import NesContainer from "../ui/NESContainer";
 import "styles/views/Lobby.scss";
 import NESContainerW from "../ui/NESContainerW";
-import background2 from "../../assets/Backgrounds/bg5.jpeg";
+import background2 from "../../assets/Backgrounds/bg2.jpeg";
 
 const Browser = () => {
   const navigate = useNavigate();
@@ -154,11 +153,6 @@ const Browser = () => {
                   </div>
                 </div>
               )}
-              {/* <CustomButton
-              text="Refresh"
-              className="small hover-green"
-              onClick={() => getLobbies()}
-            /> */}
             </NESContainerW>
           </div>
         </div>

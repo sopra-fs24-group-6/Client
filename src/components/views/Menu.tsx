@@ -1,16 +1,13 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-//import "./styles/App.css";
 import "../../styles/ui/AppBody.scss";
 import NesContainer from "../ui/NESContainer";
 import NavBar from "../ui/NavBar";
 import "../../styles/ui/Fonts.scss";
 import "../../styles/ui/CustomButton.scss";
-import NESContainerW from "../ui/NESContainerW";
 import CustomButton from "../ui/CustomButton";
 import useLogout from "hooks/useLogout";
-import WoodButton from "components/ui/WoodButton";
-import background1 from "../../assets/Backgrounds/bg4.jpeg";
+import background1 from "../../assets/Backgrounds/bg2.jpeg";
 
 const Menu = () => {
   const navigate = useNavigate();
@@ -35,10 +32,6 @@ const Menu = () => {
             className="large w50 hover-green"
             onClick={() => navigate("/howtoplay")}
           />
-          {/* <WoodButton
-          text="How to play"
-          className="wood wood50"
-          onClick={() => navigate("/howtoplay")}/> */}
           <div className="button-container">
             <CustomButton
               text="Create Lobby"
@@ -63,7 +56,6 @@ const Menu = () => {
               onClick={() => logout()}
             />
           </div>
-          {/* </NESContainerW> */}
         </div>
       </>
     </div>
