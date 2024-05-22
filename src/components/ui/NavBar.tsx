@@ -2,8 +2,11 @@ import React from "react";
 import { NavLink } from "react-router-dom";
 import "../../styles/ui/NavBar.scss";
 import logo from "../../assets/logo.jpeg";
+import useLogout from "hooks/useLogout";
 
 function NavBar() {
+  const logout = useLogout();
+
   return (
     <nav className="nav">
       <NavLink to="/menu" className="nav-item">
@@ -12,8 +15,8 @@ function NavBar() {
       </NavLink>
       <ul>
         <li>
-          <NavLink to="/" className="nav-item">
-            Friends
+          <NavLink to="/" className="nav-item" onClick={logout}>
+            Sign Out
           </NavLink>
         </li>
         <li>

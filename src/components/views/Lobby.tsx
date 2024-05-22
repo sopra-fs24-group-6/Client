@@ -304,6 +304,11 @@ const GameLobby = () => {
     setIsFriendsPopupOpen(!isFriendsPopupOpen);
   };
 
+  const handleRemoveTheme = (themeToRemove) => {
+    const newSelectedThemes = selectedThemes.filter(theme => theme !== themeToRemove);
+    setSelectedThemes(newSelectedThemes);
+  };
+
   return (
     <div
       className="background"
@@ -410,15 +415,14 @@ const GameLobby = () => {
                     disabled={!isAdmin}
                   />
                 </div>
-                <div className="Space Flex">
+                {/* <div className="Space Flex">
                   <label>Themes:</label>
                   {isAdmin && (
-                    <button
+                    <CustomButton
+                      text="Select theme"
+                      className="small hover-orange"
                       onClick={() => setShowThemePopUp(true)}
-                      disabled={!isAdmin || availableThemes.length === 0}
-                    >
-                      Select Themes
-                    </button>
+                      disabled={!isAdmin || availableThemes.length === 0}/>
                   )}
                   {showThemePopUp && (
                     <ThemePopUp
@@ -433,7 +437,37 @@ const GameLobby = () => {
                       <li key={theme}>{theme}</li>
                     ))}
                   </ul>
+                </div> */}
+                <div className="theme-container">
+                  <div className="theme-label-button">
+                    <label>Themes:</label>
+                    {isAdmin && (
+                      <CustomButton
+                        text="Select theme"
+                        className="small hover-orange"
+                        onClick={() => setShowThemePopUp(true)}
+                        disabled={!isAdmin || availableThemes.length === 0}
+                      />
+                    )}
+                  </div>
+                  {showThemePopUp && (
+                    <ThemePopUp
+                      themes={availableThemes}
+                      selectedThemes={selectedThemes}
+                      onSelect={handleSelectThemes}
+                      onClose={handleThemePopUpClose}
+                    />
+                  )}
+                  <div className="theme-tags-container">
+                    {selectedThemes.map(theme => (
+                      <span key={theme} className="theme-tag">
+                        {theme}
+                        <button onClick={() => handleRemoveTheme(theme)} className="remove-theme">x</button>
+                      </span>
+                    ))}
+                  </div>
                 </div>
+
                 {!isPublished && isAdmin && (
                   <div className="Space">
                     <CustomButton
@@ -611,7 +645,7 @@ const GameLobby = () => {
           )}
         </div>
       </>
-    </div>
+    </div >
   );
 };
 

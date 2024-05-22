@@ -1,5 +1,6 @@
 import React from "react";
 import "../../styles/ui/VotingOverlay.scss";
+import CustomButton from "./CustomButton";
 
 interface Player {
   userId: string;
@@ -13,6 +14,7 @@ interface GameResult {
 }
 
 interface VotingOverlayProps {
+  word: string;
   players: Player[];
   onVote: (userId: string) => void;
   hasVoted: boolean;
@@ -22,21 +24,25 @@ interface VotingOverlayProps {
 }
 
 const VotingOverlay: React.FC<VotingOverlayProps> = ({
+  word,
   players,
   onVote,
   hasVoted,
   isVisible,
   results,
-  displayResults
+  displayResults,
 }) => {
   if (displayResults && results) {
     return (
       <div className={`voting-overlay ${isVisible ? "show" : ""}`}>
         <h2>Game Results</h2>
+        <p>The Word was: {word}</p>
         <p>Winner Role: {results.winnerRole}</p>
-        <p>Winners: {results.winners.map(w => w.username).join(", ")}</p>
-        <p>Losers: {results.losers.map(l => l.username).join(", ")}</p>
-        <p>Waiting for the next round to begin or be redirected to the menu...</p>
+        <p>Winners: {results.winners.map((w) => w.username).join(", ")}</p>
+        <p>Losers: {results.losers.map((l) => l.username).join(", ")}</p>
+        <p>
+          Waiting for the next round to begin or be redirected to the menu...
+        </p>
       </div>
     );
   }
@@ -44,10 +50,13 @@ const VotingOverlay: React.FC<VotingOverlayProps> = ({
   return (
     <div className={`voting-overlay ${isVisible ? "show" : ""}`}>
       {!hasVoted ? (
-        players.map(player => (
-          <button key={player.userId} onClick={() => onVote(player.userId)}>
-            {player.username}
-          </button>
+        players.map((player) => (
+          <CustomButton
+            text={player.username}
+            className="hover-red"
+            key={player.userId}
+            onClick={() => onVote(player.userId)}
+          />
         ))
       ) : (
         <div className="waiting-message">

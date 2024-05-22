@@ -3,7 +3,7 @@ import { api, handleError } from "helpers/api";
 import { Client } from "@stomp/stompjs";
 import { getBrokerURL } from "helpers/getBrokerURL";
 import { useNavigate } from "react-router-dom";
-
+import { getDomain } from "helpers/getDomain";
 import RoleWordOverlay from "components/ui/RoleWordOverlay";
 import NESContainerW from "components/ui/NESContainerW";
 import "../../styles/ui/GameDemo.scss";
@@ -12,6 +12,18 @@ import InfoBar from "components/ui/InfoBar";
 import NESContainer from "components/ui/NESContainer";
 import PlayerIcons from "components/ui/PlayerIcons";
 import TimerDisplay from "components/ui/TimerDisplay";
+import CustomButton from "components/ui/CustomButton";
+import background3 from "../../assets/Backgrounds/bgGameView.jpeg";
+import leaderList from "components/placeholders/leaderlist";
+
+interface Player {
+  userId: string;
+  username: string;
+}
+
+interface AvatarMap {
+  [userId: string]: string; // Maps userId to avatar URL
+}
 
 const GameDemo = () => {
   const [client, setClient] = useState(null);
@@ -26,7 +38,7 @@ const GameDemo = () => {
   const [isWolf, setIsWolf] = useState(null);
   const [word, setWord] = useState(null);
   const [isCurrentPlayerTurn, setIsCurrentPlayerTurn] = useState(false);
-  const [players, setPlayers] = useState([]);
+  const [players, setPlayers] = useState(leaderList);
   const [hasAlreadyVoted, setHasAlreadyVoted] = useState(false);
   const [gameResult, setGameResult] = useState(null);
   const lobbyId = localStorage.getItem("lobbyId");
@@ -46,13 +58,28 @@ const GameDemo = () => {
   const [draftClueMessage, setDraftClueMessage] = useState("");
   const [playerTurn, setPlayerTurn] = useState("");
   const [startPlayers, setStartPlayers] = useState([]);
+  const [hasSentClue, setHasSentClue] = useState(false);
+
+  const [userIds, setUserIds] = useState([]);
+  const [avatars, setAvatars] = useState([]);
+  const [timestamp] = useState(new Date().getTime());
 
   useEffect(() => {
     const playerGetter = async () => {
       const id = localStorage.getItem("lobbyId");
       try {
         const response = await api.get(`/lobbies/${id}/players`);
-        setStartPlayers(response.data);
+        setPlayers(response.data);
+        // Log each player's avatarUrl
+        response.data.forEach((player) => {
+          console.log(
+            `Player ${player.userId} avatarUrl:`,
+            getDomain() + "/" + player.avatarUrl + `?v=${timestamp}`
+          );
+        });
+
+        const fetchedUserIds = response.data.map((player) => player.userId);
+        setUserIds(fetchedUserIds);
       } catch (error) {
         alert(`Couldn't fetch players in the lobby: \n${handleError(error)}`);
       }
@@ -62,12 +89,57 @@ const GameDemo = () => {
   }, []);
 
   useEffect(() => {
-    const overlayTimer = setTimeout(() => {
-      setRoleOverlay(false);
-    }, 8000);
+    console.log(startPlayers); // This will log whenever startPlayers changes
+  }, [startPlayers]);
+  // useEffect(() => {
+  //   const avatarGetter = async () => {
+  //     if (userIds.length === 0) return;
+  //     try {
+  //       const fetchPromises = userIds.map(userId =>
+  //         api.get(`/users/${userId}`)
+  //       );
+  //       const responses = await Promise.all(fetchPromises);
+  //       const fetchedAvatars = responses.map(response => {
+  //         const user = response.data;
+
+  //         return {
+  //           userId: user.id,
+  //           avatarUrl: getDomain() + "/" + user.avatarUrl + `?v=${Date.now()}`
+  //         };
+  //       });
+  //       setAvatars(fetchedAvatars);
+  //     } catch (error) {
+  //       alert(`Couldn't fetch avatars: \n${handleError(error)}`);
+  //     }
+  //   };
+
+  //   avatarGetter();
+  // }, [userIds]);
+
+  // const fetchAvatars = async (startPlayers: Player[]) => {
+  //   const avatarPromises = players.map(player =>
+  //     api.get(`/users/${player.userId}`).then(response => ({
+  //       userId: player.userId,
+  //       avatarUrl: `${getDomain()}/${response.data.avatarUrl}?v=${Date.now()}`
+  //     }))
+  //   );
+  //   const avatars = await Promise.all(avatarPromises);
+  //   setAvatars(avatars.reduce((acc, avatar) => ({
+  //     ...acc,
+  //     [avatar.userId]: avatar.avatarUrl
+  //   }), {}));
+  // };
+
+  useEffect(() => {
+    let overlayTimer;
+    if (roleOverlay) {
+      overlayTimer = setTimeout(() => {
+        setRoleOverlay(false);
+      }, 8000);
+    }
 
     return () => clearTimeout(overlayTimer);
-  }, []);
+  }, [roleOverlay]);
 
   useEffect(() => {
     if (phase === "vote") {
@@ -146,17 +218,17 @@ const GameDemo = () => {
   //   ));
   // };
 
-  const renderPlayerButtons = () => {
-    return players.map((player) => (
-      <button
-        key={player.userId}
-        className={`button ${player.isTurn ? "active-turn" : ""}`}
-        disabled={!player.isTurn}
-      >
-        {player.username}
-      </button>
-    ));
-  };
+  // const renderPlayerButtons = () => {
+  //   return players.map((player) => (
+  //     <button
+  //       key={player.userId}
+  //       className={`button ${player.isTurn ? "active-turn" : ""}`}
+  //       disabled={!player.isTurn}
+  //     >
+  //       {player.username}
+  //     </button>
+  //   ));
+  // };
 
   // these settings are for demo. userId and lobbyId should be set appropriately.
   // const [userId, setUserId] = useState("");
@@ -204,8 +276,11 @@ const GameDemo = () => {
             setHasAlreadyVoted(false);
             setCurrentRound(event.currentRound);
             setMaxRound(event.maxRound);
+            // fetchAvatars(startPlayers);
             setShowResults(false);
             setVoteOverlay(false);
+            setRoleOverlay(true);
+            // fetchAvatars(startPlayers);
           }
           // if (event.eventType === "vote") {
           //   setVoteOverlay(true);
@@ -274,6 +349,9 @@ const GameDemo = () => {
               isTurn: player.userId === turnUserId,
             }))
           );
+          if (String(event.userId) === String(userId)) {
+            setHasSentClue(false);
+          }
         });
 
         // subscribe game result
@@ -288,7 +366,7 @@ const GameDemo = () => {
         // message has word<String>. if null, it indicates Wolf.
         stompClient.subscribe(`/queue/${userId}/wordAssignment`, (message) => {
           const event = JSON.parse(message.body);
-          if (event.word === null) {
+          if (event.isWolf) {
             setIsWolf(true);
             setRole("Wolf");
           } else {
@@ -344,21 +422,20 @@ const GameDemo = () => {
   };
 
   const sendClue = () => {
-    if (client && connected && draftClueMessage) {
-      const normalizedDraftMessage = draftClueMessage
-        .toLowerCase()
-        .replace(/\s/g, "");
-      const normalizedWord = word.toLowerCase().replace(/\s/g, "");
+    if (client && connected) {
+      if (draftClueMessage && role === "Villager" && !hasSentClue) {
+        const normalizedDraftMessage = draftClueMessage.toLowerCase().trim();
 
-      if (
-        normalizedDraftMessage === normalizedWord ||
-        normalizedDraftMessage.includes(normalizedWord)
-      ) {
-        console.log(
-          "Clue cannot be submitted. It is equal or too similar to the word."
-        );
+        if (
+          !normalizedDraftMessage ||
+          normalizedDraftMessage === word.toLowerCase().trim()
+        ) {
+          alert(
+            "Clue cannot be submitted: It is equal or too similar to the word."
+          );
 
-        return;
+          return;
+        }
       }
       const clueMessage = {
         content: draftClueMessage,
@@ -370,8 +447,11 @@ const GameDemo = () => {
         body: JSON.stringify(clueMessage),
       });
       setDraftClueMessage("");
+      setHasSentClue(true);
     } else {
-      console.log("STOMP connection is not established.");
+      console.error(
+        "STOMP connection is not established or draft clue is empty."
+      );
     }
   };
 
@@ -391,87 +471,107 @@ const GameDemo = () => {
       console.log("STOMP connection is not established.");
     }
   };
-
+  
   return (
     <>
+      {/* <div
+        className="background"
+        style={{ backgroundImage: `url(${background3})` }}
+      > */}
       <div className="Center">
         <NESContainer title="Play">
           <h1 className="press-start-font">Word Wolf</h1>
         </NESContainer>
       </div>
-      <div className="main-container">
+      <div className="container-all">
         <RoleWordOverlay isVisible={roleOverlay} word={word} isWolf={isWolf} />
-        <div className="container1">
-          <div className="container1-top">
-            <h1>{word || "Role: " + role}</h1>
-            <div className="info-container">
-              <TimerDisplay
-                label={
-                  phase !== "discussion" ? "Round time" : "Discussion time"
-                }
-                timer={phase !== "discussion" ? roundTimer : discussionTimer}
-              />
-              <p>Role: {role}</p>
+        <div className="container-top">
+          <h1>{word || "Role: " + role}</h1>
+          <div className="info">
+            <TimerDisplay
+              label={phase !== "discussion" ? "Round time" : "Discussion time"}
+              timer={phase !== "discussion" ? roundTimer : discussionTimer}
+            />
+            <p>Role: {role}</p>
+            <div className="player-details">
+              {players.map((player) => (
+                <div key={player.userId} className="player-info">
+                  <img
+                    src={
+                      getDomain() + "/" + player.avatarUrl + `?v=${timestamp}`
+                    }
+                    alt={`${player.username}'s avatar`}
+                    style={{
+                      width: "32px",
+                      height: "32px",
+                      borderRadius: "50%",
+                      marginRight: "8px",
+                    }}
+                    className="player-avatar"
+                  />
+                  <p>{player.username}</p>
+                </div>
+              ))}
             </div>
           </div>
-          <PlayerIcons players={players} />
+          {/* <PlayerIcons players={players} /> */}
         </div>
-        {voteOverlay && (
-          <VotingOverlay
-            players={players}
-            onVote={sendVote}
-            hasVoted={hasAlreadyVoted}
-            isVisible={voteOverlay}
-            results={gameResult}
-            displayResults={showResults}
-          />
-        )}
-        <div className="container2">
-          <h3>Clues</h3>
-          <div className="log-area" ref={clueLogRef}>
-            {clueMessages.map((msg, index) => (
-              <div key={index}>
-                {msg.username}: {msg.content}
-              </div>
-            ))}
+        <div className="container-bottom">
+          <div className="chat-align">
+            <h3>Clues</h3>
+            <div className="log-area" ref={clueLogRef}>
+              {clueMessages.map((msg, index) => (
+                <div key={index}>
+                  {msg.username}: {msg.content}
+                </div>
+              ))}
+            </div>
+            <div className="input-area">
+              <input
+                type="text"
+                value={draftClueMessage}
+                onChange={(e) => setDraftClueMessage(e.target.value)}
+                disabled={
+                  phase !== "clue" || !isCurrentPlayerTurn || hasSentClue
+                }
+                onKeyPress={(e) => e.key === "Enter" && sendClue()}
+                placeholder="Type a clue..."
+              />
+              <CustomButton
+                text="Send"
+                className="send hover-orange"
+                onClick={sendClue}
+                disabled={
+                  phase !== "clue" || !isCurrentPlayerTurn || hasSentClue
+                }
+              />
+            </div>
           </div>
-          <input
-            type="text"
-            value={draftClueMessage}
-            onChange={(e) => setDraftClueMessage(e.target.value)}
-            disabled={phase !== "clue" || !isCurrentPlayerTurn}
-            onKeyPress={(e) => e.key === "Enter" && sendClue()}
-            placeholder="Type a clue..."
-            style={{ width: "80%", marginRight: "10px" }}
-          />
-          <button
-            onClick={sendClue}
-            disabled={phase !== "clue" || !isCurrentPlayerTurn}
-          >
-            Send
-          </button>
-          <hr className="hr" />
-          <h3>Chat</h3>
-          <div className="log-area" ref={chatLogRef}>
-            {chatMessages.map((msg, index) => (
-              <div key={index}>
-                {msg.username}: {msg.content}
-              </div>
-            ))}
-          </div>
-          <div className="input-area">
-            <input
-              type="text"
-              value={draftChatMessage}
-              onChange={(e) => setDraftChatMessage(e.target.value)}
-              onKeyPress={(e) => e.key === "Enter" && sendMessage()}
-              placeholder="Type a message..."
-              disabled={phase !== "discussion"}
-              style={{ width: "80%", marginRight: "10px" }}
-            />
-            <button onClick={sendMessage} disabled={phase !== "discussion"}>
-              Send
-            </button>
+          <div className="chat-align">
+            <h3>Chat</h3>
+            <div className="log-area" ref={chatLogRef}>
+              {chatMessages.map((msg, index) => (
+                <div key={index}>
+                  {msg.username}: {msg.content}
+                </div>
+              ))}
+            </div>
+            <div className="input-area">
+              <input
+                type="text"
+                value={draftChatMessage}
+                onChange={(e) => setDraftChatMessage(e.target.value)}
+                onKeyPress={(e) => e.key === "Enter" && sendMessage()}
+                placeholder="Type a message..."
+                disabled={phase !== "discussion"}
+              />
+              <CustomButton
+                text="Send"
+                className="send hover-orange"
+                onClick={sendMessage}
+                disabled={phase !== "discussion"}
+              />
+            </div>
           </div>
         </div>
         <InfoBar
@@ -480,7 +580,19 @@ const GameDemo = () => {
           word={word}
           clueTimer={clueTimer}
         />
+        {voteOverlay && (
+          <VotingOverlay
+            word={word}
+            players={players}
+            onVote={sendVote}
+            hasVoted={hasAlreadyVoted}
+            isVisible={voteOverlay}
+            results={gameResult}
+            displayResults={showResults}
+          />
+        )}
       </div>
+      {/* </div> */}
     </>
   );
 };

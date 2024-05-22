@@ -1,89 +1,172 @@
+// .log-area {
+//   background-color: #f8f8f8;
+//   border: 1px solid #ccc;
+//   overflow-y: auto;
+//   height: 150px;
+//   flex-grow: 1;
+//   width: 50%;
+// }
+
+// .main-container {
+//   display: flex;
+//   height: 100vh;
+//   width: 100vw;
+//   padding-top: 2.5%;
+//   margin: 0;
+//   font-family: "Press Start 2P", system-ui, sans-serif;
+//   justify-content: space-between;
+// }
+
+// .container1 {
+//   padding-right: 2.5%;
+//   margin-left: 5%;
+//   height: 100%;
+//   width: 60%;
+//   position: relative;
+// }
+
+// .container2 {
+//   padding-left: 2.5%;
+//   margin-right: 5%;
+//   height: 100%;
+//   width: 30%;
+// }
+
+// .button {
+//   background-color: gray;
+//   color: white;
+//   padding: 10px 20px;
+//   border: none;
+//   border-radius: 5px;
+//   margin: 5px;
+//   cursor: pointer;
+// }
+
+// .button:disabled {
+//   background-color: #ccc;
+//   cursor: not-allowed;
+// }
+
+// .active-turn {
+//   background-color: blue;
+// }
+
+// .top-section {
+//   display: flex;
+//   flex-direction: column;
+//   align-items: center;
+// }
+
+// .top-section h1 {
+//   margin-bottom: 10px;
+// }
+
+// .info-container {
+//   display: flex;
+//   justify-content: space-around;
+//   width: 100%;
+// }
+
+// .info-container2 {
+//   display: flex;
+//   flex-direction: column;
+//   justify-content: space-around;
+//   width: 100%;
+//   align-items: flex-start;
+// }
+
+// .icon-container {
+//   position: absolute;
+//   top: 20px;
+//   left: 0;
+//   right: 0;
+//   bottom: 0;
+//   display: flex;
+//   flex-wrap: wrap;
+//   align-items: flex-start;
+//   justify-content: flex-start;
+//   overflow: hidden;
+// }
+
+.container-all {
+  font-family: "Press Start 2P", system-ui, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 80vh;
+  width: 100%;
+  overflow: auto;
+}
+
+.container-top {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 50vh;
+  width: 80%;
+  margin-top: 1%;
+}
+
+.info {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  gap: 2rem;
+}
+
+.container-bottom {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-start;
+  width: 80%;
+  height: 25vh;
+  margin-top: 3vh;
+  margin-bottom: 2vh;
+  gap: 5%;
+}
+
+.chat-align {
+  display: flex;
+  flex-direction: column;
+  width: 50%; /* each section takes half of the container width */
+}
+
 .log-area {
   background-color: #f8f8f8;
   border: 1px solid #ccc;
   overflow-y: auto;
   height: 150px;
-  flex-grow: 1;
+  margin-bottom: 10px;
   width: 100%;
 }
 
-.main-container {
+.input-area {
   display: flex;
-  height: 100vh;
-  width: 100vw;
-  padding-top: 2.5%;
-  margin: 0;
-  font-family: "Press Start 2P", system-ui, sans-serif;
-  justify-content: space-between;
-}
-
-.container1 {
-  padding-right: 2.5%;
-  margin-left: 5%;
-  height: 100%;
-  width: 60%;
-  position: relative;
-}
-
-.container2 {
-  padding-left: 2.5%;
-  margin-right: 5%;
-  height: 100%;
-  width: 30%;
-}
-
-.button {
-  background-color: gray;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  margin: 5px;
-  cursor: pointer;
-}
-
-.button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-}
-
-.active-turn {
-  background-color: blue;
-}
-
-.top-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.top-section h1 {
+  width: 100%;
   margin-bottom: 10px;
 }
 
-.info-container {
-  display: flex;
-  justify-content: space-around;
-  width: 100%;
+.input-area input {
+  flex-grow: 1;
+  margin-right: 10px;
 }
 
-.info-container2 {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  width: 100%;
-  align-items: flex-start;
-}
-
-.icon-container {
-  position: absolute;
-  top: 20px;
-  left: 0;
-  right: 0;
-  bottom: 0;
+.player-details {
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-start;
-  justify-content: flex-start;
-  overflow: hidden;
+  justify-content: start;
+  gap: 10px;
+}
+
+.player-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 60px;
+}
+
+.player-avatar {
+  width: 100%;
+  border-radius: 50%;
 }
