@@ -561,7 +561,7 @@ const GameDemo = () => {
       <div className="container-all">
         <RoleWordOverlay isVisible={roleOverlay} word={word} isWolf={isWolf} />
         <div className="container-top">
-          <h1>{word || "Role: " + role}</h1>
+          <h1>{!isWolf ? word || "Role: " + role : "Role: " + role}</h1>
           <div className="info">
             <TimerDisplay
               label={phase !== "discussion" ? "Round time" : "Discussion time"}

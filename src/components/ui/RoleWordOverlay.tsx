@@ -15,7 +15,7 @@ const RoleWordOverlay: React.FC<RoleWordOverlayProps> = ({
 }) => {
   if (!isVisible) return null;
 
-  if (!word && !isWolf) return <Spinner />;
+  if (!word) return <Spinner />;
 
   return (
     <div className="overlay">
