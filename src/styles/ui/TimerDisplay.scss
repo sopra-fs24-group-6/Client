@@ -1,0 +1,13 @@
+@keyframes pulsate {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.pulsating-red {
+  color: #AD2831;
+  animation: pulsate 1s infinite;
+}

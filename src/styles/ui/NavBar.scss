@@ -30,8 +30,8 @@ body {
   text-decoration: none;
   padding: 10px 15px;
   transition: transform 0.3s ease, background-color 0.3s ease;
-  display: inline-flex; // Make sure it's inline-flex or inline-block
-  align-items: center; // Align text vertically
+  display: inline-flex;
+  align-items: center; 
 }
 
 .nav-item:visited {
@@ -40,5 +40,10 @@ body {
 
 .nav-item:hover {
   text-decoration: none;
-  transform: scale(1.2); // Enlarge the link on hover
+  transform: scale(1.2);
+}
+
+.logo-image {
+  height: 30px;
+  width: 30px;
 }

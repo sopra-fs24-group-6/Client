@@ -6,15 +6,13 @@ export default function useLogout() {
   const navigate = useNavigate();
 
   const logout = useCallback(async () => {
-    const id = localStorage.getItem("id");
-    localStorage.removeItem("token");
-    navigate("/login");
+    const userId = localStorage.getItem("userId");
     try {
-      await api.put(`logout/${id}`, { status: "OFFLINE" });
+      await api.put("/logout", { userId });
 
       //clearing local storage
+      localStorage.removeItem("userId");
       localStorage.removeItem("token");
-      localStorage.removeItem("username");
       navigate("/login");
     } catch (error) {
       console.error("Error logging out:", error);

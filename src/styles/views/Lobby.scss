@@ -1,24 +1,56 @@
 .container {
-    display: flex;
-    height: 100vh;
-  }
-  
-  .settings {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-    background-color: #f0f0f0; /* Example background color */
+  display: flex;
+  height: 100vh;
+}
+
+.settings, .players {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  background-color: #f0f0f0;
+}
+
+.theme-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: 10px;
+
+  .theme-control-container {
+      margin-bottom: 10px;
   }
 
-  .players {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-    background-color: #f0f0f0; /* Example background color */
+  .theme-tags-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      width: 100%;
   }
+
+  .theme-tag {
+      color: #333;
+      padding: 2px 5px;
+      margin: 0 5px 5px 0;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background-color: transparent;
+
+      .remove-theme {
+          background: none;
+          border: none;
+          color: #333;
+          cursor: pointer;
+          font-size: 14px;
+          padding: 0 5px;
+      }
+  }
+
+  .theme-tag:hover {
+      background-color: #e0e0e0;
+  }
+}

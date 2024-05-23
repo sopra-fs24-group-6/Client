@@ -3,19 +3,21 @@ import "../../styles/ui/ContainerW.scss";
 
 interface NESContainerProps {
   title: string;
-  children?: ReactNode; // children is now optional
-  className?: string; // className is also optional
+  children?: ReactNode;
+  className?: string;
+  scrollable?: boolean;
 }
 
 const NESContainerW: React.FC<NESContainerProps> = ({
   title,
   children,
   className,
+  scrollable = false,
 }) => {
-  //const containerClassName = `nes-container custom-style with-title ${className || ""}`;
-  
+  const containerClassName = `nes-container custom-style with-title ${className || ""} ${scrollable ? "scrollable" : ""}`;
+
   return (
-    <div className={`nes-container custom-style with-title ${className}`}>
+    <div className={containerClassName}>
       {title && <p className="title">{title}</p>}
       {children}
     </div>

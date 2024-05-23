@@ -1,6 +1,6 @@
 // styles/CustomButton.scss
 .custom-button {
-  padding: 10px 15px;
+  padding: 10px 10px;
   border: none;
   border-radius: 5px;
   transition: background-color 0.3s ease;
@@ -40,24 +40,19 @@
   }
 
   &.w50 {
-    width: 50%;
+    width: 35%;
     margin-left: auto;
     margin-right: auto;
     display: block;
   }
 
   &.w25 {
-    width: calc(25% - 0.25rem);
-    // margin-left: auto;
-    // margin-right: auto;
-    // display: block;
+    width: calc(17.5% - 0.75rem);
   }
 
   &.w55 {
     width: 55%;
     margin-left: 8%;
-    // margin-right: auto;
-    // display: block;
   }
 
   &.small-kick {
@@ -70,4 +65,26 @@
     margin-bottom: 0.5rem;
   }
 
+  &.margin-right {
+    margin-right: 2rem;
+  }
+
+  &.margin-top {
+    margin-top: 2rem;
+  }
+
+  &.set-size {
+    width: 150px;
+    height: 60px;
+    font-size: small;
+  }
+
+  &.send {
+    font-size: 0.75rem;
+    margin-top: 5px;
+    padding-top: 6px;
+    padding-bottom: 5px;
+    padding-left: 9px;
+    padding-right: 9px;
+  }
 }

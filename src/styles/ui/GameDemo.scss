@@ -1,0 +1,96 @@
+.container-all {
+  font-family: "Press Start 2P", system-ui, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 80vh;
+  width: 100%;
+  overflow: auto;
+}
+
+.container-top {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 50vh;
+  width: 80%;
+  margin-top: 1%;
+}
+
+.info {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  gap: 2rem;
+}
+
+.container-bottom {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-start;
+  width: 80%;
+  height: 25vh;
+  margin-top: 3vh;
+  margin-bottom: 2vh;
+  gap: 5%;
+}
+
+.chat-align {
+  display: flex;
+  flex-direction: column;
+  width: 50%; /* each section takes half of the container width */
+}
+
+.log-area {
+  background-color: #f8f8f8;
+  border: 1px solid #ccc;
+  overflow-y: auto;
+  height: 150px;
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+.input-area {
+  display: flex;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.input-area input {
+  flex-grow: 1;
+  margin-right: 10px;
+}
+
+.player-details {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  justify-content: center;
+  align-items: center;
+  gap: 10px 50px;
+}
+
+.player-details.odd-last-centered :last-child {
+  grid-column: 1 / -1;
+  justify-self: center;
+}
+
+.player-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 70px;
+  margin-bottom: 10px;
+}
+
+.player-avatar {
+  width: 100%;
+  height: 70px;
+  border-radius: 50%;
+  gap: 10px;
+}
+
+.player-avatar-turn {
+  border: 3px solid #AD2831;
+  box-sizing: border-box;
+}

@@ -26,11 +26,28 @@
     margin-right: auto;
   }
 
+  &.style {
+    background-color: rgba(202, 137, 95, 0.95);
+    //background-color: #8E6E53;
+    //background-color: #817E9F;
+    //color: #C6D8D3;
+    color: #212529;
+  }
+
+  &.scrollable {
+    overflow-y: auto;
+    max-height: 500px;
+  }
+
+  &.scrollable2 {
+    overflow-y: auto;
+    max-height: 750px;
+  }
+
   .setting-container {
     display: flex;
     flex-direction: row;
     align-items: center;
-    //gap: 0.5rem;
   
     .setting-field {
       flex-grow: 1;

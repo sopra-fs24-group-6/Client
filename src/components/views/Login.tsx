@@ -7,15 +7,8 @@ import NesContainer from "../ui/NESContainer";
 import NESContainerW from "../ui/NESContainerW";
 import CustomButton from "../ui/CustomButton";
 import "../../styles/ui/AppBody.scss";
-import Button from "../ui/Button";
+import background1 from "../../assets/Backgrounds/bg2.jpeg";
 
-
-/*
-It is possible to add multiple components inside a single file,
-however be sure not to clutter your files with an endless amount!
-As a rule of thumb, use one file per component and only add small,
-specific components that belong to the main one in the same file.
- */
 const Login = () => {
   const navigate = useNavigate();
 
@@ -46,61 +39,62 @@ const Login = () => {
   };
 
   return (
-    <>
-      <div className="Center">
-        <NesContainer title="Word Wolf">
-          <h1 className="press-start-font">Log In</h1>
-        </NesContainer>
-      </div>
-      <div className="Extension">
-        <NESContainerW title="Welcome back" className="center">
-          <div className="field-aligner">
-            <label className="log-label">Username:</label>
-            <input
-              className="log-field"
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
-          </div>
-          <div className="field-aligner">
-            <label className="log-label">Password:</label>
-            <input
-              className="log-field"
-              type={isSecure ? "password" : "text"}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            <CustomButton
-              text={isSecure ? "Show" : "Hide"}
-              className={
-                isSecure ? "small 50 hover-green" : "small 50 hover-orange"
-              }
-              onClick={() => setIsSecure(!isSecure)}
-            />
-          </div>
-          <CustomButton
-            text="Login"
-            className="w55 hover-green"
-            disabled={!username || !password}
-            onClick={() => doLogin()}
-          />
-          <div className="Space">
-            <div className="register-text2">
-              Don&apos;t have an account yet?
-              <span className="register-cta2" onClick={() => navigate("/register")}>
-                Register here
-              </span>
+    <div
+      className="background"
+      style={{ backgroundImage: `url(${background1})` }}
+    >
+      <>
+        <div className="Center-LR">
+          <NesContainer title="Word Wolf">
+            <h1 className="press-start-font">Log In</h1>
+          </NesContainer>
+        </div>
+        <div className="Extension">
+          <NESContainerW title="Welcome back" className="center style">
+            <div className="field-aligner">
+              <label className="log-label">Username:</label>
+              <input
+                className="log-field"
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
             </div>
-          </div>
-        </NESContainerW>
-      </div>
-    </>
-
+            <div className="field-aligner">
+              <label className="log-label">Password:</label>
+              <input
+                className="log-field"
+                type={isSecure ? "password" : "text"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <CustomButton
+                text={isSecure ? "Show" : "Hide"}
+                className={
+                  isSecure ? "small 50 hover-green" : "small 50 hover-orange"
+                }
+                onClick={() => setIsSecure(!isSecure)}
+              />
+            </div>
+            <div className="Space">
+              <div className="register-text2">
+                Don&apos;t have an account yet?
+                <span className="register-cta2" onClick={() => navigate("/register")}>
+                  Register here
+                </span>
+              </div>
+            </div>
+            <CustomButton
+              text="Login"
+              className="w55 hover-green"
+              disabled={!username || !password}
+              onClick={() => doLogin()}
+            />
+          </NESContainerW>
+        </div>
+      </>
+    </div>
   );
 };
 
-/**
- * You can get access to the history object's properties via the useLocation, useNavigate, useParams, ... hooks.
- */
 export default Login;

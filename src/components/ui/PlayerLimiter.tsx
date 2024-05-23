@@ -8,7 +8,7 @@ interface LimiterProps {
 
 const PlayerLimiter: React.FC<LimiterProps> = ({
   disabled,
-  value, // Destructure the value prop
+  value,
   onPlayerLimitChange,
 }) => {
   const handlePlayerLimitChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -19,7 +19,7 @@ const PlayerLimiter: React.FC<LimiterProps> = ({
   return (
     <select
       className="player-limit-selector"
-      value={value} // Set the value of the select to the controlled value
+      value={value}
       disabled={disabled}
       onChange={handlePlayerLimitChange}
     >

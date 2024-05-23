@@ -17,3 +17,34 @@
   padding: 20px;
   z-index: 1001;
 }
+
+.theme-selection-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  .theme-tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .theme-tag {
+    background-color: #666666;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+
+    .remove-theme {
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+      font-size: 12px;
+    }
+  }
+}

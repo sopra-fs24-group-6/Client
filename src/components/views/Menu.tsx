@@ -1,33 +1,36 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-//import "./styles/App.css";
 import "../../styles/ui/AppBody.scss";
 import NesContainer from "../ui/NESContainer";
 import NavBar from "../ui/NavBar";
 import "../../styles/ui/Fonts.scss";
 import "../../styles/ui/CustomButton.scss";
-import NESContainerW from "../ui/NESContainerW";
 import CustomButton from "../ui/CustomButton";
 import useLogout from "hooks/useLogout";
+import background1 from "../../assets/Backgrounds/bg2.jpeg";
 
 const Menu = () => {
   const navigate = useNavigate();
   const logout = useLogout();
 
   return (
-    <>
-      <NavBar />
-      <div className="Center">
-        <NesContainer title="Welcome to">
-          <h1 className="press-start-font">Word Wolf</h1>
-        </NesContainer>
-      </div>
-      <div className="Extension">
-        <NESContainerW title="Pick an option" className="center">
+    <div
+      className="background"
+      style={{ backgroundImage: `url(${background1})` }}
+    >
+      <>
+        <NavBar />
+        <div className="Center">
+          <NesContainer title="Welcome to">
+            <h1 className="press-start-font">Word Wolf</h1>
+          </NesContainer>
+        </div>
+        <div className="Extension">
+          {/* <NESContainerW title="Pick an option" className="center"> */}
           <CustomButton
-            text="Play"
+            text="How To Play"
             className="large w50 hover-green"
-            onClick={() => console.log("Play button clicked!")}
+            onClick={() => navigate("/howtoplay")}
           />
           <div className="button-container">
             <CustomButton
@@ -45,18 +48,18 @@ const Menu = () => {
             <CustomButton
               text="Leaderboard"
               className="w25 hover-orange"
-              onClick={() => console.log("Create Lobby button clicked!")}
+              onClick={() => navigate("/leaderboard")}
             />
             <CustomButton
               text="Sign out"
               className="w25 hover-red"
-              onClick={() => logout}
+              onClick={() => logout()}
             />
           </div>
-        </NESContainerW>
-      </div>
-    </>
+        </div>
+      </>
+    </div>
   );
-}
+};
 
 export default Menu;
