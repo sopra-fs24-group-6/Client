@@ -15,16 +15,16 @@ function NavBar() {
       </NavLink>
       <ul>
         <li>
-          <NavLink to="/" className="nav-item" onClick={logout}>
-            Sign Out
-          </NavLink>
-        </li>
-        <li>
           <NavLink
             to={`/users/${localStorage.getItem("userId")}`}
             className="nav-item"
           >
             Profile
+          </NavLink>
+        </li>
+        <li>
+          <NavLink to="/" className="nav-item" onClick={logout}>
+            Sign Out
           </NavLink>
         </li>
       </ul>

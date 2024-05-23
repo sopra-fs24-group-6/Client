@@ -4,14 +4,13 @@ import { useNavigate } from "react-router-dom";
 import "styles/views/Browser.scss";
 import "styles/ui/popUp.scss";
 import CustomButton from "components/ui/CustomButton";
-import BaseContainer from "components/ui/BaseContainer";
 import leaderList from "components/placeholders/leaderlist";
 import NavBar from "../ui/NavBar";
 import NesContainer from "../ui/NESContainer";
 import "styles/views/Lobby.scss";
 import NESContainerW from "../ui/NESContainerW";
 import { getDomain } from "helpers/getDomain";
-import background2 from "../../assets/Backgrounds/bg5.jpeg";
+import background2 from "../../assets/Backgrounds/bg2.jpeg";
 
 const LeaderBoard = () => {
   const navigate = useNavigate();

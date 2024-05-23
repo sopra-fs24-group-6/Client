@@ -7,15 +7,8 @@ import NesContainer from "../ui/NESContainer";
 import NESContainerW from "../ui/NESContainerW";
 import CustomButton from "../ui/CustomButton";
 import "../../styles/ui/AppBody.scss";
-import background1 from "../../assets/Backgrounds/bg4.jpeg";
+import background1 from "../../assets/Backgrounds/bg2.jpeg";
 
-
-/*
-It is possible to add multiple components inside a single file,
-however be sure not to clutter your files with an endless amount!
-As a rule of thumb, use one file per component and only add small,
-specific components that belong to the main one in the same file.
- */
 const Login = () => {
   const navigate = useNavigate();
 
@@ -57,7 +50,7 @@ const Login = () => {
           </NesContainer>
         </div>
         <div className="Extension">
-          <NESContainerW title="Welcome back" className="center">
+          <NESContainerW title="Welcome back" className="center style">
             <div className="field-aligner">
               <label className="log-label">Username:</label>
               <input
@@ -104,7 +97,4 @@ const Login = () => {
   );
 };
 
-/**
- * You can get access to the history object's properties via the useLocation, useNavigate, useParams, ... hooks.
- */
 export default Login;

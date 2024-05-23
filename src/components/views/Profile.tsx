@@ -5,14 +5,13 @@ import { Spinner } from "components/ui/Spinner";
 import NESContainerW from "../ui/NESContainerW";
 import CustomButton from "../ui/CustomButton";
 import NavBar from "../ui/NavBar";
-//import initialPlayers from "components/placeholders/playerlist";
 import languages from "helpers/languages.json";
 import { getDomain } from "helpers/getDomain";
-import background2 from "../../assets/Backgrounds/bg5.jpeg";
+import background2 from "../../assets/Backgrounds/bg2.jpeg";
 
 const Profile = () => {
   const navigate = useNavigate();
-  const { userId } = useParams(); // Extract the user ID from the URL
+  const { userId } = useParams();
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoggedInUser, setIsLoggedInUser] = useState(false);
@@ -105,7 +104,6 @@ const Profile = () => {
     setFriends(updatedFriends);
   };
 
-  //retrieve userdata from server
   useEffect(() => {
     const fetchUserDetails = async () => {
       setIsLoading(true);
@@ -140,25 +138,10 @@ const Profile = () => {
       }
     };
 
-    // const fetchAvatar = async () => {
-    //   try {
-    //     // Replace with the actual backend endpoint
-    //     const response = await api.get(`/${userId}/avatar`)
-    //     const avatarSrc = getDomain() + response.data.avatarUrl;
-    //     console.log(avatarSrc)
-    //     setAvatar(avatarSrc);
-    //   } catch (error) {
-    //     console.error(`Failed to fetch avatar: ${handleError(error)}`);
-    //     // Fallback to a default image if fetching fails
-    //     setAvatar("/path/to/default/avatar.png");
-    //   }
-    // };
-
     fetchUserDetails();
     // fetchAvatar();
   }, [userId, navigate, avatar]);
 
-  //retrieve all users from server
   const fetchUsers = async () => {
     try {
       const response = await api.get("/users");
@@ -317,10 +300,9 @@ const Profile = () => {
                   alt="User Avatar"
                   style={{ width: "100px", height: "100px", borderRadius: "50%" }}
                 />
-                {/* Plus Button Overlay */}
                 {isHovered &&
                   localStorage.getItem("userId") === userId &&
-                  isEditable && (
+                  (
                   <div
                     className="nes-badge"
                     style={{
@@ -399,7 +381,6 @@ const Profile = () => {
               </div>
               <div>
                 <span className="info-title">Language:</span>
-
                 {isEditable ? (
                   <div className="editable-input">
                     <select
@@ -427,7 +408,6 @@ const Profile = () => {
                   {formatCreationDate(user.creationDate)}
                 </p>
               </div>
-
               <div className="user-details button-container">
                 {isLoggedInUser && !isEditable && (
                   <CustomButton

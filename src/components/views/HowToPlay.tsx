@@ -4,7 +4,7 @@ import CustomButton from "../ui/CustomButton";
 import NESContainerW from "../ui/NESContainerW";
 import NavBar from "../ui/NavBar";
 import "../../styles/views/HowToPlay.scss";
-import background2 from "../../assets/Backgrounds/bg5.jpeg";
+import background2 from "../../assets/Backgrounds/bg2.jpeg";
 import NESContainer from "components/ui/NESContainer";
 
 const HowToPlay = () => {
