@@ -1,4 +1,4 @@
-# SoPra Group06 Server
+# SoPra Group06 Client
 
 ## 1. Introduction
 
