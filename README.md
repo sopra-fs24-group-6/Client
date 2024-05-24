@@ -137,7 +137,7 @@ for everyone. Either to accommodate for example people that are colour blind or 
 
 ## 7.  License
 
-Our project is based on the existing project: [sopra-fs24-template-server](https://github.com/HASEL-UZH/sopra-fs24-template-server). As such, we continue to use the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0).
+Our project is based on the existing project: [sopra-fs24-template-client](https://github.com/HASEL-UZH/sopra-fs24-template-client). As such, we continue to use the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0).
 
 The Apache License 2.0 is a permissive license that allows users to use, modify, and distribute the software under the following conditions:
 
