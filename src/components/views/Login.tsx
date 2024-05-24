@@ -79,7 +79,10 @@ const Login = () => {
             <div className="Space">
               <div className="register-text2">
                 Don&apos;t have an account yet?
-                <span className="register-cta2" onClick={() => navigate("/register")}>
+                <span
+                  className="register-cta2"
+                  onClick={() => navigate("/register")}
+                >
                   Register here
                 </span>
               </div>

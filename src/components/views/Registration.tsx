@@ -13,7 +13,6 @@ import background1 from "../../assets/Backgrounds/bg2.jpeg";
 const Registration = () => {
   const navigate = useNavigate();
   const [isSecure, setIsSecure] = useState(true);
-  const [name, setName] = useState(null);
   const [password, setPassword] = useState(null);
   const [username, setUsername] = useState(null);
   const [language, setLanguage] = useState("en");
@@ -86,7 +85,8 @@ const Registration = () => {
             <div className="field-aligner">
               <select
                 value={language}
-                onChange={(e) => setLanguage(e.target.value)}>
+                onChange={(e) => setLanguage(e.target.value)}
+              >
                 {languages.map((lang) => (
                   <option key={lang.code} value={lang.code}>
                     {lang.name}

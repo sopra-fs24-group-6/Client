@@ -1,5 +1,4 @@
 import React from "react";
-import {ReactLogo} from "../ui/ReactLogo";
 import PropTypes from "prop-types";
 import "../../styles/views/Header.scss";
 
@@ -8,11 +7,11 @@ import "../../styles/views/Header.scss";
  * Conceptually, components are like JavaScript functions. They accept arbitrary inputs (called “props”) and return React elements describing what should appear on the screen.
  * They are reusable pieces, and think about each piece in isolation.
  * Functional components have to return always something. However, they don't need a "render()" method.
- * https://react.dev/learn/your-first-component and https://react.dev/learn/passing-props-to-a-component 
+ * https://react.dev/learn/your-first-component and https://react.dev/learn/passing-props-to-a-component
  * @FunctionalComponent
  */
-const Header = props => (
-  <div className="header container" style={{height: props.height}}>
+const Header = (props) => (
+  <div className="header container" style={{ height: props.height }}>
     <h1 className="header title">Group 6</h1>
     {/* <ReactLogo width="60px" height="60px"/> */}
   </div>

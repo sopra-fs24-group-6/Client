@@ -60,8 +60,11 @@ const GameDemo = () => {
         const response = await api.get(`/lobbies/${id}/players`);
         setStartPlayers(response.data);
         // Log each player's avatarUrl
-        response.data.forEach(player => {
-          console.log(`Player ${player.userId} avatarUrl:`, getDomain() + "/" + player.avatarUrl + `?v=${timestamp}`);
+        response.data.forEach((player) => {
+          console.log(
+            `Player ${player.userId} avatarUrl:`,
+            getDomain() + "/" + player.avatarUrl + `?v=${timestamp}`
+          );
         });
 
         const fetchedUserIds = response.data.map((player) => player.userId);
@@ -199,7 +202,7 @@ const GameDemo = () => {
           const newRoundTime = JSON.parse(message.body);
           if (newRoundTime === 0) {
             setPlayerTurn("");
-          };
+          }
           setRoundTimer(newRoundTime);
         });
 
@@ -368,23 +371,37 @@ const GameDemo = () => {
           </NESContainer>
         </div>
         <div className="container-all">
-          <RoleWordOverlay isVisible={roleOverlay} word={word} isWolf={isWolf} />
+          <RoleWordOverlay
+            isVisible={roleOverlay}
+            word={word}
+            isWolf={isWolf}
+          />
           <div className="container-top">
             <h1>{!isWolf ? word || "Role: " + role : "Role: " + role}</h1>
             <div className="info">
               <TimerDisplay
-                label={phase !== "discussion" ? "Round time" : "Discussion time"}
+                label={
+                  phase !== "discussion" ? "Round time" : "Discussion time"
+                }
                 timer={phase !== "discussion" ? roundTimer : discussionTimer}
               />
               <p>Role: {role}</p>
             </div>
-            <div className={`player-details ${startPlayers.length % 2 !== 0 ? "odd-last-centered" : ""}`}>
+            <div
+              className={`player-details ${
+                startPlayers.length % 2 !== 0 ? "odd-last-centered" : ""
+              }`}
+            >
               {startPlayers.map((player, index) => (
                 <div key={player.userId} className="player-info">
                   <img
-                    src={getDomain() + "/" + player.avatarUrl + `?v=${timestamp}`}
+                    src={
+                      getDomain() + "/" + player.avatarUrl + `?v=${timestamp}`
+                    }
                     alt={`${player.username}'s avatar`}
-                    className={`player-avatar ${player.userId === playerTurn ? "player-avatar-turn" : ""}`}
+                    className={`player-avatar ${
+                      player.userId === playerTurn ? "player-avatar-turn" : ""
+                    }`}
                   />
                   <p>{player.username}</p>
                 </div>

@@ -26,7 +26,11 @@ const Browser = () => {
         const response = await api.get("/lobbies");
         setLobbies(response.data);
       } catch (error) {
-        alert(`Something went wrong when trying to fetch available lobbies: \n${handleError(error)}`);
+        alert(
+          `Something went wrong when trying to fetch available lobbies: \n${handleError(
+            error
+          )}`
+        );
       }
     };
     // get all available lobbies when mount
@@ -103,7 +107,7 @@ const Browser = () => {
                     <tr key={lobby.id}>
                       <td className="browser-items">{lobby.name}</td>
                       <td className="browser-items">
-                        {lobby.isPrivate? "Private" : "Public"}
+                        {lobby.isPrivate ? "Private" : "Public"}
                       </td>
                       <td className="browser-items">{lobby.players.length}</td>
                       <td className="browser-items">{lobby.playerLimit}</td>

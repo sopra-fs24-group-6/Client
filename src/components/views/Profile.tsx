@@ -298,36 +298,40 @@ const Profile = () => {
                 <img
                   src={avatar}
                   alt="User Avatar"
-                  style={{ width: "100px", height: "100px", borderRadius: "50%" }}
+                  style={{
+                    width: "100px",
+                    height: "100px",
+                    borderRadius: "50%",
+                  }}
                 />
-                {isHovered &&
-                  localStorage.getItem("userId") === userId &&
-                  (
-                    <div
-                      className="nes-badge"
-                      style={{
-                        position: "absolute",
-                        top: "50%",
-                        left: "45%",
-                        transform: "translate(-50%, -50%)",
-                        backgroundColor: "green",
-                        borderRadius: "50%",
-                        width: "30px",
-                        height: "30px",
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        cursor: "pointer",
-                      }}
+                {isHovered && localStorage.getItem("userId") === userId && (
+                  <div
+                    className="nes-badge"
+                    style={{
+                      position: "absolute",
+                      top: "50%",
+                      left: "45%",
+                      transform: "translate(-50%, -50%)",
+                      backgroundColor: "green",
+                      borderRadius: "50%",
+                      width: "30px",
+                      height: "30px",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <span
+                      className="is-primary"
+                      onClick={() =>
+                        document.getElementById("fileInput").click()
+                      }
                     >
-                      <span
-                        className="is-primary"
-                        onClick={() =>
-                          document.getElementById("fileInput").click()}>
                       +
-                      </span>
-                    </div>
-                  )}
+                    </span>
+                  </div>
+                )}
                 {/* Hidden File Input */}
                 <input
                   type="file"
@@ -341,7 +345,9 @@ const Profile = () => {
                 <span className="info-title">Status:</span>
                 <p className="info-text">
                   <span style={{ marginRight: 8 }}>
-                    {`${user.status === "OFFLINE" ? "🔴" : "🟢"} ${user.status}`}
+                    {`${user.status === "OFFLINE" ? "🔴" : "🟢"} ${
+                      user.status
+                    }`}
                   </span>
                 </p>
               </div>

@@ -21,7 +21,6 @@ import "styles/ui/popUp.scss";
 const GameLobby = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const params = useParams();
 
   const [isPublished, setIsPublished] = useState(false);
   const [isAdmin, setIsAdmin] = useState(location.state?.isAdmin || false);
@@ -230,7 +229,7 @@ const GameLobby = () => {
       clueTimer,
       discussionTimer,
       themes: selectedThemes,
-      isPrivate
+      isPrivate,
     };
     if (isAdmin) {
       try {
@@ -279,6 +278,12 @@ const GameLobby = () => {
   };
 
   const startGame = () => {
+    if (players.length <= 2) {
+      alert(
+        "You need at least 3 Players for the game to work. Wait for more people to join."
+      );
+      return;
+    }
     if (client && connected) {
       client.publish({
         destination: "/app/startGame",
@@ -303,7 +308,9 @@ const GameLobby = () => {
   };
 
   const handleRemoveTheme = (themeToRemove) => {
-    const newSelectedThemes = selectedThemes.filter(theme => theme !== themeToRemove);
+    const newSelectedThemes = selectedThemes.filter(
+      (theme) => theme !== themeToRemove
+    );
     setSelectedThemes(newSelectedThemes);
   };
 
@@ -431,10 +438,15 @@ const GameLobby = () => {
                     />
                   )}
                   <div className="theme-tags-container">
-                    {selectedThemes.map(theme => (
+                    {selectedThemes.map((theme) => (
                       <span key={theme} className="theme-tag">
                         {theme}
-                        <button onClick={() => handleRemoveTheme(theme)} className="remove-theme">x</button>
+                        <button
+                          onClick={() => handleRemoveTheme(theme)}
+                          className="remove-theme"
+                        >
+                          x
+                        </button>
                       </span>
                     ))}
                   </div>
@@ -603,7 +615,7 @@ const GameLobby = () => {
           )}
         </div>
       </>
-    </div >
+    </div>
   );
 };
 

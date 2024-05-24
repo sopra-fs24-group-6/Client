@@ -11,8 +11,6 @@ import Lobby from "../../views/Lobby";
 import Browser from "../../views/Browser";
 import LeaderBoard from "../../views/LeaderBoard";
 import HowToPlay from "../../views/HowToPlay";
-
-import Game from "../../views/Game";
 import GameDemo from "../../views/GameDemo";
 
 /**
