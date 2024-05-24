@@ -282,6 +282,7 @@ const GameLobby = () => {
       alert(
         "You need at least 3 Players for the game to work. Wait for more people to join."
       );
+
       return;
     }
     if (client && connected) {
