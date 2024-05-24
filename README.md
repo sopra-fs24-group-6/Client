@@ -19,29 +19,29 @@
 ## 3. High-level components
 
 
-### (1) Real-time communication (Websockets)
-Allows for smooth lobby settings updates
-Allows for smooth transition between the game’s phases
-Allows for interactive functionalities such as chat box
+### (1) Real-time communication [Websockets](https://github.com/sopra-fs24-group-6/Client/blob/main/src/helpers/GameWebSocketManager.js)
+* Allows for smooth lobby settings updates
+* Allows for smooth transition between the game’s phases
+* Allows for interactive functionalities such as chat box
 ### (2) Simple and minimal layout for ease of use
-Consistent layout across the board with similar themes and colour patterns
-Simple and intuitive layout such that it makes the application accessible to
+* Consistent layout across the board with similar themes and colour patterns
+* Simple and intuitive layout such that it makes the application accessible to
 everyone
-Inclusion of a rule / game explanation tab for clarification of the game’s
+* Inclusion of a rule / game explanation tab for clarification of the game’s
 phases and game rules
-### (3) Lobby
-Gathering Hub for players before starting a game
-Allows to set desired game values
-Separate views for lobby owner & other players
-### (4) Game
-Central functionality of the app
-Handles game flow in different stages
-Can only be accessed through lobby
-Emphasis on the important information
-### (5) Profile
-Allows access & edit of user information
-Shows personal game stats
-Ability to add friends
+### (3) [Lobby](https://github.com/sopra-fs24-group-6/Client/blob/main/src/components/views/Lobby.tsx)
+* Gathering Hub for players before starting a game
+* Allows to set desired game values
+* Separate views for lobby owner & other players
+### (4) [Game](https://github.com/sopra-fs24-group-6/Client/blob/main/src/components/views/Game.tsx)
+* Central functionality of the app
+* Handles game flow in different stages
+* Can only be accessed through lobby
+* Emphasis on the important information
+### (5) [Profile](https://github.com/sopra-fs24-group-6/Client/blob/main/src/components/views/Profile.tsx)
+* Allows access & edit of user information
+* Shows personal game stats
+* Ability to add friends
 
 ## 4. Launch & Deployment
 
